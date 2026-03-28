@@ -1,7 +1,9 @@
-# About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+# 关于这个网站
+这是一个基于[Fuwari](https://github.com/saicaca/fuwari)搭建的个人博客
 
-::github{repo="saicaca/fuwari"}
+## 关于我
+目前还是学生，所以博客内容大概就是一些学习生活之类的吧
+
 
 > ### Sources of images used in this site
 > - [Unsplash](https://unsplash.com/)
