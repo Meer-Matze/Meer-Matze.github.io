@@ -4,9 +4,10 @@ published: 2026-03-28
 description: 'a fresh new start'
 image: ''
 tags: [hello world]
-category: ''
+category: 'tittle-tattle'
 draft: false 
 lang: ''
+serise: ''
 ---
 # 一个全新的开始！
 在这里我可能会

@@ -8,7 +8,20 @@ import { getSortedPostsList } from "../utils/content-utils";
 const sortedPostsList = await getSortedPostsList();
 ---
 
+
 <MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+    <ArchivePanel
+        sortedPosts={sortedPostsList.map(post => ({
+            ...post,
+            data: {
+                ...post.data,
+                category: post.data.category || undefined
+            }
+        }))}
+        tags={[...new Set(sortedPostsList.flatMap(post => post.data.tags))]}
+        categories={[...new Set(sortedPostsList.map(post => post.data.category).filter((cat): cat is string => typeof cat === 'string'))]}
+        client:only="svelte"
+    />
+    <!-- <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel> -->
 </MainGridLayout>
 
