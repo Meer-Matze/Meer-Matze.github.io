@@ -1,12 +1,12 @@
 ---
-title: start
+title: 新启航
 published: 2026-03-28
 description: 'a fresh new start'
 image: ''
 tags: [hello world]
-category: 'tittle-tattle'
+category: '闲聊'
 draft: false 
-lang: ''
+lang: 'zh_CN'
 serise: ''
 ---
 # 一个全新的开始！
