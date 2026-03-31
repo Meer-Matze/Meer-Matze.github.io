@@ -8,7 +8,6 @@ category: '数据结构'
 draft: false 
 lang: ''
 series: 'ST表'
- ---
 ---
 最近写洛谷[P7167](https://www.luogu.com.cn/problem/P7167)的时候，用单调栈发现TLE了，然后学习了ST表，想着记录一些ST的使用方法。
 # ST表简介
