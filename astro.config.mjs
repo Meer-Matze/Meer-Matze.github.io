@@ -56,7 +56,10 @@ export default defineConfig({
 			},
 		}),
 		expressiveCode({
-			themes: [expressiveCodeConfig.theme, expressiveCodeConfig.theme],
+			themes: ["light-plus", "catppuccin-macchiato"],
+			// 根据 HTML 的 .dark 类切换主题，而不是仅依赖 window.matchMedia
+			useDarkModeMediaQuery: false,
+			themeCssSelector: (theme) => (theme.type === "dark" ? ".dark" : ":root"),
 			plugins: [
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),
