@@ -3,9 +3,10 @@
 
 ## 关于我
 目前还是学生，所以博客内容大概就是一些学习生活之类的吧
+## 关于文章
+博客的文章主要分为两类：**技术类**和**生活类**。技术类文章主要涉及计算机科学、编程、算法等方面的内容，旨在分享我的学习经验和技术见解；生活类文章则记录我的日常生活、兴趣爱好以及一些个人感悟，希望能够与读者们分享我的生活点滴。
+不过由于我基础薄弱，所以技术类文章的质量可能不太高，也比较啰嗦，同时大量使用AI生成的内容，~~虽然AI写的有时候我也看不懂，但我尽量校对了~~，如果有错误或者不合理的地方欢迎提issue指出，我会尽快修正。
 
-
-> ### Sources of images used in this site
-> - [Unsplash](https://unsplash.com/)
-> - [星と少女](https://www.pixiv.net/artworks/108916539) by [Stella](https://www.pixiv.net/users/93273965)
-> - [Rabbit - v1.4 Showcase](https://civitai.com/posts/586908) by [Rabbit_YourMajesty](https://civitai.com/user/Rabbit_YourMajesty)
+> ## 图片来源
+> - [二人だけの楽園](https://www.pixiv.net/artworks/120269913/) by [藤ちょこ](https://www.pixiv.net/users/27517)
+> - [大図書館](https://www.pixiv.net/artworks/78532174) by [藤ちょこ](https://www.pixiv.net/users/27517)

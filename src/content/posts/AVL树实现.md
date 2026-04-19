@@ -6,7 +6,7 @@ image: ''
 tags: [二叉树, 数据结构, 代码实现]
 category: '数据结构'
 series: '二叉树'
-draft: true 
+draft: false 
 lang: 'zh_CN'
 ---
 # AVL树
@@ -19,7 +19,7 @@ lang: 'zh_CN'
 但在具体实现中平衡因子的维护比较复杂，所以我使用了一个高度属性来代替平衡因子，一来容易维护，二来平衡因子的计算也容易。
 在AVL树类中，我们需要实现以下方法：
 - 插入节点：在AVL树中插入一个节点后，需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。
-- 旋转操作：AVL树的旋转操作包括左旋、右旋、左-右旋和右-左旋，这些操作用于调整树的结构以保持平衡。
+- 删除节点：在AVL树中删除一个节点后，同样需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。
 ## AVL树的具体结构
 ### AVL树节点类
 一个AVL树节点类通常包含以下成员：
@@ -42,6 +42,8 @@ lang: 'zh_CN'
 
 和以下方法：
 - 插入节点：实现一个方法来插入节点，并在插入后检查树的平衡状态，进行必要的旋转操作。
+- 删除节点：实现一个方法来删除节点，并在删除后检查树的平衡状态，进行必要的旋转操作。
+- 平衡调整：实现一个方法来调整树的平衡状态，根据节点的平衡因子选择合适的旋转操作。
 - 旋转操作：实现左旋、右旋、左-右旋和右-左旋等方法，用于调整树的结构以保持平衡。
 - 判断是否平衡：实现一个方法来判断AVL树是否平衡，可以通过检查根节点的平衡因子来判断。
 
@@ -143,6 +145,7 @@ namespace mystruct
 我们还定义了一个`isBalanced()`方法，用于判断AVL树是否平衡，通过检查根节点的平衡状态来判断。
 ### 旋转操作
 **旋转操作**是AVL树保持**平衡**的关键，我们需要实现**左旋、右旋、左-右旋和右-左旋**等方法来调整树的结构。
+
 #### 左旋
 当我们在 AVL 树中插入一个节点后，如果某个节点 `node` 的**平衡因子变为 -2**（即右子树比左子树高 2 层），且其**右孩子的平衡因子为 -1 或 0**（说明是“右右”失衡），则需要进行一次左旋。
 
@@ -250,8 +253,43 @@ namespace mystruct
             RightRotate(node);
         }
 ```
+
+### 平衡调整
+在插入或删除节点后，我们需要通过旋转操作来维护 AVL 树的平衡。以下是插入操作中平衡调整的逻辑流程：
+
+#### 平衡调整逻辑流程图
+[![平衡调整流程图](https://mermaid.ink/img/pako:eNptkjFPg0AUx7_K5U2aQHNQjhZSa2KNEy4XJ6UDKdfSWKDBI1FJZ2PUtJuuLjUOjUOHfiIa_RYeUAltZeK9-_9_7_3hEuiFLgMTBpEz9tDFqR0g8XQ81ru2WJ8nJ2eojRR0PEGyjNZvX-ggXc1_Hl4ORd3e6KxE9NLFZ7qYZfIjhIW-CrJKs2UVRjoceJyG3OHsav348f3-nE6X69en6kF3D5HO5gJBC0S23j-Y1VzeoHYEG5wdVLD5cZaxheTtkNPldkhKE9ErQ7b2QlJamml1w53lysX2IhaAPCKtfqV9ynQpb0g7gm4WDiTxM4cumDyKmQQ-i3wnKyHJhtnAPeYzG0zx6rK-E4-4DXYwEbaxE1yGof_njMJ44IHZd0Y3oorHrphwOnTETfHLbsQCl0WdMA44mIqB9UaOATOBWzA1tWboTYIbRNewomBCJLgTOk2rqQrRVANjnaj1OplIcJ9PxrWGodWFRSGGrhHcVCRg7pCH0XlxT_PrOvkFPof4VA?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNptkjFPg0AUx7_K5U2aQHNQjhZSa2KNEy4XJ6UDKdfSWKDBI1FJZ2PUtJuuLjUOjUOHfiIa_RYeUAltZeK9-_9_7_3hEuiFLgMTBpEz9tDFqR0g8XQ81ru2WJ8nJ2eojRR0PEGyjNZvX-ggXc1_Hl4ORd3e6KxE9NLFZ7qYZfIjhIW-CrJKs2UVRjoceJyG3OHsav348f3-nE6X69en6kF3D5HO5gJBC0S23j-Y1VzeoHYEG5wdVLD5cZaxheTtkNPldkhKE9ErQ7b2QlJamml1w53lysX2IhaAPCKtfqV9ynQpb0g7gm4WDiTxM4cumDyKmQQ-i3wnKyHJhtnAPeYzG0zx6rK-E4-4DXYwEbaxE1yGof_njMJ44IHZd0Y3oorHrphwOnTETfHLbsQCl0WdMA44mIqB9UaOATOBWzA1tWboTYIbRNewomBCJLgTOk2rqQrRVANjnaj1OplIcJ9PxrWGodWFRSGGrhHcVCRg7pCH0XlxT_PrOvkFPof4VA)
+
+#### 代码实现
+代码实现如下：
+```cpp title="AVLtree.hpp" startLineNumber=135
+        void Balance(AVLNode* node) {
+            int bf = node->getBF();
+
+            if (bf > 1) // 左重
+            {
+                if (node->left_child->getBF() >= 0)
+                    RightRotate(node);
+                else
+                    LeftRightRotate(node);
+            }
+            else if (bf < -1) // 右重
+            {
+                if (node->right_child->getBF() <= 0)
+                    LeftRotate(node);
+                else
+                    RightLeftRotate(node);
+            }
+        }
+```
+
 ### 插入节点
 在AVL树中插入一个节点后，需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。插入节点的过程与普通二叉树类似，但在插入后需要进行平衡调整。
+
+#### 插入逻辑流程图
+[![插入流程图](https://mermaid.ink/img/pako:eNqNVF1PE0EU_SubeYKkYNttt-0mYiJI9AFCEF_c9mHTHWhju9tsZw24aUJQE8RgQcUQQYFEWowRGyFiW1v_TGdb_4W3M7v9AGLch_2Yueeec-69OzZKGhpGMloy1VxKWJiK6wJc94lqkhGF_lql5ZdO8TV9fpwYFcbGJoQ72RxZsZ3DbWf3G90qtX7W2p9rtwocxjYhTIBNFj1pYpXgecMgCl3fo_Wa867S2Vhrr1VbjX3AOodV_pngyXVtRGnX3zgfDmj1R-f3W7r3USCmhROjlwiAmiGm07o2Z-SVVv1VL5er-uDYedHk2luNzXbjNMFz8LsLZEmmrFwmnQShtrNTcTZP6cV3-nWX7p94vnoBg97mMbFMfVrN5PFV0YvdZU_1ENxTPmM8xrN4mSigGzhd5k9lWinSrW16UbpBi2ftcp1unAwJ93DcvmExGzZdr3SaTWgFWPVUe5vX1OtqgOfqnp7HJpmFoVB47Xodc1X0A3iHUzj5aE41sU7sHHsI100Gvw8ED3KCKDWzAG3-d_MvoT1LD3IalPYuTi-loJh75yBYcJW03z_782WX1kqu9sHQLpZlvK1mVD0JvWeyafWsc3TkyR4MAADsdxndBYXHdipPnZ1zl6Efy6Y5_x-O-hBQ0DfEjSquk5uupbEJ_hwy1KvJUDsGCo988H-nNSR3yX0oi82s2v1Ednc7jkgKZ3EcyfCq4UXVypA4iusFgOVU_aFhZD2kaVhLKSSz6fYhi7FPpVU4PLK9VeDWsDkJs0WQHBQj4SBLg2QbLcNCZFyMhsNhvxiSoqFIMCT60AqSRf-4KPmlWNQfDkhRMSAVfOgJIw6MhyIRKSiJQVGKxWLhgA9hLU0Mc4YfXOz8KvwFfIb4Aw?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNqNVF1PE0EU_SubeYKkYNttt-0mYiJI9AFCEF_c9mHTHWhju9tsZw24aUJQE8RgQcUQQYFEWowRGyFiW1v_TGdb_4W3M7v9AGLch_2Yueeec-69OzZKGhpGMloy1VxKWJiK6wJc94lqkhGF_lql5ZdO8TV9fpwYFcbGJoQ72RxZsZ3DbWf3G90qtX7W2p9rtwocxjYhTIBNFj1pYpXgecMgCl3fo_Wa867S2Vhrr1VbjX3AOodV_pngyXVtRGnX3zgfDmj1R-f3W7r3USCmhROjlwiAmiGm07o2Z-SVVv1VL5er-uDYedHk2luNzXbjNMFz8LsLZEmmrFwmnQShtrNTcTZP6cV3-nWX7p94vnoBg97mMbFMfVrN5PFV0YvdZU_1ENxTPmM8xrN4mSigGzhd5k9lWinSrW16UbpBi2ftcp1unAwJ93DcvmExGzZdr3SaTWgFWPVUe5vX1OtqgOfqnp7HJpmFoVB47Xodc1X0A3iHUzj5aE41sU7sHHsI100Gvw8ED3KCKDWzAG3-d_MvoT1LD3IalPYuTi-loJh75yBYcJW03z_782WX1kqu9sHQLpZlvK1mVD0JvWeyafWsc3TkyR4MAADsdxndBYXHdipPnZ1zl6Efy6Y5_x-O-hBQ0DfEjSquk5uupbEJ_hwy1KvJUDsGCo988H-nNSR3yX0oi82s2v1Ednc7jkgKZ3EcyfCq4UXVypA4iusFgOVU_aFhZD2kaVhLKSSz6fYhi7FPpVU4PLK9VeDWsDkJs0WQHBQj4SBLg2QbLcNCZFyMhsNhvxiSoqFIMCT60AqSRf-4KPmlWNQfDkhRMSAVfOgJIw6MhyIRKSiJQVGKxWLhgA9hLU0Mc4YfXOz8KvwFfIb4Aw)
+
+#### 代码实现
 代码实现如下：
 ```cpp title="AVLtree.hpp" startLineNumber=135
         bool insert(const Data &data)
@@ -270,10 +308,7 @@ namespace mystruct
             {
                 if (current->data == data) return false;
                 parent = current;
-                if (data < current->data)
-                    current = current->left_child;
-                else
-                    current = current->right_child;
+                current = (data < current->data) ? current->left_child : current->right_child;
             }
 
             //current此时已经到达了插入位置，将新节点插入到parent的左子树或右子树
@@ -285,43 +320,87 @@ namespace mystruct
                 parent->right_child = current;
 
             // 向上回溯：更新高度并检查平衡
-            AVLNode *temp = parent;
-            while (temp)
+            while (parent)
             {
-                temp->update();
-                //到达最小不平衡子树，进行旋转调整
-                if (!temp->is_balanced())
+                parent->update();
+                if (!parent->is_balanced())
                 {
-                    if (temp->getBF() > 1)
-                    {
-                        if (data < temp->left_child->data)
-                            RightRotate(temp);
-                        else
-                            LeftRightRotate(temp);
-                    }
-                    else
-                    {
-                        if (data > temp->right_child->data)
-                            LeftRotate(temp);
-                        else
-                            RightLeftRotate(temp);
-                    }
-                    return true; // AVL树插入并旋转后即达到全局平衡
+                    Balance(parent);
+                    break; // 旋转后树已经平衡，停止回溯
                 }
-                temp = temp->parent;
+                parent = parent->parent;
             }
-            //如果没有找到不平衡的节点，说明AVL树已经保持平衡，直接返回true
+            return true;
+        }
+```
+### 删除节点
+在AVL树中删除一个节点后，同样需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。删除节点的过程与普通二叉树类似，但在删除后需要进行平衡调整。由于删除节点可能会导致树的高度发生变化，因此需要向上回溯更新节点的高度，并检查每个节点的平衡状态，进行必要的旋转操作来保持AVL树的平衡。
+
+#### 删除逻辑流程图
+[![](https://mermaid.ink/img/pako:eNptVNlO20AU_RVrnkAKkV2TzWqp1KSoL0UI6EudPLjxQCwSO5qMBTSKhGhVoCAUuomlC0gsaqtCpKI2LKI_k7HDX3Q8YycmJA9WZu4555575-pWQd7SIVDADNLKBWEqkzUF-pvEGsIDKrlaJMdrZGXvZvsgNygMDY0Ij0tlvFB19jadrVNSP2o1L9zvFw9rnMaCFCbQIENPQGwjc1QrVuCA2v73gex-Faa9U26wh0G1GGPUMPUxakl1vh06q9fu7omzt9x-u-QunQt5GyFo4hyn8m-A5-bmjQquUhpZaXBmx5kXCecJOetBBN6n5qx0wSjqNGXVz3z_BRpxPq-2mget5g_yq859BTn4N0QLq3k-J-18HlYqFlLJ6aXnsr7hXh77xVWCYK5bWIfAJCbntHJGw5pKGm-6cMHdeU0Wr5y1v-2zL-7ldk-XAhJXgDjNo10rPlxw1pdJffOOjT4UJjWOYFlDMAOLEEPV3T8hJzudjgh5rwMCebfurvzxrzw0c9W3TcGz3NYN9_VWwH_ComHOqjfvr52NQ19faDU3eHbfPwcxPKey4dK5Sr-B6qIYKV2A-dlxpl31U_Sb_BDs7vxPIbs7_pgegunvYQVNeFbWNQyfQGOmgFVn98z51AjKu_m5RS6OfMNhXNfsI62okvPf7f39duOV8_HsVnUBQmD4MTiPeXrV13_gJ4r6z9Xbg6wJInRXGDpQvEIioARRSfOOoOplyAJcgCWYBQr9q8NpzS7iLMiaNUora-ZzyyoFTGTZMwWgsHUQATarJWNodBGVOrc0pQ5R2rJNDBRJTiVkJgOUKpinF9JwVI7JiVRSTEqJmJRMRcACUIZiw8loMiYl5OF4XEzEY6laBLxkmaVo_J4kpWJJURRlUZbEeARA3cAWesrXINuGtf9DXve2?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNptVNlO20AU_RVrnkAKkV2TzWqp1KSoL0UI6EudPLjxQCwSO5qMBTSKhGhVoCAUuomlC0gsaqtCpKI2LKI_k7HDX3Q8YycmJA9WZu4555575-pWQd7SIVDADNLKBWEqkzUF-pvEGsIDKrlaJMdrZGXvZvsgNygMDY0Ij0tlvFB19jadrVNSP2o1L9zvFw9rnMaCFCbQIENPQGwjc1QrVuCA2v73gex-Faa9U26wh0G1GGPUMPUxakl1vh06q9fu7omzt9x-u-QunQt5GyFo4hyn8m-A5-bmjQquUhpZaXBmx5kXCecJOetBBN6n5qx0wSjqNGXVz3z_BRpxPq-2mget5g_yq859BTn4N0QLq3k-J-18HlYqFlLJ6aXnsr7hXh77xVWCYK5bWIfAJCbntHJGw5pKGm-6cMHdeU0Wr5y1v-2zL-7ldk-XAhJXgDjNo10rPlxw1pdJffOOjT4UJjWOYFlDMAOLEEPV3T8hJzudjgh5rwMCebfurvzxrzw0c9W3TcGz3NYN9_VWwH_ComHOqjfvr52NQ19faDU3eHbfPwcxPKey4dK5Sr-B6qIYKV2A-dlxpl31U_Sb_BDs7vxPIbs7_pgegunvYQVNeFbWNQyfQGOmgFVn98z51AjKu_m5RS6OfMNhXNfsI62okvPf7f39duOV8_HsVnUBQmD4MTiPeXrV13_gJ4r6z9Xbg6wJInRXGDpQvEIioARRSfOOoOplyAJcgCWYBQr9q8NpzS7iLMiaNUora-ZzyyoFTGTZMwWgsHUQATarJWNodBGVOrc0pQ5R2rJNDBRJTiVkJgOUKpinF9JwVI7JiVRSTEqJmJRMRcACUIZiw8loMiYl5OF4XEzEY6laBLxkmaVo_J4kpWJJURRlUZbEeARA3cAWesrXINuGtf9DXve2)
+
+#### 代码实现
+代码实现如下：
+```cpp title="AVLtree.hpp" startLineNumber=173
+        bool erase(const Data &data) {
+            if (!this->root) return false;
+
+            AVLNode *current = this->root;
+
+            // 1. 查找目标节点
+            while (current && current->data != data) {
+                current = (data < current->data) ? current->left_child : current->right_child;
+            }
+
+            if (!current) return false; // 未找到
+            
+            AVLNode *parent = current;
+
+            // 2. 准备删除逻辑
+            // 处理有两个子节点的情况：转换为删除后继节点
+            if (current->left_child && current->right_child) {
+                AVLNode *successor = current->right_child;
+                while (successor->left_child) successor = successor->left_child;
+
+                // 直接替换，这样后续逻辑只需处理 successor 的删除
+                const_cast<Data &>(current->data) = successor->data;
+                current = successor;
+                parent = current->parent;
+            }
+
+            // 现在的 current 最多只有一个子节点
+            AVLNode *child = current->left_child ? current->left_child : current->right_child;
+
+            // 链接父节点和子节点
+            if (!parent)
+                this->root = child;
+            else if (parent->left_child == current)
+                parent->left_child = child;
+            else
+                parent->right_child = child;
+
+            if (child) child->parent = parent;
+
+            // 手动断开子节点连接防止析构时递归删除
+            current->left_child = current->right_child = nullptr;
+            delete current;
+
+            // 3. 向上回溯重新平衡
+            while (parent) {
+                parent->update();
+                Balance(parent);
+                parent = parent->parent;
+            }
             return true;
         }
     };
 }
-#endif
+#endif //AVLTREE_HPP
 ```
 # 结语
 以上是AVL树的基本实现，包括节点类、树类以及插入和旋转操作。其中旋转操作可能比较复杂，理清楚旋转的步骤和逻辑对于理解AVL树的平衡调整非常重要。
-AVL树的删除操作相对复杂，涉及到更多的情况和调整，后续有机会再更新这部分内容。
 # 参考资料
 - [AVL树 - Wikipedia](https://en.wikipedia.org/wiki/AVL_tree)
 - [史上最详细的AVL树的实现(万字+动图讲解旋转)](https://zhuanlan.zhihu.com/p/676233161)
 
-本篇图片同样来自[史上最详细的AVL树的实现(万字+动图讲解旋转)](https://zhuanlan.zhihu.com/p/676233161)，感谢原作者的分享。
+本篇动图同样来自[史上最详细的AVL树的实现(万字+动图讲解旋转)](https://zhuanlan.zhihu.com/p/676233161)，感谢原作者的分享。
