@@ -3,7 +3,7 @@ title: 等效电源的综合例题
 published: 2026-04-03
 description: '收录了一些我不会的等效电路例题，供以后复习使用。'
 image: ''
-tags: [电路，例题]
+tags: [电路, 例题]
 category: '电路原理'
 series: '电路例题'
 draft: false 
