@@ -139,9 +139,7 @@ struct sockaddr_in {
 - **返回值**：int
   - `> 0`：已连接套接字的描述符（新文件索引）
   - `-1`：失败
-- **传入参数改变**：
-  - `addr`：内核将对端地址信息写入此指针指向的内存区域
-  - `addrlen`：内核将实际写入的地址长度更新到此指针指向的变量中
+- **传入参数改变**：若不为 `NULL`，内核会将对端地址信息写入 `addr` 指向的内存区域，并更新 `addrlen` 为实际写入的长度。
 
 ## 2. 数据传输与工具函数
 
@@ -243,7 +241,7 @@ struct sockaddr_in {
 - `ntohl()`：**n**etwork **t**o **h**ost **l**ong（接收端还原）。
 上述函数的参数和返回值都是无符号整数（`uint16_t` 或 `uint32_t`）。
 
-## 2. 核心套接字选项：SO_REUSEADDR
+## 2. 套接字选项：SO_REUSEADDR
 在调试阶段，若频繁重启服务器，可能会遇到 `Address already in use` 错误。
 - **原因**：TCP 连接关闭后，主动关闭方会进入 `TIME_WAIT` 状态（通常持续 1-4 分钟），导致该 IP+Port 组合被内核锁定。
 - **方案**：在 `bind` 之前设置 `setsockopt` 允许强制重用处于等待状态的端口。
@@ -319,166 +317,185 @@ Windows 的 Socket (Winsock) 最初是在 90 年代初作为**外部动态链接
 ---
 
 # 四、完整 TCP 编程示例
-## Linux 环境
-### 1. TCP 服务端 (server.cpp)
+## windows + linux 服务端
+c++20 标准，跨平台（Windows + Linux）TCP Echo 服务器示例。
+多线程支持多客户端并发连接。
+控制台输入 `close` 关闭服务器，客户端输入`exit`断开链接。
 ```cpp
+#include <algorithm>
 #include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <cstring>
+#include <string>
+#include <thread>
+#include <vector>
+#include <atomic>
+#include <mutex>
 
-int main() {
-    // 忽略 SIGPIPE，防止对端关闭导致程序退出
-    signal(SIGPIPE, SIG_IGN);
+// 平台兼容性处理
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #pragma comment(lib, "ws2_32.lib")
+    using SOCKET_TYPE = SOCKET;
+    constexpr SOCKET_TYPE INVALID_SOCKET_VALUE = INVALID_SOCKET;
+    inline void close_socket(SOCKET_TYPE s) { closesocket(s); }
+    inline int get_error() { return WSAGetLastError(); }
+#else
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    using SOCKET_TYPE = int;
+    const SOCKET_TYPE INVALID_SOCKET_VALUE = -1;
+    inline void close_socket(SOCKET_TYPE s) { close(s); }
+    inline int get_error() { return errno; }
+#endif
 
-    // 1. 创建 socket
-    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == -1) {
-        perror("socket failed");
-        return -1;
-    }
+// 服务器配置
+constexpr int PORT = 8888;
+constexpr int BUFFER_SIZE = 1024;
 
-    // 2. 允许端口快速重用
-    int opt = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+// 全局状态
+std::atomic<bool> server_running{true};// 服务器运行状态标志
+std::vector<SOCKET_TYPE> client_sockets;
+std::mutex clients_mutex;// 保护 client_sockets 的线程安全
 
-    // 3. 准备地址
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr)); // 零初始化
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(8080);
-    addr.sin_addr.s_addr = INADDR_ANY;
-
-    // 4. 绑定与监听
-    if (bind(server_fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        perror("bind failed");
-        return -1;
-    }
-    listen(server_fd, 5);
-
-    // 5. 接受连接（阻塞等待）
-    std::cout << "Waiting for connect..." << std::endl;
-    int client_fd = accept(server_fd, NULL, NULL);
-    if (client_fd < 0) return -1;
-
-    // 6. 接收并回复
-    char buffer[1024] = {0};
-    ssize_t valread = recv(client_fd, buffer, 1024, 0);
-    if (valread > 0) {
-        std::cout << "Received: " << buffer << std::endl;
-        send(client_fd, "Hello Client", 12, 0);
-    }
-
-    // 7. 优雅关闭
-    close(client_fd);
-    close(server_fd);
-    return 0;
+// 辅助函数：将字符串转换为小写
+std::string to_lower(std::string s) {
+    std::ranges::transform(s, s.begin(), [](const unsigned char c){ return std::tolower(c);});
+    //c++20 的 std::ranges::transform 直接在原字符串上进行转换，无需额外空间
+    //相当于 std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){ return std::tolower(c); });
+    return s;
 }
-```
 
-### 2. TCP 客户端 (client.cpp)
-```cpp
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <cstring>
+/**
+  * @brief 处理客户端连接的函数
+  * @param client_sock 已接受的客户端套接字描述符
+  * @details 该函数在独立线程中运行，负责与客户端进行通信
+  *          1. 循环接收客户端数据，直到连接关闭或服务器停止
+  *          2. 每当接收到一行数据（以换行符结尾）时，检查是否为 "exit" 命令
+  *          3. 如果是 "exit"，则关闭连接并退出线程；否则将数据原样返回给客户端
+  *          4. 在连接关闭时，确保从全局客户端列表中移除该套接字
+  */
+void handle_client(const SOCKET_TYPE client_sock) {
+    std::string line_buffer;
+    char buf[BUFFER_SIZE];
+    int bytes;
 
-int main() {
-    int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock_fd < 0) {
-        perror("socket failed");
-        return -1;
+    while (server_running && (bytes = recv(client_sock, buf, sizeof(buf), 0)) > 0) {
+        for (int i = 0; i < bytes; ++i) {
+            line_buffer.push_back(buf[i]);
+            if (buf[i] == '\n') {
+                std::string cmd = line_buffer;
+                // 去除行尾的换行符
+                while (!cmd.empty() && (cmd.back() == '\n' || cmd.back() == '\r'))
+                    cmd.pop_back();
+
+                if (to_lower(cmd) == "exit") {
+                    std::cout << "Client exits.\n";
+                    close_socket(client_sock);
+                    std::lock_guard<std::mutex> lock(clients_mutex);
+                    const auto it = std::ranges::find(client_sockets, client_sock);
+                    if (it != client_sockets.end()) client_sockets.erase(it);
+                    return;
+                }
+
+                // 回显数据
+                send(client_sock, line_buffer.c_str(), line_buffer.size(), 0);
+                line_buffer.clear();
+            }
+        }
     }
 
-    struct sockaddr_in serv_addr;
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(8080);
-    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
-
-    if (connect(sock_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-        perror("connect failed");
-        close(sock_fd);
-        return -1;
-    }
-
-    send(sock_fd, "Hello Server", 12, 0);
-    char buffer[1024] = {0};
-    ssize_t valread = recv(sock_fd, buffer, 1024, 0);
-    if (valread > 0)
-        std::cout << "From Server: " << buffer << std::endl;
-
-    close(sock_fd);
-    return 0;
+    close_socket(client_sock);
+    std::lock_guard<std::mutex> lock(clients_mutex);
+    const auto it = std::ranges::find(client_sockets, client_sock);
+    if (it != client_sockets.end()) client_sockets.erase(it);
 }
-```
-## Windows 环境
-### 1. TCP 服务端 (server.cpp)
-```cpp
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <iostream>
 
+// 主函数：服务器入口
 int main() {
+// Windows 环境下初始化 Winsock
+#ifdef _WIN32
     WSADATA wsaData;
-    WSAStartup(MAKEWORD(2,2), &wsaData);
-
-    SOCKET server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == INVALID_SOCKET) return -1;
-
-    sockaddr_in addr;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+    // 创建监听套接字
+    SOCKET_TYPE listen_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (listen_sock == INVALID_SOCKET_VALUE) {
+        std::cerr << "socket error\n";
+        return 1;
+    }
+    
+    //初始化地址结构体并绑定
+    sockaddr_in addr{};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(8080);
     addr.sin_addr.s_addr = INADDR_ANY;
-
-    bind(server_fd, (sockaddr*)&addr, sizeof(addr));
-    listen(server_fd, 5);
-
-    std::cout << "Waiting for connect..." << std::endl;
-    SOCKET client_fd = accept(server_fd, NULL, NULL);
-
-    char buffer[1024] = {0};
-    recv(client_fd, buffer, 1024, 0);
-    std::cout << "Received: " << buffer << std::endl;
-    send(client_fd, "Hello Client", 12, 0);
-
-    closesocket(client_fd);
-    closesocket(server_fd);
-    WSACleanup();
-    return 0;
-}
-```
-### 2. TCP 客户端 (client.cpp)
-```cpp
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <iostream>
-
-int main() {
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2,2), &wsaData);
-
-    SOCKET sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-    sockaddr_in serv_addr;
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(8080);
-    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
-
-    if (connect(sock_fd, (sockaddr*)&serv_addr, sizeof(serv_addr)) == SOCKET_ERROR) {
-        return -1;
+    addr.sin_port = htons(PORT);
+    if (bind(listen_sock, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == -1) {
+        std::cerr << "bind error\n";
+        return 1;
     }
 
-    send(sock_fd, "Hello Server", 12, 0);
-    char buffer[1024] = {0};
-    recv(sock_fd, buffer, 1024, 0);
-    std::cout << "From Server: " << buffer << std::endl;
+    // 进入监听状态
+    if (listen(listen_sock, 5) == -1) {
+        std::cerr << "listen error\n";
+        return 1;
+    }
 
-    closesocket(sock_fd);
+    std::cout << "Echo server on port " << PORT << "\n";
+    std::cout << "Client can send 'exit' to quit. Server console type 'close' to stop.\n";
+
+    // 控制台输入线程
+    std::thread console_thread([&listen_sock]() {
+        std::string input;
+        while (server_running && std::getline(std::cin, input)) {
+            if (to_lower(input) == "close") {
+                server_running = false;
+                close_socket(listen_sock);
+                //上锁阻止加入新的链接或删除链接
+                std::lock_guard<std::mutex> lock(clients_mutex);
+                for (const SOCKET_TYPE s : client_sockets)
+                    close_socket(s);
+                client_sockets.clear();
+                break;
+            }
+        }
+    });
+
+    // 主循环：接受客户端连接
+    std::vector<std::thread> workers;
+    while (server_running) {
+        sockaddr_in client_addr{};// 用于存储客户端地址信息
+        socklen_t client_len = sizeof(client_addr);
+        SOCKET_TYPE client_sock = accept(listen_sock, reinterpret_cast<sockaddr *>(&client_addr), &client_len);
+        if (client_sock == INVALID_SOCKET_VALUE) {
+            if (!server_running) break;
+            std::cerr << "accept error\n";
+            continue;
+        }
+
+        // ---------- 打印客户端 IP 和端口 ----------
+        char ip_str[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &client_addr.sin_addr, ip_str, sizeof(ip_str));
+        std::cout << "New connection from " << ip_str << ":" << ntohs(client_addr.sin_port) << std::endl;
+        // ------------------------------------------------
+        // ---------- 将新连接加入全局列表并启动处理线程 -------
+        {
+            std::lock_guard<std::mutex> lock(clients_mutex);
+            client_sockets.push_back(client_sock);
+        }
+        workers.emplace_back(handle_client, client_sock);
+        // ------------------------------------------------
+    }
+
+    for (auto& t : workers) if (t.joinable()) t.join();
+    console_thread.join();
+
+    close_socket(listen_sock);
+#ifdef _WIN32
     WSACleanup();
+#endif
+    std::cout << "Server stopped.\n";
     return 0;
 }
 ```

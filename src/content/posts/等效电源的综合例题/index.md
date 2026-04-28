@@ -5,7 +5,7 @@ description: '收录了一些我不会的等效电路例题，供以后复习使
 image: ''
 tags: [电路, 例题]
 category: '电路原理'
-series: '电路例题'
+series: '电路原理笔记'
 draft: false 
 lang: ''
 ---
