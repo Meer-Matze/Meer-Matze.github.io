@@ -1,5 +1,5 @@
 ﻿---
-title: Reactor 模式与 epoll
+title: Epoll解析
 published: 2026-04-30
 description: "从 Linux 内核源码层面深度剖析 epoll 的核心数据结构、事件触发链路，并结合 Reactor 事件驱动模型实现高性能 C++ 网络服务器。"
 image: ""
@@ -52,7 +52,7 @@ lang: "zh_CN"
 - **`list_head rdlink`**：**就绪链表节点**。
   - **节点指针**：`rdlink` 内部包含 `next`, `prev` 指针，构成了就绪链表的结构。
     - **挂载机制**：当事件发生时，内核会将 `epitem` 的 `rdlink` 挂载到 `eventpoll` 的 `rdllist` 中。
-- **int rdy**：就绪状态标志，0 表示未就绪，1 表示已就绪。
+- **`int rdy`**：就绪状态标志，0 表示未就绪，1 表示已就绪。
 - **`struct epoll_event event`**：存储了用户空间传入的事件掩码和数据。
   - **`events`**：事件类型掩码（如 `EPOLLIN`, `EPOLLOUT`）。
     - **事件类型**：内核通过 `events` 字段知道这个 `epitem` 监听的是什么事件（可读、可写、异常等）。并在对应事件发生时将其挂载到就绪链表。
@@ -76,7 +76,8 @@ lang: "zh_CN"
     - **硬件中断**：网卡向 CPU 发送的信号，通知有数据到达。
 2. **内核响应**：CPU 响应中断，内核协议栈（TCP/IP）层层解析，将数据放入对应的 Socket 接收缓冲区。
 3. **触发回调**：Socket 缓冲区状态改变，会触发挂在其等待队列上的回调函数 **`ep_poll_callback`**。
-4. **提交就绪**：`ep_poll_callback` 执行，将该 fd 对应的 `epitem` 节点挂载到 `eventpoll` 对象中的 **Ready List (就绪链表)**。
+   - **Socket等待队列**：挂载所有等待该 Socket 事件的进程（如`recv()` 阻塞的进程），但`epoll`不仅挂载了`epitem`对象，还同时挂载了回调函数`ep_poll_callback`。
+4. **提交就绪**：`ep_poll_callback` 执行，若监视到事件发生，将对应的 `epitem` 节点挂载到 `eventpoll` 对象中的 **Ready List (就绪链表)**。
 5. **唤醒进程**：如果原本有进程阻塞在 `epoll_wait`，此时会被唤醒。
    - **触发模式**：
      - **LT (水平触发)**：只要缓冲区里有数据，`epoll_wait` 就会持续返回该事件。
@@ -124,6 +125,7 @@ lang: "zh_CN"
   - `sockid`：发生事件的 socket 文件描述符。
   - `event`：事件类型掩码，指示发生了什么事件（如可读、可写等）。
 
+## 2. 辅助 API
 ### **`fcntl(fd, int cmd, ...)`**
 - 作用：**file control** ，通过命令对fd执行操作
 - 参数：
@@ -137,7 +139,6 @@ lang: "zh_CN"
 int flags = fcntl(fd, F_GETFL, 0);
 fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 ```
-
 
 # 四、 应用层：Reactor 事件驱动模型
 
