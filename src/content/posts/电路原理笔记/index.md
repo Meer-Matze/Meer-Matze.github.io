@@ -55,14 +55,17 @@ lang: 'zh_CN'
 - 定义：衡量电能转换或传输速率的物理量，$p = \frac{dw}{dt}$
 - 计算：
   - 关联参考方向：$p = ui$
-    - p > 0 表示吸收功率
-    - p < 0 表示发出功率
+    - $p > 0$ 表示吸收功率
+    - $p < 0$ 表示发出功率
   - 非关联参考方向：$p = -ui$
-    - p > 0 表示发出功率
-    - p < 0 表示吸收功率
+    - $p > 0$ 表示发出功率
+    - $p < 0$ 表示吸收功率
 
 **2. 电能**
-$$w(t) = \int_{t_0}^{t} p(\xi) d\xi = \int_{t_0}^{t} u(\xi)i(\xi) d\xi \quad \text{单位：焦耳（J）}$$
+
+$$
+w(t) = \int_{t_0}^{t} p(\xi) d\xi = \int_{t_0}^{t} u(\xi)i(\xi) d\xi \quad \text{单位：焦耳（J）}
+$$
 
 恒功率时：$W = P \times \Delta t = ui \times \Delta t$
 
@@ -77,7 +80,11 @@ $$w(t) = \int_{t_0}^{t} p(\xi) d\xi = \int_{t_0}^{t} u(\xi)i(\xi) d\xi \quad \te
 - 电阻单位：欧姆（Ω），电导单位：西门子（S）
 
 **2. 电阻的功率**
-$$p = ui = i^2R = \frac{u^2}{R} \geq 0$$
+
+$$
+p = ui = i^2R = \frac{u^2}{R} \geq 0
+$$
+
 
 - 电阻总是吸收功率，为无源元件
 
@@ -101,7 +108,10 @@ $$p = ui = i^2R = \frac{u^2}{R} \geq 0$$
 - 对于实际电容，直流稳态时相当于开路
 
 **3. 电容的储能**
-$$w_C(t) = \frac{1}{2}Cu^2(t)$$
+
+$$
+w_C(t) = \frac{1}{2}Cu^2(t)
+$$
 
 ## 1.4 电感元件
 
@@ -117,7 +127,10 @@ $$w_C(t) = \frac{1}{2}Cu^2(t)$$
 - 电感电流不能跃变
 
 **3. 电感的储能**
-$$w_L(t) = \frac{1}{2}Li^2(t)$$
+
+$$
+w_L(t) = \frac{1}{2}Li^2(t)
+$$
 
 ## 1.5 独立电源
 
@@ -183,13 +196,21 @@ $$w_L(t) = \frac{1}{2}Li^2(t)$$
 ### 二、基尔霍夫电流定律（KCL）
 
 **基本表述（针对节点）**：
-$$\sum i_k = 0$$
+
+$$
+\sum i_k = 0
+$$
+
 在集中参数电路中，任一时刻流出（或流入）任一节点的支路电流代数和等于零。
 
 - 规定：流出节点时 $i_k$ 前面取 "+" 号；流入节点时取 "-" 号
 
 **推论**：任一时刻，流出任一节点电流的代数和等于流入该节点电流的代数和
-$$\sum i_{\text{流入}} = \sum i_{\text{流出}}$$
+
+$$
+\sum i_{\text{流入}} = \sum i_{\text{流出}}
+$$
+
 
 **广义表述（针对闭合边界）**：
 任一时刻流出（或流入）任一闭合边界S的支路电流代数和等于零。
@@ -205,7 +226,11 @@ $$\sum i_{\text{流入}} = \sum i_{\text{流出}}$$
 ### 三、基尔霍夫电压定律（KVL）
 
 **基本表述**：
-$$\sum u_k = 0$$
+
+$$
+\sum u_k = 0
+$$
+
 在集中参数电路中，任一时刻沿任一回路各支路电压的代数和等于零。
 
 - 规定：$u_k$ 参考方向与回路方向相同时取 "+" 号，否则取 "-" 号
@@ -255,19 +280,51 @@ $$\sum u_k = 0$$
 ### 四、星形-三角形变换（Y-Δ变换）
 
 **Y→Δ 等效变换公式**：
-$$R_{12} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_3}$$
-$$R_{23} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_1}$$
-$$R_{31} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_2}$$
+
+$$
+R_{12} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_3}
+$$
+
+
+$$
+R_{23} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_1}
+$$
+
+
+$$
+R_{31} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_2}
+$$
+
 
 **Δ→Y 等效变换公式**：
-$$R_1 = \frac{R_{12}R_{31}}{R_{12} + R_{23} + R_{31}}$$
-$$R_2 = \frac{R_{23}R_{12}}{R_{12} + R_{23} + R_{31}}$$
-$$R_3 = \frac{R_{31}R_{23}}{R_{12} + R_{23} + R_{31}}$$
+
+$$
+R_1 = \frac{R_{12}R_{31}}{R_{12} + R_{23} + R_{31}}
+$$
+
+
+$$
+R_2 = \frac{R_{23}R_{12}}{R_{12} + R_{23} + R_{31}}
+$$
+
+
+$$
+R_3 = \frac{R_{31}R_{23}}{R_{12} + R_{23} + R_{31}}
+$$
+
 
 **对称情况**：
 
-- 三个相等的电阻接成Y形：$$R_Y = \frac{1}{3}R_{\Delta}$$
-- 三个相等的电阻接成Δ形：$$R_{\Delta} = 3R_Y$$
+- 三个相等的电阻接成Y形：
+$$
+R_Y = \frac{1}{3}R_{\Delta}
+$$
+
+- 三个相等的电阻接成Δ形：
+$$
+R_{\Delta} = 3R_Y
+$$
+
 
 **结构变化**：
 
@@ -288,7 +345,11 @@ $$R_3 = \frac{R_{31}R_{23}}{R_{12} + R_{23} + R_{31}}$$
 
 **等效条件**：
 ![等效示意](2.2.1-knowledge.png)
-$$I_S = \frac{U_S}{R}, \quad U_S = I_SR$$
+
+$$
+I_S = \frac{U_S}{R}, \quad U_S = I_SR
+$$
+
 
 :::warning
 电压源内阻 $R_1 = 0$（理想电压源），电流源内导 $G_1 = 0$（理想电流源）时，不能相互等效，因为0不能取倒数。
@@ -410,7 +471,10 @@ $$
 - 输出电阻为零
 
 **典型应用——反相放大器**：
-$$\frac{u_o}{u_i} = -\frac{R_f}{R_1}$$
+
+$$
+\frac{u_o}{u_i} = -\frac{R_f}{R_1}
+$$
 
 当 $R_1 = R_f$ 时，$u_o = -u_i$，电路称为反相器。
 
@@ -439,7 +503,10 @@ $$\frac{u_o}{u_i} = -\frac{R_f}{R_1}$$
 ### 一、齐性定理
 
 **内容**：在**只有一个激励**$X$作用的线性电路中，设任一响应为$Y$，若将该激励乘以常数$K$，则对应的响应$Y'$也等于原来响应乘以同一常数，即：
-$$Y' = f(KX) = Kf(X) = KY$$
+
+$$
+Y' = f(KX) = Kf(X) = KY
+$$
 
 **直观表述**：若电路中只有一个激励，则**响应与激励成正比**，比例系数取决于电路的结构和参数，与激励源无关。
 
@@ -472,7 +539,9 @@ $$Y' = f(KX) = Kf(X) = KY$$
 
 ### 三、戴维南与诺顿的等效关系
 
-$$I_{SC} = \frac{U_{OC}}{R_1}, \quad R_1 = \frac{1}{G_1} = \frac{U_{OC}}{I_{SC}}$$
+$$
+I_{SC} = \frac{U_{OC}}{R_1}, \quad R_1 = \frac{1}{G_1} = \frac{U_{OC}}{I_{SC}}
+$$
 
 ### 四、等效电阻的计算方法
 
@@ -488,7 +557,10 @@ $$I_{SC} = \frac{U_{OC}}{R_1}, \quad R_1 = \frac{1}{G_1} = \frac{U_{OC}}{I_{SC}}
 
 当负载电阻等于电源内阻抗时，负载获得最大功率。
 即当$R_i = R_x$时，有：
-$$P_{\max} = \frac{U_{OC}^2}{4R_x}$$
+
+$$
+P_{\max} = \frac{U_{OC}^2}{4R_x}
+$$
 
 **注**：当负载获得最大功率时，电源内阻和负载电阻消耗的功率相等，电能的利用率只有50%。
 
@@ -499,10 +571,16 @@ $$P_{\max} = \frac{U_{OC}^2}{4R_x}$$
 ## 3.4 特勒根定理
 
 **定理内容**：电路N中各支路电压 $u_k$ 与电路 $\hat{N}$ 中对应支路电流 $\hat{i}_k$ 的乘积之和等于零：
-$$\sum_{k=1}^{b} u_k \hat{i}_k = 0 \quad \text{与} \quad \sum_{k=1}^{b} \hat{u}_k i_k = 0$$
+
+$$
+\sum_{k=1}^{b} u_k \hat{i}_k = 0 \quad \text{与} \quad \sum_{k=1}^{b} \hat{u}_k i_k = 0
+$$
 
 **应用于同一电路**：得到功率守恒定理
-$$\sum_{k=1}^{b} p_k = 0$$
+
+$$
+\sum_{k=1}^{b} p_k = 0
+$$
 
 意义：在任一瞬间，一个电路中各支路吸收功率的代数和等于零。
 
@@ -563,7 +641,10 @@ $$\sum_{k=1}^{b} p_k = 0$$
 ### 一、基本概念
 
 **正弦电流**：随时间按正弦规律变动的电流，一般表达式为：
-$$i = I_m \cos(\omega t + \psi_i)$$
+
+$$
+i = I_m \cos(\omega t + \psi_i)
+$$
 
 其中：
 
@@ -577,17 +658,26 @@ $$i = I_m \cos(\omega t + \psi_i)$$
 
 **定义**：当周期电流 $i = f(t)$ 和直流 $I$ 分别通过相同的电阻 $R$，若二者做功的平均效果相同，则将此直流 $I$ 的量值规定为周期电流 $i$ 的有效值。
 
-$$I = \sqrt{\frac{1}{T}\int_0^T i^2 dt}$$
+
+$$
+I = \sqrt{\frac{1}{T}\int_0^T i^2 dt}
+$$
 
 **正弦电流有效值与最大值的关系**：
-$$I = \frac{I_m}{\sqrt{2}}$$
+
+$$
+I = \frac{I_m}{\sqrt{2}}
+$$
 
 正弦电流可表示为：$i = \sqrt{2}I \cos(\omega t + \psi_i)$
 
 ### 三、相位差
 
 同频率正弦电压和正弦电流的相位差为初相之差：
-$$\varphi = (\omega t + \psi_u) - (\omega t + \psi_i) = \psi_u - \psi_i$$
+
+$$
+\varphi = (\omega t + \psi_u) - (\omega t + \psi_i) = \psi_u - \psi_i
+$$
 
 - $\varphi > 0$：电压越前（超前）电流于 $\phi$
 - $\varphi < 0$：电压滞后电流于 $\phi$
@@ -604,7 +694,10 @@ $$\varphi = (\omega t + \psi_u) - (\omega t + \psi_i) = \psi_u - \psi_i$$
 ### 一、相量表示原理
 
 正弦量 $f(t) = A_m \cos(\omega t + \psi)$ 可表示为：
-$$f(t) = \text{Re}[A_m e^{j(\omega t + \psi)}] = \text{Re}[\dot{A}_m e^{j\omega t}]$$
+
+$$
+f(t) = \text{Re}[A_m e^{j(\omega t + \psi)}] = \text{Re}[\dot{A}_m e^{j\omega t}]
+$$
 
 其中 $\dot{A}_m = A_m e^{j\psi} = A_m \angle \psi$ 称为相量。
 
@@ -615,13 +708,22 @@ $$f(t) = \text{Re}[A_m e^{j(\omega t + \psi)}] = \text{Re}[\dot{A}_m e^{j\omega 
 **1. 唯一性**：两个同频率正弦量相等的充要条件是代表这两个正弦量的相量相等。
 
 **2. 线性性**：N个同频率正弦量线性组合（具有实系数）的相量等于各个正弦量相量的同样的线性组合。
-$$\sum_{k=1}^{N} b_k \cdot f_k(t) \rightleftharpoons \sum_{k=1}^{N} b_k \dot{A}_{mk}$$
+
+$$
+\sum_{k=1}^{N} b_k \cdot f_k(t) \rightleftharpoons \sum_{k=1}^{N} b_k \dot{A}_{mk}
+$$
 
 **3. 微分**：
-$$\frac{d}{dt}f(t) \rightleftharpoons j\omega \dot{A}_m$$
+
+$$
+\frac{d}{dt}f(t) \rightleftharpoons j\omega \dot{A}_m
+$$
 
 **4. 积分**：
-$$\int f(t) dt \rightleftharpoons \frac{1}{j\omega}\dot{A}_m$$
+
+$$
+\int f(t) dt \rightleftharpoons \frac{1}{j\omega}\dot{A}_m
+$$
 
 **相量法的意义**：
 
@@ -636,10 +738,16 @@ $$\int f(t) dt \rightleftharpoons \frac{1}{j\omega}\dot{A}_m$$
 ## 4.3 基尔霍夫定律的相量形式
 
 **KCL的相量形式**：
-$$\sum \dot{I}_m = 0 \quad \text{或} \quad \sum \dot{I} = 0$$
+
+$$
+\sum \dot{I}_m = 0 \quad \text{或} \quad \sum \dot{I} = 0
+$$
 
 **KVL的相量形式**：
-$$\sum \dot{U}_m = 0 \quad \text{或} \quad \sum \dot{U} = 0$$
+
+$$
+\sum \dot{U}_m = 0 \quad \text{或} \quad \sum \dot{U} = 0
+$$
 
 ## 4.4 电容和电感
 
@@ -686,10 +794,16 @@ $$\sum \dot{U}_m = 0 \quad \text{或} \quad \sum \dot{U} = 0$$
 ### 一、阻抗
 
 **定义**：阻抗Z等于端口电压相量与电流相量之比。
-$$Z = \frac{\dot{U}}{\dot{I}} = \frac{U \angle \psi_u}{I \angle \psi_i} = \frac{U}{I} \angle (\psi_u - \psi_i) = |Z| \angle \varphi$$
+
+$$
+Z = \frac{\dot{U}}{\dot{I}} = \frac{U \angle \psi_u}{I \angle \psi_i} = \frac{U}{I} \angle (\psi_u - \psi_i) = |Z| \angle \varphi
+$$
 
 **RLC串联阻抗**：
-$$Z = R + j(\omega L - \frac{1}{\omega C}) = R + j(X_L + X_C) = R + jX$$
+
+$$
+Z = R + j(\omega L - \frac{1}{\omega C}) = R + j(X_L + X_C) = R + jX
+$$
 
 - 阻抗模：$|Z| = \sqrt{R^2 + (X_L + X_C)^2}$
 - 阻抗角：$\varphi = \arctan \frac{X_L + X_C}{R}$
@@ -705,10 +819,16 @@ $$Z = R + j(\omega L - \frac{1}{\omega C}) = R + j(X_L + X_C) = R + jX$$
 ### 二、导纳
 
 **定义**：导纳Y等于端口电流相量与电压相量之比。
-$$Y = \frac{\dot{I}}{\dot{U}} = \frac{I}{U} \angle (\psi_i - \psi_u) = |Y| \angle \varphi_Y$$
+
+$$
+Y = \frac{\dot{I}}{\dot{U}} = \frac{I}{U} \angle (\psi_i - \psi_u) = |Y| \angle \varphi_Y
+$$
 
 **GCL并联导纳**：
-$$Y = G + j(\omega C - \frac{1}{\omega L}) = G + j(B_C + B_L) = G + jB$$
+
+$$
+Y = G + j(\omega C - \frac{1}{\omega L}) = G + j(B_C + B_L) = G + jB
+$$
 
 - 容纳：$B_C = \omega C$
 - 感纳：$B_L = -\frac{1}{\omega L}$
@@ -742,7 +862,9 @@ $$Y = G + j(\omega C - \frac{1}{\omega L}) = G + j(B_C + B_L) = G + jB$$
 
 ### 一、瞬时功率
 
-$$p = ui = UI \cos(\psi_u - \psi_i) + UI \cos(2\omega t + \psi_u + \psi_i)$$
+$$
+p = ui = UI \cos(\psi_u - \psi_i) + UI \cos(2\omega t + \psi_u + \psi_i)
+$$
 
 包含两个分量：
 
@@ -751,7 +873,9 @@ $$p = ui = UI \cos(\psi_u - \psi_i) + UI \cos(2\omega t + \psi_u + \psi_i)$$
 
 ### 二、有功功率（平均功率）
 
-$$P = \frac{1}{T}\int_0^T p dt = UI \cos(\psi_u - \psi_i) = UI \cos \varphi = UI\lambda$$
+$$
+P = \frac{1}{T}\int_0^T p dt = UI \cos(\psi_u - \psi_i) = UI \cos \varphi = UI\lambda
+$$
 
 - 单位：瓦（W）
 - $\varphi = \psi_u - \psi_i$：功率因数角
@@ -772,7 +896,9 @@ $$P = \frac{1}{T}\int_0^T p dt = UI \cos(\psi_u - \psi_i) = UI \cos \varphi = UI
 
 ### 三、无功功率
 
-$$Q = UI \sin \varphi$$
+$$
+Q = UI \sin \varphi
+$$
 
 - 单位：乏（var）
 - 感性：$Q > 0$
@@ -786,7 +912,9 @@ $$Q = UI \sin \varphi$$
 
 ### 四、视在功率
 
-$$S = UI = \sqrt{P^2 + Q^2}$$
+$$
+S = UI = \sqrt{P^2 + Q^2}
+$$
 
 - 单位：伏安（VA）
 - 表示电气设备容量
@@ -795,7 +923,9 @@ $$S = UI = \sqrt{P^2 + Q^2}$$
 
 ### 五、复功率
 
-$$\tilde{S} = P + jQ = UI \cos \varphi + jUI \sin \varphi = UIe^{j\varphi} = \dot{U}\dot{I}^*$$
+$$
+\tilde{S} = P + jQ = UI \cos \varphi + jUI \sin \varphi = UIe^{j\varphi} = \dot{U}\dot{I}^*
+$$
 
 - $\dot{I}^*$号表示共轭复数$\bar{\dot{I}}$，即$\dot{I}^* = I \angle (-\psi_i)$
 - 复功率等于电压相量与电流相量共轭复相量的乘积
@@ -803,7 +933,10 @@ $$\tilde{S} = P + jQ = UI \cos \varphi + jUI \sin \varphi = UIe^{j\varphi} = \do
 - $\arctan \frac{Q}{P} = \varphi$
 
 **复功率守恒性**：各支路发出的复功率代数和等于零。
-$$\sum_{k=1}^{b} \dot{U}_k \dot{I}_k^* = \sum_{k=1}^{b} P_k + j\sum_{k=1}^{b} Q_k = 0$$
+
+$$
+\sum_{k=1}^{b} \dot{U}_k \dot{I}_k^* = \sum_{k=1}^{b} P_k + j\sum_{k=1}^{b} Q_k = 0
+$$
 
 ### 六、功率因数的提高
 
@@ -817,7 +950,11 @@ $$\sum_{k=1}^{b} \dot{U}_k \dot{I}_k^* = \sum_{k=1}^{b} P_k + j\sum_{k=1}^{b} Q_
 **方法**：在感性负载两端并联电容。
 
 **并联电容计算**：
-$$C = \frac{P(\tan \varphi_1 - \tan \varphi_2)}{\omega U^2}$$
+
+$$
+C = \frac{P(\tan \varphi_1 - \tan \varphi_2)}{\omega U^2}
+$$
+
 其中 $\varphi_1$ 为补偿前功率因数角，$\varphi_2$ 为补偿后功率因数角。
 
 **注意**：串联电容理论上可进行无功补偿，但实际中不采用，因为：
@@ -832,9 +969,15 @@ $$C = \frac{P(\tan \varphi_1 - \tan \varphi_2)}{\omega U^2}$$
 
 ### 一、共轭匹配（负载可任意改变）
 
-**条件**：负载阻抗等于内阻抗的共轭复数，即：$$Z_L = R_L + jX_L = R_S - jX_S = Z_S^*$$
+**条件**：负载阻抗等于内阻抗的共轭复数，即：
+$$
+Z_L = R_L + jX_L = R_S - jX_S = Z_S^*
+$$
 
-**最大功率**：$$P_{L\max} = \frac{U_S^2}{4R_S} = \frac{U_S^2}{4R_L}$$
+**最大功率**：
+$$
+P_{L\max} = \frac{U_S^2}{4R_S} = \frac{U_S^2}{4R_L}
+$$
 
 此时电能的利用率只有50%
 
@@ -842,7 +985,10 @@ $$C = \frac{P(\tan \varphi_1 - \tan \varphi_2)}{\omega U^2}$$
 
 **条件**：$|Z_L| = |Z_S|$
 
-**最大功率**：$$P_{L\max} = \frac{U_S^2 \cos \varphi_L}{2|Z_S|[1 + \cos(\varphi_S - \varphi_L)]}$$
+**最大功率**：
+$$
+P_{L\max} = \frac{U_S^2 \cos \varphi_L}{2|Z_S|[1 + \cos(\varphi_S - \varphi_L)]}
+$$
 
 - 其中 $\varphi_S = \arctan\frac{X_S}{R_S}$、$\varphi_L=\arctan\frac{X_L}{R_L}$ 分别为内阻抗和负载阻抗的阻抗角
 
@@ -880,10 +1026,16 @@ $$C = \frac{P(\tan \varphi_1 - \tan \varphi_2)}{\omega U^2}$$
 ### 三、互感元件的特性方程
 
 **时域形式**：
-$$\begin{cases} u_1 = L_1 \frac{di_1}{dt} \pm M \frac{di_2}{dt} \\ u_2 = \pm M \frac{di_1}{dt} + L_2 \frac{di_2}{dt} \end{cases}$$
+
+$$
+\begin{cases} u_1 = L_1 \frac{di_1}{dt} \pm M \frac{di_2}{dt} \\ u_2 = \pm M \frac{di_1}{dt} + L_2 \frac{di_2}{dt} \end{cases}
+$$
 
 **相量形式**：
-$$\begin{cases} \dot{U}_1 = j\omega L_1 \dot{I}_1 \pm j\omega M \dot{I}_2 \\ \dot{U}_2 = \pm j\omega M \dot{I}_1 + j\omega L_2 \dot{I}_2 \end{cases}$$
+
+$$
+\begin{cases} \dot{U}_1 = j\omega L_1 \dot{I}_1 \pm j\omega M \dot{I}_2 \\ \dot{U}_2 = \pm j\omega M \dot{I}_1 + j\omega L_2 \dot{I}_2 \end{cases}
+$$
 
 **符号判断规则**：
 
@@ -894,22 +1046,42 @@ $$\begin{cases} \dot{U}_1 = j\omega L_1 \dot{I}_1 \pm j\omega M \dot{I}_2 \\ \do
 
 **1. 串联**
 
-- 正串（顺接，电流从同名端流入）：$$L_{eq} = L_1 + L_2 + 2M$$
-- 反串（反接，电流从异名端流入）：$$L_{eq} = L_1 + L_2 - 2M$$
+- 正串（顺接，电流从同名端流入）：
+  $$
+  L_{eq} = L_1 + L_2 + 2M
+  $$
+
+- 反串（反接，电流从异名端流入）：
+  $$
+  L_{eq} = L_1 + L_2 - 2M
+  $$
 
 **2. 并联**
 
-- 同名端连接：$$L_{eq} = \frac{L_1 L_2 - M^2}{L_1 + L_2 - 2M}$$
-- 异名端连接：$$L_{eq} = \frac{L_1 L_2 - M^2}{L_1 + L_2 + 2M}$$
+- 同名端连接：
+  $$
+  L_{eq} = \frac{L_1 L_2 - M^2}{L_1 + L_2 - 2M}
+  $$
+
+- 异名端连接：
+  $$
+  L_{eq} = \frac{L_1 L_2 - M^2}{L_1 + L_2 + 2M}
+  $$
 
 **3. 去耦等效（T型联接）**
 
 ![示意图](https://pic3.zhimg.com/v2-b6ef0229002356c69b9fff0ef67fbc84_1440w.jpg)
 同名端连接时(a)：
-$$\begin{cases} L_a = M \\ L_b = L_1 - M \\ L_c = L_2 - M \end{cases}$$
+
+$$
+\begin{cases} L_a = M \\ L_b = L_1 - M \\ L_c = L_2 - M \end{cases}
+$$
 
 异名端连接时(b)：
-$$\begin{cases} L_a = -M \\ L_b = L_1 + M \\ L_c = L_2 + M \end{cases}$$
+
+$$
+\begin{cases} L_a = -M \\ L_b = L_1 + M \\ L_c = L_2 + M \end{cases}
+$$
 
 :::note
 原来中心点经变换后应等效于下方空心圆点位置
@@ -917,7 +1089,9 @@ $$\begin{cases} L_a = -M \\ L_b = L_1 + M \\ L_c = L_2 + M \end{cases}$$
 
 ### 五、互感储能
 
-$$w_m = \frac{1}{2}L_1 i_1^2 + \frac{1}{2}L_2 i_2^2 \pm M i_1 i_2 \geq 0$$
+$$
+w_m = \frac{1}{2}L_1 i_1^2 + \frac{1}{2}L_2 i_2^2 \pm M i_1 i_2 \geq 0
+$$
 
 存在磁耦合时，要增减一项 $M i_1 i_2$，增减视互感的作用是使磁场增强还是减弱而定。
 
@@ -934,9 +1108,16 @@ $$w_m = \frac{1}{2}L_1 i_1^2 + \frac{1}{2}L_2 i_2^2 \pm M i_1 i_2 \geq 0$$
 ![示意](4.10.1.png)
 
 从一次侧看进去的等效阻抗：
-$$Z_{eq} = \frac{(\omega M)^2}{Z_2 + j\omega L_2} + j\omega L_1 = Z_r + j\omega L_1$$
 
-其中 $$Z_r = \frac{(\omega M)^2}{\text{二次侧回路总阻抗}}$$ 称为反映阻抗。
+$$
+Z_{eq} = \frac{(\omega M)^2}{Z_2 + j\omega L_2} + j\omega L_1 = Z_r + j\omega L_1
+$$
+
+其中 
+$$
+Z_r = \frac{(\omega M)^2}{\text{二次侧回路总阻抗}}
+$$
+ 称为反映阻抗。
 
 ![例](4.10.2-example.png)
 
@@ -950,19 +1131,28 @@ $$Z_{eq} = \frac{(\omega M)^2}{Z_2 + j\omega L_2} + j\omega L_1 = Z_r + j\omega 
 4. 铁心的损耗为零
 
 **特性方程**：
-$$\begin{cases} u_1 = n u_2 \\ i_1 = -\frac{1}{n} i_2 \end{cases}$$
+
+$$
+\begin{cases} u_1 = n u_2 \\ i_1 = -\frac{1}{n} i_2 \end{cases}
+$$
 
 其中 $n = \frac{N_1}{N_2}$ 称为变比。
 
 **相量形式**：
-$$\begin{cases} \dot{U}_1 = n\dot{U}_2 \\ \dot{I}_1 = -\dot{I}_2/n \end{cases}$$
+
+$$
+\begin{cases} \dot{U}_1 = n\dot{U}_2 \\ \dot{I}_1 = -\dot{I}_2/n \end{cases}
+$$
 
 **功率特性**：$p = u_1 i_1 + u_2 i_2 = 0$
 
 - 理想变压器既无能量损耗，也无能量存储，为非能元件
 
 **阻抗变换作用**：
-$$Z_i = \frac{\dot{U}_1}{\dot{I}_1} = n^2 Z_2$$
+
+$$
+Z_i = \frac{\dot{U}_1}{\dot{I}_1} = n^2 Z_2
+$$
 
 当理想变压器输出端口接阻抗 $Z_2$ 时，折算到输入端口的等效阻抗为 $n^2 Z_2$
 
@@ -983,9 +1173,18 @@ $$Z_i = \frac{\dot{U}_1}{\dot{I}_1} = n^2 Z_2$$
 
 **定义**：频率相同、波形相同、幅值相同、变动进程的时间差相等的三相电压。
 
-$$u_A = \sqrt{2}U \cos(\omega t + \varphi)$$
-$$u_B = \sqrt{2}U \cos[\omega(t - \frac{kT}{3}) + \varphi] = \sqrt{2}U \cos(\omega t + \varphi - \frac{2k\pi}{3})$$
-$$u_C = \sqrt{2}U \cos[\omega(t - \frac{2kT}{3}) + \varphi] = \sqrt{2}U \cos(\omega t + \varphi - \frac{4k\pi}{3})$$
+
+$$
+u_A = \sqrt{2}U \cos(\omega t + \varphi)
+$$
+
+$$
+u_B = \sqrt{2}U \cos[\omega(t - \frac{kT}{3}) + \varphi] = \sqrt{2}U \cos(\omega t + \varphi - \frac{2k\pi}{3})
+$$
+
+$$
+u_C = \sqrt{2}U \cos[\omega(t - \frac{2kT}{3}) + \varphi] = \sqrt{2}U \cos(\omega t + \varphi - \frac{4k\pi}{3})
+$$
 
 ### 二、相序
 
@@ -996,12 +1195,24 @@ $$u_C = \sqrt{2}U \cos[\omega(t - \frac{2kT}{3}) + \varphi] = \sqrt{2}U \cos(\om
 **电力系统一般采用正序。**
 
 **正序相量表示**（取 $\varphi = 0°$）：
-$$\dot{U}_A = U \angle 0° \text{ V}$$
-$$\dot{U}_B = U \angle -120° \text{ V}$$
-$$\dot{U}_C = U \angle 120° \text{ V}$$
+
+$$
+\dot{U}_A = U \angle 0° \text{ V}
+$$
+
+$$
+\dot{U}_B = U \angle -120° \text{ V}
+$$
+
+$$
+\dot{U}_C = U \angle 120° \text{ V}
+$$
 
 **对称三相电压的性质**：
-$$\dot{U}_A + \dot{U}_B + \dot{U}_C = 0$$
+
+$$
+\dot{U}_A + \dot{U}_B + \dot{U}_C = 0
+$$
 
 ### 三、对称三相负载
 
@@ -1030,16 +1241,28 @@ $$\dot{U}_A + \dot{U}_B + \dot{U}_C = 0$$
 - **相电压**：电源或负载各相中的电压 $\dot{U}_{AN}, \dot{U}_{BN}, \dot{U}_{CN}$
 - **相电流**：电源或负载各相中的电流 $\dot{I}_{AN}, \dot{I}_{BN}, \dot{I}_{CN}$
 
-在对称三相电路中，容易计算出：$$\dot{I}_N=0$$
+在对称三相电路中，容易计算出：
+$$
+\dot{I}_N=0
+$$
 
 ### 二、Y-Y 联结
 ![Y-Y 联结](5.2.2.png)
 **线电流 = 相电流**：$I_l = I_p$
 
 **线电压与相电压的关系**：
-$$\dot{U}_{AB} = \dot{U}_{AN} - \dot{U}_{BN} = \sqrt{3}\dot{U}_{AN}\angle 30°$$
-$$\dot{U}_{BC} = \dot{U}_{BN} - \dot{U}_{CN} = \sqrt{3}\dot{U}_{BN}\angle 30°$$
-$$\dot{U}_{CA} = \dot{U}_{CN} - \dot{U}_{AN} = \sqrt{3}\dot{U}_{CN}\angle 30°$$
+
+$$
+\dot{U}_{AB} = \dot{U}_{AN} - \dot{U}_{BN} = \sqrt{3}\dot{U}_{AN}\angle 30°
+$$
+
+$$
+\dot{U}_{BC} = \dot{U}_{BN} - \dot{U}_{CN} = \sqrt{3}\dot{U}_{BN}\angle 30°
+$$
+
+$$
+\dot{U}_{CA} = \dot{U}_{CN} - \dot{U}_{AN} = \sqrt{3}\dot{U}_{CN}\angle 30°
+$$
 
 - 在星形接法中，线电压是相电压有效值的 $\sqrt{3}$ 倍，即 $U_l = \sqrt{3}U_p$
 - 在相位上，线电压**超前**于先行相电压 $30°$
@@ -1049,9 +1272,18 @@ $$\dot{U}_{CA} = \dot{U}_{CN} - \dot{U}_{AN} = \sqrt{3}\dot{U}_{CN}\angle 30°$$
 **线电压 = 相电压**：$U_l = U_p$
 
 **线电流与相电流的关系**：
-$$\dot{I}_A = \dot{I}_{A'B'} - \dot{I}_{C'A'} = \sqrt{3}\dot{I}_{A'B'}\angle -30°$$
-$$\dot{I}_B = \dot{I}_{B'C'} - \dot{I}_{A'B'} = \sqrt{3}\dot{I}_{B'C'}\angle -30°$$
-$$\dot{I}_C = \dot{I}_{C'A'} - \dot{I}_{B'C'} = \sqrt{3}\dot{I}_{C'A'}\angle -30°$$
+
+$$
+\dot{I}_A = \dot{I}_{A'B'} - \dot{I}_{C'A'} = \sqrt{3}\dot{I}_{A'B'}\angle -30°
+$$
+
+$$
+\dot{I}_B = \dot{I}_{B'C'} - \dot{I}_{A'B'} = \sqrt{3}\dot{I}_{B'C'}\angle -30°
+$$
+
+$$
+\dot{I}_C = \dot{I}_{C'A'} - \dot{I}_{B'C'} = \sqrt{3}\dot{I}_{C'A'}\angle -30°
+$$
 
 - **(a)** 在三角形接法中，线电流是相电流有效值的 $\sqrt{3}$ 倍，即 $I_l = \sqrt{3}I_p$
 - **(b)** 在相位上，线电流**滞后**于先行相电流 $30°$
@@ -1065,13 +1297,15 @@ $$\dot{I}_C = \dot{I}_{C'A'} - \dot{I}_{B'C'} = \sqrt{3}\dot{I}_{C'A'}\angle -30
 
 **常见联结组合**：Y-Y、Y-Δ、Δ-Y、Δ-Δ。
 
-![例](5.2.4-example.png)
 ## 5.3 对称三相电路的计算
 
 ### 一、对称 Y-Y 联结电路的计算
 ![对称 Y-Y 联结电路](5.3.1.png)
 对 N' 点列节点电压方程：
-$$(\frac{3}{Z_L + Z} + \frac{1}{Z_N})\dot{U}_{N'N} = \frac{\dot{U}_A + \dot{U}_B + \dot{U}_C}{Z_L + Z}$$
+
+$$
+(\frac{3}{Z_L + Z} + \frac{1}{Z_N})\dot{U}_{N'N} = \frac{\dot{U}_A + \dot{U}_B + \dot{U}_C}{Z_L + Z}
+$$
 
 由于三相电源对称，$\dot{U}_A + \dot{U}_B + \dot{U}_C = 0$，所以 $\dot{U}_{N'N} = 0$。
 
@@ -1091,22 +1325,131 @@ $$(\frac{3}{Z_L + Z} + \frac{1}{Z_N})\dot{U}_{N'N} = \frac{\dot{U}_A + \dot{U}_B
 4. 根据对称关系推算其它相（线）电压、电流
 
 ![例](5.3.2-example.png)
-## 5.4 不对称三相电路
 
-当三相电路中电源电压或电路参数不对称时，电路中的电流一般将不再对称，这种电路称为不对称三相电路。
+## 5.4 不对称三相电路示例
 
-**分析方法**：不对称三相电路不能简化为单相计算，需要按一般正弦电路的方法进行求解（如节点电压法、回路电流法等）。
+### 一、不对称三相电路的产生原因
+
+当三相电路中**电源电压不对称**或**电路参数不对称**时，电路中的电流一般将不再对称，这种电路称为不对称三相电路。
+
+### 二、不对称星形负载与中性点位移
+
+在不对称 Y-Y 联结中，若无中线（或中线阻抗不可忽略），则 $\dot{U}_{N'N} \neq 0$，即负载中性点 N' 与电源中性点 N 的电位不相等，这种现象称为**中性点位移**。
+
+负载各相电压为：
+
+$$
+\dot{U}_{AN'} = \dot{U}_A - \dot{U}_{N'N}
+$$
+
+
+$$
+\dot{U}_{BN'} = \dot{U}_B - \dot{U}_{N'N}
+$$
+
+
+$$
+\dot{U}_{CN'} = \dot{U}_C - \dot{U}_{N'N}
+$$
+
+中性点位移会导致各相负载电压不再对称，有的相电压过高（可能烧坏设备），有的相电压过低（无法正常工作）。
+
+**解决方案**：为了减少或消除负载中性点位移，应尽量减小中线阻抗 $Z_N$。为了在负载阻抗不对称的情况下也能保持负载相电压对称，保证负载正常工作，低压电网广泛采用**三相四线制**（有中线）。
+
+### 三、不对称三相电路的计算方法
+
+不对称三相电路**不能使用单相法简化**，应视为一般正弦电流电路，选择适当的分析方法（如节点电压法、回路电流法等）进行完整求解。分析时需注意：各相之间可能存在耦合关系，不能独立求解。
+
+**常见的不对称情况**：
+- 断相（某一相负载开路）
+- 短路（某一相负载短路）
+- 负载参数不对称
+- 电源电压不对称
 
 ## 5.5 三相电路的功率
 
-**对称三相电路的有功功率**：$P = 3U_p I_p \cos \varphi = \sqrt{3}U_l I_l \cos \varphi$
+**基本要求**：掌握对称三相电路瞬时功率的特点及平均功率、无功功率、视在功率的计算。了解三相电路功率的测量。
 
-**对称三相电路的无功功率**：$Q = 3U_p I_p \sin \varphi = \sqrt{3}U_l I_l \sin \varphi$
+### 一、对称三相电路的瞬时功率
 
-**对称三相电路的视在功率**：$S = 3U_p I_p = \sqrt{3}U_l I_l$
+设各相的电压与电流取关联参考方向，且取 A 相相电压为参考正弦量：
 
-其中 $\varphi$ 为相电压与相电流的相位差（即单相负载的阻抗角）。
+$$
+u_A = U_m \cos \omega t, \quad i_A = I_m \cos(\omega t - \phi)
+$$
 
-**对称三相电路瞬时功率的特点**：对称三相电路的瞬时功率恒定，等于有功功率，不随时间变化。
+三相总瞬时功率：
+
+$$
+p = p_A + p_B + p_C = 1.5U_m I_m \cos \phi = \text{常量}
+$$
+
+**结论**：对称三相正弦电路的瞬时功率等于常量（平均功率）。这种性质称为**瞬时功率平衡**。三相制是一种**平衡制**，这是三相制的优点之一（发电机运行平稳，无脉动转矩）。
+
+### 二、对称三相电路的平均功率（有功功率）
+
+$$
+P = 3U_p I_p \cos \phi = \sqrt{3}U_l I_l \cos \phi
+$$
+
+其中 $\phi$ 是**相电压与相电流的相位差**（即每相负载的阻抗角），不是线电压与线电流的相位差。
+
+- 对称三相电路的平均功率等于其中一相平均功率的三倍
+- 对称三相电路的平均功率也等于线电压、线电流和功率因数三者乘积的 $\sqrt{3}$ 倍
+
+### 三、对称三相电路的无功功率
+
+$$
+Q = 3U_p I_p \sin \phi = \sqrt{3}U_l I_l \sin \phi
+$$
+
+### 四、对称三相电路的视在功率
+
+$$
+S = \sqrt{P^2 + Q^2} = 3U_p I_p = \sqrt{3}U_l I_l
+$$
+
+### 五、不对称三相电路功率的计算
+
+不对称三相电路的总功率等于各相功率之和：
+
+$$
+P = U_A I_A \cos \phi_A + U_B I_B \cos \phi_B + U_C I_C \cos \phi_C
+$$
+
+
+$$
+Q = U_A I_A \sin \phi_A + U_B I_B \sin \phi_B + U_C I_C \sin \phi_C
+$$
+
+
+$$
+S = \sqrt{P^2 + Q^2}, \quad \lambda = \frac{P}{S}
+$$
+
+其中 $\phi_A$、$\phi_B$、$\phi_C$ 分别是各相负载的阻抗角，也是各相相电压与相电流之间的相位差。
+
+### 六、三相电路功率的测量
+
+**1. 一表法（适用于对称三相电路）**
+
+测量对称三相电路的功率时，只需用一个功率表测量其一相功率，然后乘以 3。
+
+如果星形联结的负载中性点不易引出，或负载为三角形联结时，需要制造一个人工中性点，即用三个相等的适当电阻连成星形并引出其中性点。
+
+**2. 两表法（适用于三相三线制，对称或不对称均可）**
+
+对于三相三线制电路，无论负载对称与否，都可以用两个功率表测量三相总功率。两个功率表的读数之和等于三相总功率：
+
+$$
+P = P_1 + P_2
+$$
+
+接线方式：两个功率表的电流线圈分别串入任意两相端线，电压线圈的同名端接各自电流线圈所在相，另一端共同接到第三相。
+
+**3. 三表法（适用于三相四线制）**
+
+对于三相四线制电路，通常用三个功率表分别测量各相功率，总功率等于三个功率表读数之和。
 
 ---
+
