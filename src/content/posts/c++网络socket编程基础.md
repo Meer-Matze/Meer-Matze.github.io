@@ -7,7 +7,7 @@ tags: [Socket, 网络编程]
 category: '网络'
 series: 'C++网络编程'
 draft: false
-lang: 'zh-cn'
+lang: 'zh_CN'
 ---
 
 # 一、Socket 的本质与抽象机制

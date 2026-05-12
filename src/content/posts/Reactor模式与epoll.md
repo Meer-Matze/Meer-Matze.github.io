@@ -1,5 +1,5 @@
 ﻿---
-title: Epoll解析
+title: Epoll解析与Reactor模式
 published: 2026-04-30
 description: "从 Linux 内核源码层面深度剖析 epoll 的核心数据结构、事件触发链路，并结合 Reactor 事件驱动模型实现高性能 C++ 网络服务器。"
 image: ""
@@ -32,7 +32,17 @@ lang: "zh_CN"
 
 ---
 
-# 二、 核心：epoll 内核全景图
+# 二、 Reactor 模式简介
+Reactor 模式是一种事件驱动型同步 I/O 的设计模式，核心思想是：**应用程序发起 I/O 操作后立即返回，由操作系统在后台完成实际的读写工作，完成后再通知应用程序。** 
+这与 Proactor 模式的区别在于，Reactor 模式需要应用程序自己调用 `read`/`write` 来搬运数据，而 Proactor 模式则由操作系统负责搬运数据。
+Reactor 模式的核心组件包括：
+1. **Event Handler**（事件处理器）：处理 I/O 事件的业务逻辑。
+2. **Reactor**：负责监听事件并分发到对应的处理器。
+3. **Synchronous I/O**：应用程序需要自己调用 `read`/`write` 来搬运数据。
+
+---
+
+# 三、 核心：epoll 内核全景图
 
 ## 1. 递归拆解核心对象：eventpoll
 当你调用 `epoll_create` 时，内核会创建一个 `struct eventpoll` 对象。这是一个**顶级容器**，我们通过递归视角看它包含了什么：
@@ -85,7 +95,7 @@ lang: "zh_CN"
 
 ---
 
-# 三、 API
+# 四、 API
 
 ## 1. 核心 API
 ### **`epoll_create1(int flags)`**
@@ -139,13 +149,6 @@ lang: "zh_CN"
 int flags = fcntl(fd, F_GETFL, 0);
 fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 ```
-
-# 四、 应用层：Reactor 事件驱动模型
-
-Reactor 模型是对 epoll 的极致封装，其核心流程如下：
-1. **Register**：利用 `epoll_ctl` 的 `data.ptr` 挂载具体的业务处理器（Event Handler）。
-2. **Listen**：Reactor 循环调用 `epoll_wait`。
-3. **Dispatch**：当事件返回，从 `events[i].data.ptr` 取出 Handler 对象的指针，调用处理函数。
 
 ---
 
@@ -275,6 +278,6 @@ int main() {
 
 ---
 
-## 结论
+# 结论
 
 `epoll` 是 Linux 内核通过**红黑树**、**就绪链表**和**回调机制**构建的一套高效“订阅-通知”系统。通过将业务逻辑封装在 `EventHandler` 中，并利用 `epoll_ctl` 的副本机制将对象地址注入内核，我们就能构建出高性能、可扩展的 Reactor 并发服务器。
