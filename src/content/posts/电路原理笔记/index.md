@@ -4,7 +4,7 @@ published: 2026-04-28
 description: '基于上课课件和老师讲课内容的电路原理笔记，欢迎指正'
 image: ''
 tags: [电路, 笔记]
-category: '电路原理'
+category: '大学数理'
 series: '电路原理笔记'
 draft: false 
 lang: 'zh_CN'

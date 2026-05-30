@@ -4,10 +4,10 @@ published: 2026-04-03
 description: '收录了一些我不会的等效电路例题，供以后复习使用。'
 image: ''
 tags: [电路, 例题]
-category: '电路原理'
+category: '大学数理'
 series: '电路原理笔记'
 draft: false 
-lang: ''
+lang: 'zh_CN'
 ---
 # 例1
 图示电路中，$N$为线性含源电阻网络。已知$i_1 = 2\text{A}$时，$i_2 = \frac{1}{3}\text{A}$；当$R$增加$10\Omega$时，$i_1 = 1.5\text{A}$，$i_2 = 0.5\text{A}$。求：当$R$减少$10\Omega$时，$i_2$的值。
