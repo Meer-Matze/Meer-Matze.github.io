@@ -4,7 +4,7 @@ published: 2026-05-12
 description: 'Proactor 模式概念与 Windows IOCP 使用指南'
 image: ''
 tags: [网络编程, Windows, C++]
-category: 技术笔记
+category: 网络
 series: ''
 draft: false 
 lang: 'zh_CN'
