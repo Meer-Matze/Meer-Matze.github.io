@@ -3,8 +3,8 @@ title: 协程Coroutine使用方法与示例
 published: 2026-05-05
 description: 'c++20协程的学习笔记与简单示例'
 image: ''
-tags: [Coroutine, C++]
-category: 'Coding Tech'
+tags: [coroutine, C++]
+category: '编程技术'
 series: 'Modern C++'
 draft: false 
 lang: 'zh_CN'
