@@ -316,6 +316,9 @@ $$
 \dot{A_u} = \frac{\dot{U_o}}{\dot{U_i}} = - \frac{\beta R_c}{R_b+r_{be}},\qquad R_i = \frac{U_i}{I_i} = R_b + r_{be},\qquad R_o = R_c
 $$
 放心，考试不会这么简单的。往往在电路中稍作改动，引入一些电阻、电容，此时就需要重新画出等效电路，重新分析了。
+
+务必观看[基本共射放大电路动态分析](https://www.bilibili.com/video/BV1hd4y1M7SC)
+
 ## 2.4 放大电路静态工作点的稳定
 
 - **温度对Q点的影响**：$T \uparrow \; \to \; I_{CBO} \uparrow, \beta \uparrow, U_{BE} \downarrow \; \to \; I_C \uparrow$。Q点整体上移，易产生饱和失真。
@@ -353,6 +356,82 @@ $$
 \dot{A_u} = \frac{(1+\beta)R_e}{R_b+r_{be}+(1+\beta)R_e},\qquad R_i = R_b + r_{be} + (1+\beta)R_e,\qquad R_o =R_e \parallel \frac{R_b + r_{be}}{1+\beta}
 $$
 
+## 2.6 例题选讲
+
+**例1：** 如图所示的放大电路，已知$V_{CC}=12\text{V}$，$R_C=3\text{k}\Omega$，$R_L=6\text{k}\Omega$，$R_b=240\text{k}\Omega$，$\beta=40$，$r_{be}=0.73\text{k}\Omega$，试求：
+（1）负载开路和带载时的电压放大倍数；
+（2）输入电阻和输出电阻；
+（3）若信号源内阻为$600\Omega$，试求$\dot{A}_{us}=\frac{\dot{U}_o}{\dot{U}_s}$。
+![例一](2.6.0-1.png)
+**解：** 首先画出交流等效电路（**将耦合电容视为短路，直流电源视为短路$V_{CC}=0$**）：
+![等效图](2.6.0-2.png)
+（1）容易得到：
+$$
+\text{负载开路时}\quad \dot{A_u} = -\frac{\beta R_C}{r_{be}} = -164.38
+$$
+$$
+\text{带载时}\quad \dot{A_u} = -\frac{\beta (R_C \parallel R_L)}{r_{be}} = -109.59
+$$
+（2）计算输入和输出电阻时，把输入电压置零，输出端开路。容易发现左右两部分相互独立，输入端口等效电阻为$R_b$和$r_{be}$的并联，输出端口等效电阻为$R_C$。因此
+$$
+R_i = R_b \parallel r_{be} = 0.72\text{k}\Omega 
+$$
+$$
+R_o = R_C = 3\text{k}\Omega
+$$
+（3）画出等效电路
+![等效电路](2.6.0-3.png)
+于是容易得到
+$$
+\dot{A}_{us} = \frac{\dot{U}_o}{\dot{U}_s} = \frac{\dot{U}_o}{\dot{U}_i} \cdot \frac{\dot{U}_i}{\dot{U}_s} = \dot{A_u} \cdot \frac{R_i}{R_i + R_s} = -60.17
+$$
+
+总结：等效电路法是分析放大电路的利器，尤其是当电路稍微复杂一些时，图解法就不太适用了。通过画出等效电路，我们可以清晰地看到各个部分的关系，从而正确地计算出放大倍数、输入输出电阻等性能指标。
+
+**例2：** 分压式偏置电路如图所示，已知$\beta=50,\;U_{BE}=0.7\text{V},\;r_{be}=0.86\text{k}\Omega$，试求：
+（1）放大电路的静态值（$I_{BQ}, I_{EQ}, U_{CEQ}, U_{BQ}$）；
+（2）电压放大倍数、输入电阻和输出电阻。
+![例二](2.6.0-4.png)
+**解：** （1）画出静态电路图（耦合电容开路，交流电源$u_i$短路），分析得到
+![静态电路](2.6.0-5.png)
+容易得到
+$$
+U_{BQ} = V_{CC} \cdot \frac{R_{b2}}{R_{b1}+R_{b2}} = 3\text{V}
+$$
+$$
+I_{EQ} = \frac{U_{BQ}-U_{BEQ}}{R_e} = 1.53\text{mA}
+$$
+$$
+I_{BQ} = \frac{I_{EQ}}{1+\beta} = 30\mu \text{A}
+$$
+$$
+U_{CEQ} = V_{CC} - I_{EQ}R_e - I_{CQ}R_c = 6.7\text{V}
+$$
+（2）画出交流等效电路（耦合电容短路，直流电源短路），分析得到
+![动态电路](2.6.0-6.png)
+$$
+\dot{A}_u = -\frac{\beta (R_c \parallel R_L)}{R_b + r_{be}} = -87.21
+$$
+$$
+R_i = R_{b1} \parallel R_{b2} \parallel r_{be} = 0.77\text{k}\Omega
+$$
+$$
+R_o = R_c = 2\text{k}\Omega
+$$
+
+**例3：** 在图示电路中，已知$V_{CC}=12\text{V}, \beta=60, R_b=200\text{k}\Omega, R_e=3\text{k}\Omega, R_L=3\text{k}\Omega, R_S=50\Omega, r_{be}=1\text{k}\Omega$。试求：
+（1）静态工作点Q的参数（$I_{BQ}, I_{EQ}, U_{CEQ}$）；
+（2）电压放大倍数、输入电阻和输出电阻；
+![静态电路](image-6.png)
+留作练习，请读者自行完成。
+
+
+答案：
+（1）$I_{BQ} = 30\mu \text{A}, I_{EQ} = 1.83\text{mA}, U_{CEQ} = 6.51\text{V}$
+（2）$\dot{A}_u = 0.989, R_i = 63.3\text{k}\Omega, R_o = 16.21\Omega$
+
+
+
 
 ---
 
@@ -384,17 +463,37 @@ $$
 ## 3.2 差分放大电路
 
 ### 3.2.1 基本概念
-- **差模信号** $u_{Id}=u_{I1}-u_{I2}$（有用信号）
-- **共模信号** $u_{Ic}=(u_{I1}+u_{I2})/2$（温漂、干扰）
-- **差模放大倍数** $A_d = \Delta u_{Od}/\Delta u_{Id}$
-- **共模放大倍数** $A_c = \Delta u_{Oc}/\Delta u_{Ic}$
-- **共模抑制比** $K_{CMR} = |A_d/A_c|$（越大越好）
+
+![对称电路](3.2.1-1.png)
+
+- **差模信号** ：对称电路中两输入端的电压差 $u_{Id} = u_{I1} - u_{I2}$（有用信号）
+- **共模信号** ：对称电路中两输入端的电压平均值 $u_{Ic} = \frac{u_{I1} + u_{I2}}{2}$（干扰信号）
+- **差模放大倍数** $A_d = \dfrac{\Delta u_{od}}{\Delta u_{Id}}$
+- **共模放大倍数** $A_c = \dfrac{\Delta u_{oc}}{\Delta u_{Ic}}$
+- **共模抑制比** $K_{CMR} = \left|\dfrac{A_d}{A_c}\right|$（越大性能越好）
+  - 参数理想对称时，$A_c=0, A_d=2, K_{CMR}=\infty, $
 
 ### 3.2.2 长尾式差分放大电路（双端输入双端输出）
-- **静态**：$I_{EQ} = \dfrac{V_{EE}-U_{BEQ}}{2R_e + \frac{R_b}{1+\beta}}$，$U_{CEQ}=V_{CC}-I_{CQ}R_c + U_{BEQ}$。
-- **差模分析**：$R_e$对差模信号**短路**（两管交流电流在$R_e$上相互抵消）。
-  - $A_d = -\beta\dfrac{R_c}{r_{be}}$（空载），$R_i=2(R_b+r_{be})$，$R_o=2R_c$。
-- **共模分析**：$R_e$等效为$2R_e$，$A_c$很小（理想对称时$A_c=0$）。
+
+![长尾式差分放大电路](3.2.2-1.png)
+
+理想情况下，左右两部分完全对称
+
+#### 1. 静态分析
+
+此时输入端电压为0，两个三极管完全对称，于是
+$$
+I_{R_e} = 2I_{EQ}, \qquad I_{EQ} = \frac{V_{EE}-U_{BEQ}}{\frac{R_b}{1+\beta} + 2R_e}, \qquad I_{BQ} = \frac{I_{EQ}}{1+\beta}
+$$
+
+#### 2. 对共模信号的抑制作用
+
+#### 3. 对差模信号的放大作用
+
+$$
+A_d = -\frac{\beta (R_c \parallel \frac{R_L}{2})}{R_b + r_{be}}, \qquad R_i = 2(R_b + r_{be}), \qquad R_o = 2R_c
+$$
+
 
 ### 3.2.3 输入输出方式
 - **双端输出**：$A_d$高，抑制共模能力强。
