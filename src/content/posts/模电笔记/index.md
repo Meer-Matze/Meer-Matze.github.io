@@ -422,7 +422,7 @@ $$
 **例3：** 在图示电路中，已知$V_{CC}=12\text{V}, \beta=60, R_b=200\text{k}\Omega, R_e=3\text{k}\Omega, R_L=3\text{k}\Omega, R_S=50\Omega, r_{be}=1\text{k}\Omega$。试求：
 （1）静态工作点Q的参数（$I_{BQ}, I_{EQ}, U_{CEQ}$）；
 （2）电压放大倍数、输入电阻和输出电阻；
-![静态电路](image-6.png)
+![静态电路](2.6.0-7.png)
 留作练习，请读者自行完成。
 
 

@@ -676,7 +676,7 @@ i_2\Big|_{\Delta R = -10\Omega} = k i_1 + i_{\Delta R}\Big|_{i_1=3\text{A}} = -\
 $$
 
 **例2：** 电路如图(a)所示，已知当 $R=2\Omega$ 时，$I_1 = 5\text{A}$，$I_2 = 4\text{A}$。求当 $R=4\Omega$ 时 $I_1$ 和 $I_2$ 的值。
-![电路图abcde](3.7.2-1.webp)
+![电路图abcde](3.7.1-3.webp)
 
 解：应用戴维南定理求 $I_1$。由图 (b) 有
 $$
