@@ -488,18 +488,46 @@ $$
 
 #### 2. 对共模信号的抑制作用
 
+![共模信号下的等效电路](3.2.2-2.png)
+
+$$
+\Delta u_{Ic} = \Delta i_B[R_b + r_{be} + 2(\beta + 1)R_e], \qquad \Delta u_{O1} = \Delta u_{O2} = -\beta \Delta i_B R_c
+$$
+$$
+A_{c1} = A_{c2} = -\frac{\beta R_c}{R_b + r_{be} + 2(\beta + 1)R_e}
+$$
+参数理想对称时，$\Delta u_{Oc}=0,\;A_c=0$，共模信号完全被抑制。
+
 #### 3. 对差模信号的放大作用
 
+![差模信号下的等效电路](3.2.2-3.png)
+
+在$\Delta u_{O1}, \Delta u_{O2}$处插入电阻$\frac{R_L}{2}$，得到
+
+$$
+\Delta u_{Od} = -2\beta \Delta i_B (R_c \parallel \frac{R_L}{2}), \qquad \Delta u_{Id} = 2\Delta i_B (R_b + r_{be})
+$$
+于是
 $$
 A_d = -\frac{\beta (R_c \parallel \frac{R_L}{2})}{R_b + r_{be}}, \qquad R_i = 2(R_b + r_{be}), \qquad R_o = 2R_c
 $$
 
 
 ### 3.2.3 输入输出方式
-- **双端输出**：$A_d$高，抑制共模能力强。
-- **单端输出**：$A_d = \pm\frac12\beta\dfrac{R_c}{r_{be}}$，共模抑制能力下降，但仍比单管放大好。
-- **恒流源代替$R_e$**：进一步提高共模抑制比，且有利于集成。
 
+![四种接法](3.2.3-1.png)
+
+- 输入电阻均为$R_i = 2(R_b + r_{be})$
+- 单端输入分解为共模+差模双端输入
+- 其他参数与输出接法有关
+  - 单端输出：
+    $$
+    A_d = -\frac{\beta (R_c \parallel R_L)}{2(R_b + r_{be})},\qquad A_c = -\frac{\beta (R_c \parallel R_L)}{R_b + r_{be} + 2(\beta + 1)R_e},\qquad R_o = R_c
+    $$
+  - 双端输出：
+    $$
+    A_d = -\frac{\beta (R_c \parallel \frac{R_L}{2})}{R_b + r_{be}},\qquad A_c = 0,\qquad R_o = 2R_c
+    $$
 ## 3.3 电流源电路
 
 - **镜像电流源**：$I_{C2} \approx I_{REF} = \dfrac{V_{CC}-U_{BE}}{R}$。
