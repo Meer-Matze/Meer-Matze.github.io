@@ -297,7 +297,17 @@ namespace mystruct
 
 #### 平衡调整逻辑流程图
 
-[![平衡调整流程图](https://mermaid.ink/img/pako:eNptkjFPg0AUx7_K5U2aQHNQjhZSa2KNEy4XJ6UDKdfSWKDBI1FJZ2PUtJuuLjUOjUOHfiIa_RYeUAltZeK9-_9_7_3hEuiFLgMTBpEz9tDFqR0g8XQ81ru2WJ8nJ2eojRR0PEGyjNZvX-ggXc1_Hl4ORd3e6KxE9NLFZ7qYZfIjhIW-CrJKs2UVRjoceJyG3OHsav348f3-nE6X69en6kF3D5HO5gJBC0S23j-Y1VzeoHYEG5wdVLD5cZaxheTtkNPldkhKE9ErQ7b2QlJamml1w53lysX2IhaAPCKtfqV9ynQpb0g7gm4WDiTxM4cumDyKmQQ-i3wnKyHJhtnAPeYzG0zx6rK-E4-4DXYwEbaxE1yGof_njMJ44IHZd0Y3oorHrphwOnTETfHLbsQCl0WdMA44mIqB9UaOATOBWzA1tWboTYIbRNewomBCJLgTOk2rqQrRVANjnaj1OplIcJ9PxrWGodWFRSGGrhHcVCRg7pCH0XlxT_PrOvkFPof4VA?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNptkjFPg0AUx7_K5U2aQHNQjhZSa2KNEy4XJ6UDKdfSWKDBI1FJZ2PUtJuuLjUOjUOHfiIa_RYeUAltZeK9-_9_7_3hEuiFLgMTBpEz9tDFqR0g8XQ81ru2WJ8nJ2eojRR0PEGyjNZvX-ggXc1_Hl4ORd3e6KxE9NLFZ7qYZfIjhIW-CrJKs2UVRjoceJyG3OHsav348f3-nE6X69en6kF3D5HO5gJBC0S23j-Y1VzeoHYEG5wdVLD5cZaxheTtkNPldkhKE9ErQ7b2QlJamml1w53lysX2IhaAPCKtfqV9ynQpb0g7gm4WDiTxM4cumDyKmQQ-i3wnKyHJhtnAPeYzG0zx6rK-E4-4DXYwEbaxE1yGof_njMJ44IHZd0Y3oorHrphwOnTETfHLbsQCl0WdMA44mIqB9UaOATOBWzA1tWboTYIbRNewomBCJLgTOk2rqQrRVANjnaj1OplIcJ9PxrWGodWFRSGGrhHcVCRg7pCH0XlxT_PrOvkFPof4VA)
+```mermaid
+graph TD
+    CheckLeft{BF > 1 ?} -- 是 (左重) --> CheckLL{左孩子BF >= 0 ?}
+    CheckLL -- 是 (LL) --> RightRotate[执行右旋 RightRotate]
+    CheckLL -- 否 (LR) --> LeftRightRotate[执行左-右旋 LeftRightRotate]
+
+
+    CheckRight{BF < -1 ?} -- 是 (右重) --> CheckRR{右孩子BF <= 0 ?}
+    CheckRR -- 是 (RR) --> LeftRotate[执行左旋 LeftRotate]
+    CheckRR -- 否 (RL) --> RightLeftRotate[执行右-左旋 RightLeftRotate]
+```
 
 #### 代码实现
 
@@ -330,7 +340,29 @@ namespace mystruct
 
 #### 插入逻辑流程图
 
-[![插入流程图](https://mermaid.ink/img/pako:eNqNVF1PE0EU_SubeYKkYNttt-0mYiJI9AFCEF_c9mHTHWhju9tsZw24aUJQE8RgQcUQQYFEWowRGyFiW1v_TGdb_4W3M7v9AGLch_2Yueeec-69OzZKGhpGMloy1VxKWJiK6wJc94lqkhGF_lql5ZdO8TV9fpwYFcbGJoQ72RxZsZ3DbWf3G90qtX7W2p9rtwocxjYhTIBNFj1pYpXgecMgCl3fo_Wa867S2Vhrr1VbjX3AOodV_pngyXVtRGnX3zgfDmj1R-f3W7r3USCmhROjlwiAmiGm07o2Z-SVVv1VL5er-uDYedHk2luNzXbjNMFz8LsLZEmmrFwmnQShtrNTcTZP6cV3-nWX7p94vnoBg97mMbFMfVrN5PFV0YvdZU_1ENxTPmM8xrN4mSigGzhd5k9lWinSrW16UbpBi2ftcp1unAwJ93DcvmExGzZdr3SaTWgFWPVUe5vX1OtqgOfqnp7HJpmFoVB47Xodc1X0A3iHUzj5aE41sU7sHHsI100Gvw8ED3KCKDWzAG3-d_MvoT1LD3IalPYuTi-loJh75yBYcJW03z_782WX1kqu9sHQLpZlvK1mVD0JvWeyafWsc3TkyR4MAADsdxndBYXHdipPnZ1zl6Efy6Y5_x-O-hBQ0DfEjSquk5uupbEJ_hwy1KvJUDsGCo988H-nNSR3yX0oi82s2v1Ednc7jkgKZ3EcyfCq4UXVypA4iusFgOVU_aFhZD2kaVhLKSSz6fYhi7FPpVU4PLK9VeDWsDkJs0WQHBQj4SBLg2QbLcNCZFyMhsNhvxiSoqFIMCT60AqSRf-4KPmlWNQfDkhRMSAVfOgJIw6MhyIRKSiJQVGKxWLhgA9hLU0Mc4YfXOz8KvwFfIb4Aw?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNqNVF1PE0EU_SubeYKkYNttt-0mYiJI9AFCEF_c9mHTHWhju9tsZw24aUJQE8RgQcUQQYFEWowRGyFiW1v_TGdb_4W3M7v9AGLch_2Yueeec-69OzZKGhpGMloy1VxKWJiK6wJc94lqkhGF_lql5ZdO8TV9fpwYFcbGJoQ72RxZsZ3DbWf3G90qtX7W2p9rtwocxjYhTIBNFj1pYpXgecMgCl3fo_Wa867S2Vhrr1VbjX3AOodV_pngyXVtRGnX3zgfDmj1R-f3W7r3USCmhROjlwiAmiGm07o2Z-SVVv1VL5er-uDYedHk2luNzXbjNMFz8LsLZEmmrFwmnQShtrNTcTZP6cV3-nWX7p94vnoBg97mMbFMfVrN5PFV0YvdZU_1ENxTPmM8xrN4mSigGzhd5k9lWinSrW16UbpBi2ftcp1unAwJ93DcvmExGzZdr3SaTWgFWPVUe5vX1OtqgOfqnp7HJpmFoVB47Xodc1X0A3iHUzj5aE41sU7sHHsI100Gvw8ED3KCKDWzAG3-d_MvoT1LD3IalPYuTi-loJh75yBYcJW03z_782WX1kqu9sHQLpZlvK1mVD0JvWeyafWsc3TkyR4MAADsdxndBYXHdipPnZ1zl6Efy6Y5_x-O-hBQ0DfEjSquk5uupbEJ_hwy1KvJUDsGCo988H-nNSR3yX0oi82s2v1Ednc7jkgKZ3EcyfCq4UXVypA4iusFgOVU_aFhZD2kaVhLKSSz6fYhi7FPpVU4PLK9VeDWsDkJs0WQHBQj4SBLg2QbLcNCZFyMhsNhvxiSoqFIMCT60AqSRf-4KPmlWNQfDkhRMSAVfOgJIw6MhyIRKSiJQVGKxWLhgA9hLU0Mc4YfXOz8KvwFfIb4Aw)
+```mermaid
+graph TD
+    Start([开始插入]) --> Empty{树是否为空?}
+    Empty -- 是 --> CreateRoot[创建新节点作为根节点] --> End([结束并返回 true])
+    Empty -- 否 --> FindPos[从根节点开始查找插入位置]
+
+    FindPos --> Duplicate{数据已存在?}
+    Duplicate -- 是 --> ReturnFalse([结束并返回 false])
+    Duplicate -- 否 --> MoveNext[根据数据大小向左/右移动]
+
+    MoveNext --> FoundPos{到达空位?}
+    FoundPos -- 否 --> FindPos
+    FoundPos -- 是 --> InsertNode[插入新节点]
+    InsertNode --> CheckParent{parent 是否为空?}
+
+    CheckParent -- 是 --> FinalTrue([结束并返回 true])
+    CheckParent -- 否 --> UpdateHeight[更新 parent 的高度]
+    UpdateHeight -->CheckBalance{是否平衡?}
+    CheckBalance --否--> Balance[平衡调整]
+    Balance --> Ends([结束并返回 true])
+    CheckBalance --是--> UpdateParent[parent = parent->parent]
+    UpdateParent --> CheckParent
+```
 
 #### 代码实现
 
@@ -385,7 +417,33 @@ namespace mystruct
 
 #### 删除逻辑流程图
 
-[![](https://mermaid.ink/img/pako:eNptVNlO20AU_RVrnkAKkV2TzWqp1KSoL0UI6EudPLjxQCwSO5qMBTSKhGhVoCAUuomlC0gsaqtCpKI2LKI_k7HDX3Q8YycmJA9WZu4555575-pWQd7SIVDADNLKBWEqkzUF-pvEGsIDKrlaJMdrZGXvZvsgNygMDY0Ij0tlvFB19jadrVNSP2o1L9zvFw9rnMaCFCbQIENPQGwjc1QrVuCA2v73gex-Faa9U26wh0G1GGPUMPUxakl1vh06q9fu7omzt9x-u-QunQt5GyFo4hyn8m-A5-bmjQquUhpZaXBmx5kXCecJOetBBN6n5qx0wSjqNGXVz3z_BRpxPq-2mget5g_yq859BTn4N0QLq3k-J-18HlYqFlLJ6aXnsr7hXh77xVWCYK5bWIfAJCbntHJGw5pKGm-6cMHdeU0Wr5y1v-2zL-7ldk-XAhJXgDjNo10rPlxw1pdJffOOjT4UJjWOYFlDMAOLEEPV3T8hJzudjgh5rwMCebfurvzxrzw0c9W3TcGz3NYN9_VWwH_ComHOqjfvr52NQ19faDU3eHbfPwcxPKey4dK5Sr-B6qIYKV2A-dlxpl31U_Sb_BDs7vxPIbs7_pgegunvYQVNeFbWNQyfQGOmgFVn98z51AjKu_m5RS6OfMNhXNfsI62okvPf7f39duOV8_HsVnUBQmD4MTiPeXrV13_gJ4r6z9Xbg6wJInRXGDpQvEIioARRSfOOoOplyAJcgCWYBQr9q8NpzS7iLMiaNUora-ZzyyoFTGTZMwWgsHUQATarJWNodBGVOrc0pQ5R2rJNDBRJTiVkJgOUKpinF9JwVI7JiVRSTEqJmJRMRcACUIZiw8loMiYl5OF4XEzEY6laBLxkmaVo_J4kpWJJURRlUZbEeARA3cAWesrXINuGtf9DXve2?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNptVNlO20AU_RVrnkAKkV2TzWqp1KSoL0UI6EudPLjxQCwSO5qMBTSKhGhVoCAUuomlC0gsaqtCpKI2LKI_k7HDX3Q8YycmJA9WZu4555575-pWQd7SIVDADNLKBWEqkzUF-pvEGsIDKrlaJMdrZGXvZvsgNygMDY0Ij0tlvFB19jadrVNSP2o1L9zvFw9rnMaCFCbQIENPQGwjc1QrVuCA2v73gex-Faa9U26wh0G1GGPUMPUxakl1vh06q9fu7omzt9x-u-QunQt5GyFo4hyn8m-A5-bmjQquUhpZaXBmx5kXCecJOetBBN6n5qx0wSjqNGXVz3z_BRpxPq-2mget5g_yq859BTn4N0QLq3k-J-18HlYqFlLJ6aXnsr7hXh77xVWCYK5bWIfAJCbntHJGw5pKGm-6cMHdeU0Wr5y1v-2zL-7ldk-XAhJXgDjNo10rPlxw1pdJffOOjT4UJjWOYFlDMAOLEEPV3T8hJzudjgh5rwMCebfurvzxrzw0c9W3TcGz3NYN9_VWwH_ComHOqjfvr52NQ19faDU3eHbfPwcxPKey4dK5Sr-B6qIYKV2A-dlxpl31U_Sb_BDs7vxPIbs7_pgegunvYQVNeFbWNQyfQGOmgFVn98z51AjKu_m5RS6OfMNhXNfsI62okvPf7f39duOV8_HsVnUBQmD4MTiPeXrV13_gJ4r6z9Xbg6wJInRXGDpQvEIioARRSfOOoOplyAJcgCWYBQr9q8NpzS7iLMiaNUora-ZzyyoFTGTZMwWgsHUQATarJWNodBGVOrc0pQ5R2rJNDBRJTiVkJgOUKpinF9JwVI7JiVRSTEqJmJRMRcACUIZiw8loMiYl5OF4XEzEY6laBLxkmaVo_J4kpWJJURRlUZbEeARA3cAWesrXINuGtf9DXve2)
+```mermaid
+graph TD
+    Start([开始删除]) --> Empty{树是否为空?}
+    Empty -- 是 --> ReturnFalse([返回 false])
+    Empty -- 否 --> FindNode[查找目标节点 current]
+
+    FindNode --> Exist{找到目标?}
+    Exist -- 否 --> ReturnFalse
+    Exist -- 是 --> TwoChildren{current<br>有两个子节点?}
+
+    TwoChildren -- 是 --> FindSuccessor[寻找后继节点 successor]
+    FindSuccessor --> SwapData[将 successor 的值拷贝给 current]
+    SwapData --> SetCurrentSuccessor[current 指向 successor]
+    SetCurrentSuccessor --> PrepareDelete[确定子节点 child 和父节点 parent]
+
+    TwoChildren -- 否 -->  PrepareDelete
+
+    PrepareDelete --> Relink[链接 parent 与 child]
+    Relink --> DeleteNode[delete current]
+
+    DeleteNode --> CheckParent{parent 是否为空?}
+    CheckParent -- 是 --> ReturnTrue([返回 true])
+    CheckParent -- 否 --> UpdateHeight[更新 parent 高度]
+    UpdateHeight --> CheckBal[平衡调整]
+
+    CheckBal  --> NextParent[parent = parent.parent] --> CheckParent
+```
 
 #### 代码实现
 
