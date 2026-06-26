@@ -42,10 +42,10 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
   src: {
     // 桌面背景图片（支持单张或多张随机）
     // desktop: "assets/images/DesktopWallpaper/d1.avif",
-    desktop: ["assets/images/my-banner.webp"],
+    desktop: "assets/images/my-banner.png",
     // 移动背景图片（支持单张或多张随机）
     // mobile: "assets/images/MobileWallpaper/m1.avif",
-    mobile: ["assets/images/my-banner.webp"],
+    mobile: "assets/images/my-banner-portable.png",
     // 背景视频播放地址
     // 支持单个视频路径（字符串）或多个视频循环（数组）
     // 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
@@ -76,7 +76,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
         // 是否启用打字机效果
         // 打字机开启 → 循环显示所有副标题
         // 打字机关闭 → 每次刷新随机显示一条副标题
-        enable: true,
+        enable: false,
         // 打字速度（毫秒）
         speed: 100,
         // 删除速度（毫秒）
@@ -88,7 +88,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
     // 导航栏配置
     navbar: {
       // 导航栏透明模式："semi" 半透明，"full" 完全透明，"semifull" 动态透明
-      transparentMode: "semi",
+      transparentMode: "semifull",
       // 是否开启毛玻璃模糊效果，开启可能会影响页面性能，如果不开启则是半透明，请根据自己的喜好开启
       enableBlur: true,
       // 毛玻璃模糊度
