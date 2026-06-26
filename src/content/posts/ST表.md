@@ -5,7 +5,6 @@ description: 'ST表的使用心得'
 image: ''
 tags: [ST表, 数据结构]
 category: '数据结构'
-series: 'ST表'
 draft: false 
 lang: ''
 ---

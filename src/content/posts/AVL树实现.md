@@ -1,28 +1,36 @@
 ---
 title: AVL树实现
 published: 2026-04-07
-description: '在上一篇博客中，我们实现了一个二叉树的基类，基于此基类，我们将实现一个AVL树，包含AVL树的结构、插入和删除操作，以及平衡调整的方法。'
-image: ''
+description: "在上一篇博客中，我们实现了一个二叉树的基类，基于此基类，我们将实现一个AVL树，包含AVL树的结构、插入和删除操作，以及平衡调整的方法。"
+image: ""
 tags: [二叉树, 数据结构, 代码实现]
-category: '数据结构'
-series: '二叉树'
-draft: false 
-lang: 'zh_CN'
+category: "数据结构"
+draft: false
+lang: "zh_CN"
 ---
+
 # AVL树
+
 在上一篇博客中，我们实现了一个二叉树的基类，基于此基类，我们将实现一个AVL树，包含AVL树的结构、插入和删除操作，以及平衡调整的方法。
 :::warning
 **注意**：以下代码仅供参考，实际应用中可能需要根据具体需求进行调整和优化。
 :::
+
 ## AVL树的代码结构
+
 与二叉树基类类似，AVL树的代码结构也包含一个节点类和一个AVL树类。节点类包含节点的值、左子树和右子树的指针，以及一个平衡因子（balance factor）来表示节点的平衡状态。AVL树类包含根节点和一些操作方法，如插入、删除和旋转等。
 但在具体实现中平衡因子的维护比较复杂，所以我使用了一个高度属性来代替平衡因子，一来容易维护，二来平衡因子的计算也容易。
 在AVL树类中，我们需要实现以下方法：
+
 - 插入节点：在AVL树中插入一个节点后，需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。
 - 删除节点：在AVL树中删除一个节点后，同样需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。
+
 ## AVL树的具体结构
+
 ### AVL树节点类
+
 一个AVL树节点类通常包含以下成员：
+
 - `data`：节点储存的数据，可以是任意类型。
 - `left_child`：指向左子树的指针。
 - `right_child`：指向右子树的指针。
@@ -30,17 +38,22 @@ lang: 'zh_CN'
 - `parent`：（可选）指向父节点的指针，方便在旋转操作中更新节点关系。
 
 和以下方法：
+
 - 获取平衡因子：通过计算左子树和右子树的高度差来获取节点的平衡因子。
 - 获取左右子树高度：获取节点的左子树和右子树的高度，方便计算平衡因子。
 - 更新高度：在插入或删除节点后，需要更新节点的高度，以便正确计算平衡因子。
 - 判断是否平衡：根据平衡因子判断节点是否平衡，如果平衡因子的绝对值大于1，则说明节点不平衡。
 
 还有构造函数、析构函数和比较操作等方法，具体看[二叉树基类实现](/posts/二叉树基类实现/)。
+
 ### AVL树类
+
 一个AVL树类通常包含以下成员：
+
 - `root`：指向AVL树根节点的指针。
 
 和以下方法：
+
 - 插入节点：实现一个方法来插入节点，并在插入后检查树的平衡状态，进行必要的旋转操作。
 - 删除节点：实现一个方法来删除节点，并在删除后检查树的平衡状态，进行必要的旋转操作。
 - 平衡调整：实现一个方法来调整树的平衡状态，根据节点的平衡因子选择合适的旋转操作。
@@ -48,9 +61,13 @@ lang: 'zh_CN'
 - 判断是否平衡：实现一个方法来判断AVL树是否平衡，可以通过检查根节点的平衡因子来判断。
 
 还有构造函数、析构函数和查找节点等方法，具体看[二叉树基类实现](/posts/二叉树基类实现/)。
+
 # 具体代码实现
+
 接下来我会逐段讲解AVL树的代码实现。
+
 ## AVL树节点类
+
 ```cpp title="AVLtree.hpp"
 #ifndef AVLTREE_HPP
 #define AVLTREE_HPP
@@ -71,13 +88,16 @@ namespace mystruct
         AVLTreeNode() = delete;
         explicit AVLTreeNode(const Data& data) : BaseNode(data),  parent(nullptr), height(1) {}
 ```
+
 在这一段中，我们定义了一个`AVLTreeNode`类，继承自之前定义的`treeNode`类。我们可以看到之前在`treeNode`类中使用了`DerivedNode`来表示派生节点的类型，让代码实现复用。
 然后：
+
 - `using`：让我们可以少打点字。
 - `friend`：使比较函数和AVL树类能够访问节点的私有成员。
 
 接着，我们定义了`parent`指针和`height`属性来维护AVL树的结构和平衡状态。
 最后，我们定义了构造函数，禁止默认构造，并初始化节点的数据、父节点指针和高度。
+
 ```cpp title="AVLtree.hpp" startLineNumber=19
         [[nodiscard]] std::pair<int, int> getLRHeight() const
         {
@@ -113,7 +133,9 @@ namespace mystruct
         return lhs.data < rhs.data;
     }
 ```
+
 在这一段中，我们实现了AVL树节点类的一些方法：
+
 - `getLRHeight()`：获取节点的左子树和右子树的高度，返回一个包含左右子树高度的`std::pair`。
 - `is_balanced()`：判断节点是否平衡，通过计算平衡因子来判断，如果平衡因子的绝对值大于1，则说明节点不平衡。
 - `update()`：更新节点的高度，通过获取左右子树的高度来计算节点的高度。
@@ -124,7 +146,9 @@ namespace mystruct
 :::note
 \[\[nodiscard]]：这是C++17引入的属性，表示函数的返回值不应该被忽略，如果调用者没有使用返回值，编译器会发出警告。这对于一些重要的函数来说非常有用，可以帮助开发者避免一些潜在的错误。不写这个属性也是可以的，但加上后可以提高代码的安全性和可维护性。
 :::
+
 ## AVL树类
+
 ```cpp title="AVLtree.hpp" startLineNumber=52
     template<typename Data>
     class AVLTree : public binaryTree<AVLTreeNode<Data>>
@@ -140,17 +164,22 @@ namespace mystruct
             return this->root ? this->root->is_balanced() : true;
         }
 ```
+
 在这一段中，我们定义了一个`AVLTree`类，继承自之前定义的`BinaryTree`类。我们使用`using`来简化类型名称。
 我们定义了构造函数和析构函数，构造函数调用基类的构造函数来初始化根节点，析构函数使用默认实现，因为基类的析构函数已经负责删除根节点及其子树了。
 我们还定义了一个`isBalanced()`方法，用于判断AVL树是否平衡，通过检查根节点的平衡状态来判断。
+
 ### 旋转操作
+
 **旋转操作**是AVL树保持**平衡**的关键，我们需要实现**左旋、右旋、左-右旋和右-左旋**等方法来调整树的结构。
 
 #### 左旋
+
 当我们在 AVL 树中插入一个节点后，如果某个节点 `node` 的**平衡因子变为 -2**（即右子树比左子树高 2 层），且其**右孩子的平衡因子为 -1 或 0**（说明是“右右”失衡），则需要进行一次左旋。
 
 ![左旋示例](https://pic1.zhimg.com/v2-a7bd0f59e788ea6e9c687cbe2834027e_b.webp)
 操作是：
+
 1. 将 `node` 的右节点更新为其右孩子的左孩子 `right_left_child`。
 2. 将 `right_left_child` 的父节点更新为 `node`。
 3. 将 `node` 的右孩子 `right_child` 的左节点更新为 `node`。
@@ -158,6 +187,7 @@ namespace mystruct
 5. 将 `parent` 和 `right_child` 进行连接。
 
 代码实现如下：
+
 ```cpp title="AVLtree.hpp" startLineNumber=65
         void LeftRotate(AVLNode *node)
         {
@@ -192,11 +222,14 @@ namespace mystruct
             right_child->update();
         }
 ```
+
 #### 右旋
+
 当某个节点 `node` 的**平衡因子变为 2**（即左子树比右子树高 2 层），且其**左孩子的平衡因子为 1 或 0**（说明是“左左”失衡），则需要进行一次右旋。
 
 ![右旋示例](https://pic2.zhimg.com/v2-9a04996731baf62ca3141e730a4bc185_b.webp)
 操作是：
+
 1. 将 `node` 的左节点更新为其左孩子的右孩子 `left_right_child`。
 2. 将 `left_right_child` 的父节点更新为 `node`。
 3. 将 `node` 的左孩子 `left_child` 的右节点更新为 `node`。
@@ -204,6 +237,7 @@ namespace mystruct
 5. 将 `parent` 和 `left_child` 进行连接。
 
 代码实现如下：
+
 ```cpp title="AVLtree.hpp" startLineNumber=97
         void RightRotate(AVLNode *node)
         {
@@ -233,13 +267,16 @@ namespace mystruct
             left_child->update();
         }
 ```
+
 #### 左-右旋和右-左旋
+
 这些是**双旋**操作，用于处理子节点与父节点“折线”方向失衡的情况。
 
 - **左-右旋 (LR Rotate)**：当某个节点的平衡因子变为 **2**，且其**左孩子的平衡因子为 -1**（说明左子树的右侧过高，即“左右”失衡）时触发。先对左子节点进行左旋将其转为“左左”失衡，然后再对当前节点进行右旋。
 - **右-左旋 (RL Rotate)**：当某个节点的平衡因子变为 **-2**，且其**右孩子的平衡因子为 1**（说明右子树的左侧过高，即“右左”失衡）时触发。先对右子节点进行右旋将其转为“右右”失衡，然后再对当前节点进行左旋。
 
 代码实现如下：
+
 ```cpp title="AVLtree.hpp" startLineNumber=124
         void LeftRightRotate(AVLNode *node)
         {
@@ -255,13 +292,17 @@ namespace mystruct
 ```
 
 ### 平衡调整
+
 在插入或删除节点后，我们需要通过旋转操作来维护 AVL 树的平衡。以下是插入操作中平衡调整的逻辑流程：
 
 #### 平衡调整逻辑流程图
+
 [![平衡调整流程图](https://mermaid.ink/img/pako:eNptkjFPg0AUx7_K5U2aQHNQjhZSa2KNEy4XJ6UDKdfSWKDBI1FJZ2PUtJuuLjUOjUOHfiIa_RYeUAltZeK9-_9_7_3hEuiFLgMTBpEz9tDFqR0g8XQ81ru2WJ8nJ2eojRR0PEGyjNZvX-ggXc1_Hl4ORd3e6KxE9NLFZ7qYZfIjhIW-CrJKs2UVRjoceJyG3OHsav348f3-nE6X69en6kF3D5HO5gJBC0S23j-Y1VzeoHYEG5wdVLD5cZaxheTtkNPldkhKE9ErQ7b2QlJamml1w53lysX2IhaAPCKtfqV9ynQpb0g7gm4WDiTxM4cumDyKmQQ-i3wnKyHJhtnAPeYzG0zx6rK-E4-4DXYwEbaxE1yGof_njMJ44IHZd0Y3oorHrphwOnTETfHLbsQCl0WdMA44mIqB9UaOATOBWzA1tWboTYIbRNewomBCJLgTOk2rqQrRVANjnaj1OplIcJ9PxrWGodWFRSGGrhHcVCRg7pCH0XlxT_PrOvkFPof4VA?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNptkjFPg0AUx7_K5U2aQHNQjhZSa2KNEy4XJ6UDKdfSWKDBI1FJZ2PUtJuuLjUOjUOHfiIa_RYeUAltZeK9-_9_7_3hEuiFLgMTBpEz9tDFqR0g8XQ81ru2WJ8nJ2eojRR0PEGyjNZvX-ggXc1_Hl4ORd3e6KxE9NLFZ7qYZfIjhIW-CrJKs2UVRjoceJyG3OHsav348f3-nE6X69en6kF3D5HO5gJBC0S23j-Y1VzeoHYEG5wdVLD5cZaxheTtkNPldkhKE9ErQ7b2QlJamml1w53lysX2IhaAPCKtfqV9ynQpb0g7gm4WDiTxM4cumDyKmQQ-i3wnKyHJhtnAPeYzG0zx6rK-E4-4DXYwEbaxE1yGof_njMJ44IHZd0Y3oorHrphwOnTETfHLbsQCl0WdMA44mIqB9UaOATOBWzA1tWboTYIbRNewomBCJLgTOk2rqQrRVANjnaj1OplIcJ9PxrWGodWFRSGGrhHcVCRg7pCH0XlxT_PrOvkFPof4VA)
 
 #### 代码实现
+
 代码实现如下：
+
 ```cpp title="AVLtree.hpp" startLineNumber=135
         void Balance(AVLNode* node) {
             int bf = node->getBF();
@@ -284,13 +325,17 @@ namespace mystruct
 ```
 
 ### 插入节点
+
 在AVL树中插入一个节点后，需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。插入节点的过程与普通二叉树类似，但在插入后需要进行平衡调整。
 
 #### 插入逻辑流程图
+
 [![插入流程图](https://mermaid.ink/img/pako:eNqNVF1PE0EU_SubeYKkYNttt-0mYiJI9AFCEF_c9mHTHWhju9tsZw24aUJQE8RgQcUQQYFEWowRGyFiW1v_TGdb_4W3M7v9AGLch_2Yueeec-69OzZKGhpGMloy1VxKWJiK6wJc94lqkhGF_lql5ZdO8TV9fpwYFcbGJoQ72RxZsZ3DbWf3G90qtX7W2p9rtwocxjYhTIBNFj1pYpXgecMgCl3fo_Wa867S2Vhrr1VbjX3AOodV_pngyXVtRGnX3zgfDmj1R-f3W7r3USCmhROjlwiAmiGm07o2Z-SVVv1VL5er-uDYedHk2luNzXbjNMFz8LsLZEmmrFwmnQShtrNTcTZP6cV3-nWX7p94vnoBg97mMbFMfVrN5PFV0YvdZU_1ENxTPmM8xrN4mSigGzhd5k9lWinSrW16UbpBi2ftcp1unAwJ93DcvmExGzZdr3SaTWgFWPVUe5vX1OtqgOfqnp7HJpmFoVB47Xodc1X0A3iHUzj5aE41sU7sHHsI100Gvw8ED3KCKDWzAG3-d_MvoT1LD3IalPYuTi-loJh75yBYcJW03z_782WX1kqu9sHQLpZlvK1mVD0JvWeyafWsc3TkyR4MAADsdxndBYXHdipPnZ1zl6Efy6Y5_x-O-hBQ0DfEjSquk5uupbEJ_hwy1KvJUDsGCo988H-nNSR3yX0oi82s2v1Ednc7jkgKZ3EcyfCq4UXVypA4iusFgOVU_aFhZD2kaVhLKSSz6fYhi7FPpVU4PLK9VeDWsDkJs0WQHBQj4SBLg2QbLcNCZFyMhsNhvxiSoqFIMCT60AqSRf-4KPmlWNQfDkhRMSAVfOgJIw6MhyIRKSiJQVGKxWLhgA9hLU0Mc4YfXOz8KvwFfIb4Aw?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNqNVF1PE0EU_SubeYKkYNttt-0mYiJI9AFCEF_c9mHTHWhju9tsZw24aUJQE8RgQcUQQYFEWowRGyFiW1v_TGdb_4W3M7v9AGLch_2Yueeec-69OzZKGhpGMloy1VxKWJiK6wJc94lqkhGF_lql5ZdO8TV9fpwYFcbGJoQ72RxZsZ3DbWf3G90qtX7W2p9rtwocxjYhTIBNFj1pYpXgecMgCl3fo_Wa867S2Vhrr1VbjX3AOodV_pngyXVtRGnX3zgfDmj1R-f3W7r3USCmhROjlwiAmiGm07o2Z-SVVv1VL5er-uDYedHk2luNzXbjNMFz8LsLZEmmrFwmnQShtrNTcTZP6cV3-nWX7p94vnoBg97mMbFMfVrN5PFV0YvdZU_1ENxTPmM8xrN4mSigGzhd5k9lWinSrW16UbpBi2ftcp1unAwJ93DcvmExGzZdr3SaTWgFWPVUe5vX1OtqgOfqnp7HJpmFoVB47Xodc1X0A3iHUzj5aE41sU7sHHsI100Gvw8ED3KCKDWzAG3-d_MvoT1LD3IalPYuTi-loJh75yBYcJW03z_782WX1kqu9sHQLpZlvK1mVD0JvWeyafWsc3TkyR4MAADsdxndBYXHdipPnZ1zl6Efy6Y5_x-O-hBQ0DfEjSquk5uupbEJ_hwy1KvJUDsGCo988H-nNSR3yX0oi82s2v1Ednc7jkgKZ3EcyfCq4UXVypA4iusFgOVU_aFhZD2kaVhLKSSz6fYhi7FPpVU4PLK9VeDWsDkJs0WQHBQj4SBLg2QbLcNCZFyMhsNhvxiSoqFIMCT60AqSRf-4KPmlWNQfDkhRMSAVfOgJIw6MhyIRKSiJQVGKxWLhgA9hLU0Mc4YfXOz8KvwFfIb4Aw)
 
 #### 代码实现
+
 代码实现如下：
+
 ```cpp title="AVLtree.hpp" startLineNumber=135
         bool insert(const Data &data)
         {
@@ -333,14 +378,19 @@ namespace mystruct
             return true;
         }
 ```
+
 ### 删除节点
+
 在AVL树中删除一个节点后，同样需要检查树的平衡状态，并进行必要的旋转操作来保持AVL树的平衡。删除节点的过程与普通二叉树类似，但在删除后需要进行平衡调整。由于删除节点可能会导致树的高度发生变化，因此需要向上回溯更新节点的高度，并检查每个节点的平衡状态，进行必要的旋转操作来保持AVL树的平衡。
 
 #### 删除逻辑流程图
+
 [![](https://mermaid.ink/img/pako:eNptVNlO20AU_RVrnkAKkV2TzWqp1KSoL0UI6EudPLjxQCwSO5qMBTSKhGhVoCAUuomlC0gsaqtCpKI2LKI_k7HDX3Q8YycmJA9WZu4555575-pWQd7SIVDADNLKBWEqkzUF-pvEGsIDKrlaJMdrZGXvZvsgNygMDY0Ij0tlvFB19jadrVNSP2o1L9zvFw9rnMaCFCbQIENPQGwjc1QrVuCA2v73gex-Faa9U26wh0G1GGPUMPUxakl1vh06q9fu7omzt9x-u-QunQt5GyFo4hyn8m-A5-bmjQquUhpZaXBmx5kXCecJOetBBN6n5qx0wSjqNGXVz3z_BRpxPq-2mget5g_yq859BTn4N0QLq3k-J-18HlYqFlLJ6aXnsr7hXh77xVWCYK5bWIfAJCbntHJGw5pKGm-6cMHdeU0Wr5y1v-2zL-7ldk-XAhJXgDjNo10rPlxw1pdJffOOjT4UJjWOYFlDMAOLEEPV3T8hJzudjgh5rwMCebfurvzxrzw0c9W3TcGz3NYN9_VWwH_ComHOqjfvr52NQ19faDU3eHbfPwcxPKey4dK5Sr-B6qIYKV2A-dlxpl31U_Sb_BDs7vxPIbs7_pgegunvYQVNeFbWNQyfQGOmgFVn98z51AjKu_m5RS6OfMNhXNfsI62okvPf7f39duOV8_HsVnUBQmD4MTiPeXrV13_gJ4r6z9Xbg6wJInRXGDpQvEIioARRSfOOoOplyAJcgCWYBQr9q8NpzS7iLMiaNUora-ZzyyoFTGTZMwWgsHUQATarJWNodBGVOrc0pQ5R2rJNDBRJTiVkJgOUKpinF9JwVI7JiVRSTEqJmJRMRcACUIZiw8loMiYl5OF4XEzEY6laBLxkmaVo_J4kpWJJURRlUZbEeARA3cAWesrXINuGtf9DXve2?type=png)](https://mermaid-live.nodejs.cn/edit#pako:eNptVNlO20AU_RVrnkAKkV2TzWqp1KSoL0UI6EudPLjxQCwSO5qMBTSKhGhVoCAUuomlC0gsaqtCpKI2LKI_k7HDX3Q8YycmJA9WZu4555575-pWQd7SIVDADNLKBWEqkzUF-pvEGsIDKrlaJMdrZGXvZvsgNygMDY0Ij0tlvFB19jadrVNSP2o1L9zvFw9rnMaCFCbQIENPQGwjc1QrVuCA2v73gex-Faa9U26wh0G1GGPUMPUxakl1vh06q9fu7omzt9x-u-QunQt5GyFo4hyn8m-A5-bmjQquUhpZaXBmx5kXCecJOetBBN6n5qx0wSjqNGXVz3z_BRpxPq-2mget5g_yq859BTn4N0QLq3k-J-18HlYqFlLJ6aXnsr7hXh77xVWCYK5bWIfAJCbntHJGw5pKGm-6cMHdeU0Wr5y1v-2zL-7ldk-XAhJXgDjNo10rPlxw1pdJffOOjT4UJjWOYFlDMAOLEEPV3T8hJzudjgh5rwMCebfurvzxrzw0c9W3TcGz3NYN9_VWwH_ComHOqjfvr52NQ19faDU3eHbfPwcxPKey4dK5Sr-B6qIYKV2A-dlxpl31U_Sb_BDs7vxPIbs7_pgegunvYQVNeFbWNQyfQGOmgFVn98z51AjKu_m5RS6OfMNhXNfsI62okvPf7f39duOV8_HsVnUBQmD4MTiPeXrV13_gJ4r6z9Xbg6wJInRXGDpQvEIioARRSfOOoOplyAJcgCWYBQr9q8NpzS7iLMiaNUora-ZzyyoFTGTZMwWgsHUQATarJWNodBGVOrc0pQ5R2rJNDBRJTiVkJgOUKpinF9JwVI7JiVRSTEqJmJRMRcACUIZiw8loMiYl5OF4XEzEY6laBLxkmaVo_J4kpWJJURRlUZbEeARA3cAWesrXINuGtf9DXve2)
 
 #### 代码实现
+
 代码实现如下：
+
 ```cpp title="AVLtree.hpp" startLineNumber=173
         bool erase(const Data &data) {
             if (!this->root) return false;
@@ -397,9 +447,13 @@ namespace mystruct
 }
 #endif //AVLTREE_HPP
 ```
+
 # 结语
+
 以上是AVL树的基本实现，包括节点类、树类以及插入和旋转操作。其中旋转操作可能比较复杂，理清楚旋转的步骤和逻辑对于理解AVL树的平衡调整非常重要。
+
 # 参考资料
+
 - [AVL树 - Wikipedia](https://en.wikipedia.org/wiki/AVL_tree)
 - [史上最详细的AVL树的实现(万字+动图讲解旋转)](https://zhuanlan.zhihu.com/p/676233161)
 

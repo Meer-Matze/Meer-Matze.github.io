@@ -4,8 +4,7 @@ published: 2026-04-30
 description: "从 Linux 内核源码层面深度剖析 epoll 的核心数据结构、事件触发链路，并结合 Reactor 事件驱动模型实现高性能 C++ 网络服务器。"
 image: ""
 tags: [socket, reactor, epoll, linux, kernel]
-category: "网络"
-series: "c++网络编程"
+category: "编程技术"
 draft: false 
 lang: "zh_CN"
 ---

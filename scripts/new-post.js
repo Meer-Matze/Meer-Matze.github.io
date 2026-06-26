@@ -49,7 +49,6 @@ description: ''
 image: ''
 tags: []
 category: ''
-series: ''
 draft: false 
 lang: ''
 ---

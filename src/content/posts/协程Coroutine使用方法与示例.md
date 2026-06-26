@@ -5,7 +5,6 @@ description: 'c++20协程的学习笔记与简单示例'
 image: ''
 tags: [coroutine, C++]
 category: '编程技术'
-series: 'Modern C++'
 draft: false 
 lang: 'zh_CN'
 ---

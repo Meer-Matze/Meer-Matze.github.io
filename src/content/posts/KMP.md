@@ -5,7 +5,6 @@ description: 'KMP算法的解释和实现'
 image: ''
 tags: [KMP, 算法, 字符串匹配]
 category: '算法'
-series: '字符串处理'
 draft: false 
 lang: 'zh_CN'
 ---
