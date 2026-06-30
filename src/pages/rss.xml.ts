@@ -1,6 +1,7 @@
 import { loadRenderers } from "astro:container";
 import { render } from "astro:content";
 import { getContainerRenderer as getMDXRenderer } from "@astrojs/mdx/container-renderer";
+import { getContainerRenderer as getSvelteRenderer } from "@astrojs/svelte/container-renderer";
 import rss, { type RSSFeedItem } from "@astrojs/rss";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
@@ -23,7 +24,7 @@ function stripInvalidXmlChars(str: string): string {
 
 export async function GET(context: APIContext) {
 	const blog = await getSortedPosts();
-	const renderers = await loadRenderers([getMDXRenderer()]);
+	const renderers = await loadRenderers([getMDXRenderer(), getSvelteRenderer()]);
 	const container = await AstroContainer.create({ renderers });
 	const feedItems: RSSFeedItem[] = [];
 	for (const post of blog) {

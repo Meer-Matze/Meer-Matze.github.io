@@ -9,6 +9,19 @@ draft: false
 lang: "zh_CN"
 ---
 
+import DFD, {
+  ORANGE,
+  GREEN,
+  TEAL,
+  BLUE,
+  PURPLE,
+  PINK,
+  RW,
+  RH,
+  OW,
+  OH,
+} from "@/components/custom/DataFlowDiagram.svelte";
+
 # 第一部分 基础概念
 
 ## 5.1 性能指标
@@ -220,7 +233,6 @@ vmulsd %xmm6, %xmm7, %xmm8    # 周期 3 发起
 例如，对于累加操作：
 
 ```c
-long sum = 0;
 for(i = 0; i < n; i++){
     sum += data[i];  // 每次加法依赖前一个 sum
 }
@@ -289,7 +301,7 @@ void combine1(vec_ptr v, data_t *dest){
 
 为什么 CPE 这么高？有两个原因：
 
-1. **`vec_length(v)` 每次都被调用**：即使向量长度不变，编译器也不敢优化，因为它无法确定该函数是否有副作用（参考 §5.4）。
+1. **`vec_length(v)` 每次都被调用**：即使向量长度不变，编译器也不敢优化，因为它无法确定该函数是否有副作用（参考 [§5.4](#54-函数调用的副作用)）。
 2. **目标指针 `dest` 每次迭代都被访问**：`*dest = *dest OP val` 涉及读-改-写，需要多次内存访问。
 
 ## 5.8 代码移动（Code Motion）
@@ -371,6 +383,286 @@ void combine4(vec_ptr v, data_t *dest){
 
 **性能提升**：2~3 倍！这是因为大大消除了循环体内的内存读写，依赖链从"内存中的 `*dest`"变成了"寄存器中的 `acc`"，后者的延迟远低于前者，实现了与`-O2`优化相当的性能。
 
+### 5.10.1 数据流图
+
+将 `combine4` 循环体的操作抽象为数据流图：
+
+<DFD
+  client:load
+  width={520}
+  height={550}
+  boxes={[
+    // 顶部寄存器 ( 底边 y = 70 )
+    { x: 76, y: 52, label: "%rax" },
+    { x: 196, y: 52, label: "%rdx" },
+    { x: 316, y: 52, label: "%xmm0" },
+    // 底部寄存器（顶边 y = 486 ）
+    { x: 76, y: 504, label: "%rax" },
+    { x: 196, y: 504, label: "%rdx" },
+    { x: 316, y: 504, label: "%xmm0" },
+  ]}
+  ops={[
+    // 5 个运算节点垂直均匀分布，间距 74px
+    // 左边 x = 388 height = 36
+    { x: 432, y: 132, label: "load" },
+    { x: 432, y: 206, label: "mul" },
+    { x: 432, y: 280, label: "add" },
+    { x: 432, y: 354, label: "cmp" },
+    { x: 432, y: 428, label: "jne" },
+  ]}
+  polylines={[
+    {
+      points: [
+        [196, 70],
+        [196, 132],
+        [388, 132],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [316, 70],
+        [316, 200],
+        [388, 200],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [388, 212],
+        [316, 212],
+        [316, 486],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [432, 144],
+        [432, 188],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [196, 132],
+        [196, 274],
+        [388, 274],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [388, 286],
+        [196, 286],
+        [196, 486],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [196, 348],
+        [388, 348],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [76, 70],
+        [76, 360],
+        [388, 360],
+      ],
+      color: TEAL,
+    },
+    {
+      points: [
+        [76, 360],
+        [76, 486],
+      ],
+      color: TEAL,
+    },
+    {
+      points: [
+        [432, 372],
+        [432, 410],
+      ],
+      color: PURPLE,
+    },
+  ]}
+  circles={[
+    { cx: 76, cy: 360, r: 3, color: TEAL },
+    { cx: 196, cy: 132, r: 3, color: BLUE },
+    { cx: 196, cy: 348, r: 3, color: BLUE },
+  ]}
+/>
+
+调整顺序和删除与循环寄存器不相关的操作后，合并多个操作的依赖链，得到仅保留数据依赖关系的数据流图：
+
+<DFD
+  client:load
+  width={520}
+  height={800}
+  ops={[
+    //长度 88px，高度 36px
+    //mul
+    { x: 180, y: 140, label: "mul" },
+    { x: 180, y: 320, label: "mul" },
+    { x: 180, y: 540, label: "mul" },
+    { x: 180, y: 720, label: "mul" },
+    //load
+    { x: 290, y: 70, label: "load" },
+    { x: 290, y: 250, label: "load" },
+    { x: 290, y: 470, label: "load" },
+    { x: 290, y: 650, label: "load" },
+    //add
+    { x: 380, y: 140, label: "add" },
+    { x: 380, y: 320, label: "add" },
+    { x: 380, y: 540, label: "add" },
+    { x: 380, y: 720, label: "add" },
+  ]}
+  polylines={[
+    //add
+    {
+      points: [
+        [380, 0],
+        [380, 70],
+        [334, 70],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 70],
+        [380, 122],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 158],
+        [380, 250],
+        [334, 250],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 250],
+        [380, 302],
+      ],
+      color: ORANGE,
+    },
+    //断一下表示省略
+    {
+      points: [
+        [380, 338],
+        [380, 370],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 430],
+        [380, 470],
+        [334, 470],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 470],
+        [380, 522],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 558],
+        [380, 650],
+        [334, 650],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 650],
+        [380, 702],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [380, 738],
+        [380, 800],
+      ],
+      color: ORANGE,
+    },
+    //load
+    {
+      points: [
+        [290, 88],
+        [290, 140],
+        [224, 140],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [290, 268],
+        [290, 320],
+        [224, 320],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [290, 488],
+        [290, 540],
+        [224, 540],
+      ],
+      color: BLUE,
+    },
+    {
+      points: [
+        [290, 668],
+        [290, 720],
+        [224, 720],
+      ],
+      color: BLUE,
+    },
+  ]}
+  lines={[
+    //mul
+    { x1: 180, y1: 0, x2: 180, y2: 122, color: PINK },
+    { x1: 180, y1: 158, x2: 180, y2: 302, color: PINK },
+    { x1: 180, y1: 338, x2: 180, y2: 370, color: PINK },
+    { x1: 180, y1: 430, x2: 180, y2: 522, color: PINK },
+    { x1: 180, y1: 558, x2: 180, y2: 702, color: PINK },
+    { x1: 180, y1: 738, x2: 180, y2: 800, color: PINK },
+  ]}
+  circles={[
+    // 分叉点
+    { cx: 380, cy: 70, r: 3, color: ORANGE },
+    { cx: 380, cy: 250, r: 3, color: ORANGE },
+    { cx: 380, cy: 470, r: 3, color: ORANGE },
+    { cx: 380, cy: 650, r: 3, color: ORANGE },
+    // 省略号
+    { cx: 380, cy: 385, r: 3, color: ORANGE },
+    { cx: 380, cy: 400, r: 3, color: ORANGE },
+    { cx: 380, cy: 415, r: 3, color: ORANGE },
+    { cx: 180, cy: 385, r: 3, color: PINK },
+    { cx: 180, cy: 400, r: 3, color: PINK },
+    { cx: 180, cy: 415, r: 3, color: PINK },
+  ]}
+  labels={[
+    { x: 100, y: 70, text: "date[0]", color: TEAL, fontSize: 16 },
+    { x: 100, y: 250, text: "date[1]", color: TEAL, fontSize: 16 },
+    { x: 100, y: 470, text: "date[n-1]", color: TEAL, fontSize: 16 },
+    { x: 100, y: 650, text: "date[n]", color: TEAL, fontSize: 16 },
+  ]}
+/>
+
+我们可以清晰地看到，循环体内的操作形成了两条依赖链，分别是`mul`和`add`，而`mul`的延迟相较于`add`更长，因此成为了**关键路径**，决定了整个循环的最低运行时间。
+
 ## 5.11 循环展开（Loop Unrolling）
 
 **思想**：每次迭代处理多个元素，减少循环开销（循环变量更新、条件判断等）。
@@ -409,6 +701,8 @@ acc = (acc OP data[i]) OP data[i+1]
 
 第二次操作必须等待第一次完成。
 
+事实上，如果画出数据流图，会发现仍然与`combine4` 的数据流图类似（简化后），只是每次迭代处理两个元素而已，并没有打破依赖链的限制。
+
 ## 5.12 提高并行性（Parallelism）
 
 **关键洞察**：如果能创建**多条独立的依赖链**，处理器可以并行执行，打破延迟的限制。
@@ -437,10 +731,170 @@ void combine6(vec_ptr v, data_t *dest){
 
 数据流图现在有**两条并行路径**，处理器可以**同时**在两个 ALU 上执行：
 
-```
-acc0 路径：acc0[i] -> (OP) -> acc0[i+1] -> (OP) -> ...
-acc1 路径：acc1[i] -> (OP) -> acc1[i+1] -> (OP) -> ...
-```
+<DFD
+  client:load
+  width={520}
+  height={800}
+  ops={[
+    //长度 88px，高度 36px
+    //mul1
+    { x: 150, y: 120, label: "mul" },
+    { x: 150, y: 370, label: "mul" },
+    { x: 150, y: 670, label: "mul" },
+    //mul2
+    { x: 280, y: 170, label: "mul" },
+    { x: 280, y: 420, label: "mul" },
+    { x: 280, y: 720, label: "mul" },
+    //load1
+    { x: 190, y: 50, label: "load" },
+    { x: 190, y: 300, label: "load" },
+    { x: 190, y: 600, label: "load" },
+    //load2
+    { x: 320, y: 110, label: "load" },
+    { x: 320, y: 360, label: "load" },
+    { x: 320, y: 660, label: "load" },
+    //add
+    { x: 420, y: 210, label: "add" },
+    { x: 420, y: 460, label: "add" },
+    { x: 420, y: 760, label: "add" },
+  ]}
+  polylines={[
+    //add
+    {
+      points: [
+        [420, 0],
+        [420, 50],
+        [234, 50],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 50],
+        [420, 110],
+        [364, 110],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 110],
+        [420, 192],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 228],
+        [420, 300],
+        [234, 300],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 300],
+        [420, 360],
+        [364, 360],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 360],
+        [420, 442],
+      ],
+      color: ORANGE,
+    },
+    //断一下表示省略
+    {
+      points: [
+        [420, 478],
+        [420, 500],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 560],
+        [420, 600],
+        [234, 600],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 600],
+        [420, 660],
+        [364, 660],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 660],
+        [420, 742],
+      ],
+      color: ORANGE,
+    },
+    {
+      points: [
+        [420, 778],
+        [420, 800],
+      ],
+      color: ORANGE,
+    },
+  ]}
+  lines={[
+    //mul1
+    { x1: 125, y1: 0, x2: 125, y2: 102, color: PINK },
+    { x1: 125, y1: 138, x2: 125, y2: 352, color: PINK },
+    { x1: 125, y1: 388, x2: 125, y2: 500, color: PINK },
+    { x1: 125, y1: 560, x2: 125, y2: 652, color: PINK },
+    { x1: 125, y1: 688, x2: 125, y2: 800, color: PINK },
+    //mul2
+    { x1: 255, y1: 0, x2: 255, y2: 152, color: PINK },
+    { x1: 255, y1: 188, x2: 255, y2: 402, color: PINK },
+    { x1: 255, y1: 438, x2: 255, y2: 500, color: PINK },
+    { x1: 255, y1: 560, x2: 255, y2: 702, color: PINK },
+    { x1: 255, y1: 738, x2: 255, y2: 800, color: PINK },
+    //load1
+    { x1: 170, y1: 68, x2: 170, y2: 102, color: BLUE },
+    { x1: 170, y1: 318, x2: 170, y2: 352, color: BLUE },
+    { x1: 170, y1: 618, x2: 170, y2: 652, color: BLUE },
+    //load2
+    { x1: 300, y1: 128, x2: 300, y2: 152, color: BLUE },
+    { x1: 300, y1: 378, x2: 300, y2: 402, color: BLUE },
+    { x1: 300, y1: 678, x2: 300, y2: 702, color: BLUE },
+  ]}
+  circles={[
+    // 分叉点
+    { cx: 420, cy: 50, r: 3, color: ORANGE },
+    { cx: 420, cy: 110, r: 3, color: ORANGE },
+    { cx: 420, cy: 300, r: 3, color: ORANGE },
+    { cx: 420, cy: 360, r: 3, color: ORANGE },
+    { cx: 420, cy: 600, r: 3, color: ORANGE },
+    { cx: 420, cy: 660, r: 3, color: ORANGE },
+    // 省略号
+    { cx: 420, cy: 515, r: 3, color: ORANGE },
+    { cx: 420, cy: 530, r: 3, color: ORANGE },
+    { cx: 420, cy: 545, r: 3, color: ORANGE },
+    { cx: 125, cy: 515, r: 3, color: PINK },
+    { cx: 125, cy: 530, r: 3, color: PINK },
+    { cx: 125, cy: 545, r: 3, color: PINK },
+    { cx: 255, cy: 515, r: 3, color: PINK },
+    { cx: 255, cy: 530, r: 3, color: PINK },
+    { cx: 255, cy: 545, r: 3, color: PINK },
+  ]}
+  labels={[
+    { x: 50, y: 70, text: "date[0]", color: TEAL, fontSize: 16 },
+    { x: 50, y: 150, text: "date[1]", color: TEAL, fontSize: 16 },
+    { x: 50, y: 320, text: "date[2]", color: TEAL, fontSize: 16 },
+    { x: 50, y: 400, text: "date[3]", color: TEAL, fontSize: 16 },
+    { x: 50, y: 620, text: "date[n-2]", color: TEAL, fontSize: 16 },
+    { x: 50, y: 700, text: "date[n-1]", color: TEAL, fontSize: 16 },
+  ]}
+/>
 
 性能结果：
 
