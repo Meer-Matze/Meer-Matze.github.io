@@ -33,31 +33,35 @@
 
   $effect(() => {
     dark = document.documentElement.classList.contains('dark');
-    const onThemeChange = () => { dark = document.documentElement.classList.contains('dark'); };
-    window.addEventListener('theme-change', onThemeChange);
+
+    // 用 MutationObserver 监听 <html> 的 class 变化（覆盖手动切换和 system 模式）
+    const observer = new MutationObserver(() => {
+      dark = document.documentElement.classList.contains('dark');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    // 兜底：监听系统偏好变化（当站点主题为 system 模式时）
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const onSystemChange = (e) => {
       const stored = localStorage.getItem('theme');
       if (!stored || stored === 'system') dark = e.matches;
     };
     mq.addEventListener('change', onSystemChange);
+
     return () => {
-      window.removeEventListener('theme-change', onThemeChange);
+      observer.disconnect();
       mq.removeEventListener('change', onSystemChange);
     };
   });
 
   // ── 颜色工具 ──
-  // resolve(c) 接受 "#hex" 或 { light: "#hex", dark: "#hex" }，返当前主题色
   function resolve(c) {
     if (!c) return undefined;
     if (typeof c === 'string') return c;
     return dark ? c.dark : c.light;
   }
 
-  // ── 默认色板（hex 作为 SSR 安全后备，运行时会通过 oklch + var(--hue) 跟随主题）
-  //    注：fill/stroke 等 SVG 属性支持 oklch()，但内联 style 中的 oklch 在 SSR 时可能解析失败，
-  //    故 BG 用纯 hex 避免构建问题；fill/stroke 用 oklch 则无此限制。
+  // ── 默认色板 ──
   const BG         = { light: 'oklch(0.95 0.020 var(--hue))', dark: 'oklch(0.17 0.020 var(--hue))' };
   const BOX_FILL   = { light: 'oklch(0.92 0.05 var(--hue))',  dark: 'oklch(0.18 0.06 var(--hue))' };
   const BOX_STROKE = { light: 'oklch(0.55 0.18 var(--hue))', dark: 'oklch(0.65 0.15 var(--hue))' };

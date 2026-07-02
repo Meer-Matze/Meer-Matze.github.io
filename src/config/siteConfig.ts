@@ -15,10 +15,20 @@ export const siteConfig: SiteConfig = {
   site_url: "https://meer-matze.github.io",
 
   // 站点描述
-  description: "我的个人博客，分享技术文章、学习笔记和生活点滴。",
+  description: "我的个人博客，分享技术文章、学习笔记和生活点滴（雾）",
 
   // 站点关键词
-  keywords: ["Firefly", "Fuwari", "Astro", "博客", "技术博客", "静态博客"],
+  keywords: [
+    "Firefly",
+    "Fuwari",
+    "Astro",
+    "博客",
+    "技术博客",
+    "静态博客",
+    "计算机科学",
+    "编程",
+    "学习笔记",
+  ],
 
   // 主题色
   themeColor: {

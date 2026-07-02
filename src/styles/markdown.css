@@ -173,10 +173,19 @@
 
   th,
   td {
-    @apply px-3 py-2 text-left;
+    @apply px-3 py-2;
     min-width: 120px;
     border: none;
     word-break: break-word;
+    text-align: left;
+
+    &[align="center"] {
+      text-align: center;
+    }
+
+    &[align="right"] {
+      text-align: right;
+    }
 
     &:not(:last-child) {
       border-right: 1px solid var(--line-color);
