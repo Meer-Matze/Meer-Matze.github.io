@@ -1,12 +1,12 @@
 ---
 title: B树和B+树
 published: 2026-07-23
-description: ""
+description: "B树和B+树的定义、性质、操作及应用"
 image: ""
-tags: []
-category: ""
+tags: [数据结构]
+category: "数据结构"
 draft: false
-lang: ""
+lang: "zh_CN"
 ---
 
 # B树
