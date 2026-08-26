@@ -6,273 +6,227 @@
 
 ### 📐 DataFlowDiagram — 数据流图绘图组件
 
-通用的 SVG 数据流图组件，支持深色/浅色模式自动切换，可在 MDX 中声明式绘制。
+Svelte 5 组件，用于在 MDX 中绘制数据流图（寄存器、运算节点、连线、大括号等），自动跟随站点深色模式。
 
-#### 基本用法
+#### 1. 引入
 
 ```mdx
 import DFD, {
-  TEAL,
+  WHITE,
+  BLACK,
   PINK,
+  AMBER,
   ORANGE,
-  RW,
-  RH,
-  OW,
-  OH,
+  LIME,
+  GREEN,
+  CYAN,
+  TEAL,
+  INDIGO,
+  BLUE,
+  VIOLET,
+  PURPLE,
+  ROSE,
 } from "@/components/custom/DataFlowDiagram.svelte";
+```
 
+- 组件本体为默认导出。
+- 命名导出为可选的尺寸/配色常量（见 §5）。
+
+#### 2. Props
+
+| Prop        | 类型             | 默认值             | 说明                                             |
+| ----------- | ---------------- | ------------------ | ------------------------------------------------ |
+| `width`     | `number`         | `520`              | SVG viewBox 宽度                                 |
+| `height`    | `number`         | `480`              | SVG viewBox 高度                                 |
+| `bg`        | `Color`          | 自动（主题背景色） | 覆盖背景色                                       |
+| `ariaLabel` | `string`         | `'数据流图'`       | `role="img"` 的无障碍描述                        |
+| `registers` | `BoxData[]`      | `[]`               | 寄存器风格矩形（圆角小，边框细）                 |
+| `ops`       | `BoxData[]`      | `[]`               | 运算节点风格矩形（圆角大，边框粗）               |
+| `custom`    | `BoxData[]`      | `[]`               | 完全自定义矩形，默认中性灰配色，不带任何预设语义 |
+| `lines`     | `LineData[]`     | `[]`               | 直线，默认带箭头                                 |
+| `polylines` | `PolylineData[]` | `[]`               | 折线                                             |
+| `paths`     | `PathData[]`     | `[]`               | 任意 SVG path                                    |
+| `braces`    | `BraceData[]`    | `[]`               | 大括号标注                                       |
+| `circles`   | `CircleData[]`   | `[]`               | 圆点（无边框）                                   |
+| `labels`    | `LabelData[]`    | `[]`               | 纯文字（无背景/边框）                            |
+
+所有坐标以 `boxes`/`ops` 的中心点 `(x, y)`、`lines` 等的端点为准，单位与 `width`/`height` 一致。
+
+#### 3. `Color` 类型
+
+支持两种写法，可在同一图里混用：
+
+```ts
+type Color = string | { light: string; dark: string };
+```
+
+- 字符串：直接作为 CSS 颜色值使用，不随深色模式变化。
+- `{ light, dark }`：组件按当前主题自动选取（见 §6）。所有元素类型（`boxes`/`ops`/`lines`/`polylines`/`paths`/`circles`/`braces`/`labels`）均支持此写法。
+
+#### 4. 各元素字段
+
+##### 4.1 `registers` / `ops` / `custom`
+
+```ts
+{
+  x: number; y: number;           // 中心坐标（必填）
+  label: string;                  // 文字（必填）
+  w?: number; h?: number; rx?: number;
+  fill?: Color; stroke?: Color; textColor?: Color;
+  fontSize?: number; fontFamily?: string;
+  strokeWidth?: number;
+}
+```
+
+三者字段完全一致，区别只在于未指定字段时的默认值来源：
+
+| 分组        | 默认尺寸              | 默认配色                                               | 默认边框宽度 | 适用场景                                                             |
+| ----------- | --------------------- | ------------------------------------------------------ | ------------ | -------------------------------------------------------------------- |
+| `registers` | `RW/RH/RRX`（小圆角） | 浅底细边框，色相跟随 `--hue`                           | `2`          | 寄存器一类的小型固定值节点                                           |
+| `ops`       | `OW/OH/ORX`（大圆角） | 深一档底色 + 粗边框，色相在 `registers` 基础上偏移 45° | `2.5`        | ALU/运算类节点                                                       |
+| `custom`    | `CW/CH/CRX`           | 中性灰（不跟随 `--hue`，无语义倾向）                   | `2`          | 不属于上面两类、需要自己指定外观的节点；`fill`/`stroke` 建议显式传入 |
+
+三者都可以在单个元素上覆盖任意字段（包括新增的 `strokeWidth`），默认值只是兜底。
+
+##### 4.2 `lines`
+
+```ts
+{ x1: number; y1: number; x2: number; y2: number; color: Color; noArrow?: boolean }
+```
+
+##### 4.3 `polylines` / `paths`
+
+```ts
+// polylines
+{ points: [number, number][]; color: Color; noArrow?: boolean; dash?: number }
+// paths
+{ d: string; color: Color; noArrow?: boolean; dash?: number }
+```
+
+`dash` 取值 `0~1`，表示虚线中"空白段"占比（`0` = 实线，越接近 `1` 空白越多，内部会 clamp 到 `0.95`）。
+
+##### 4.4 `braces`
+
+```ts
+{
+  x1: number; y1: number; x2: number; y2: number;
+  side?: 'top' | 'bottom' | 'left' | 'right' | 'auto'; // 默认 auto：按跨度方向自动判断
+  color?: Color; strokeWidth?: number; dash?: number;
+  text?: string;                    // 默认不传，不渲染任何文字
+  textColor?: Color; fontSize?: number; fontFamily?: string;
+}
+```
+
+`text` 锚定在大括号中间突起的顶点（apex）外侧、留出固定间距处：水平大括号（`top`/`bottom`）文字水平居中，垂直大括号（`left`/`right`）文字垂直居中并朝远离大括号的方向对齐。不传 `text` 时不会渲染任何 `<text>` 元素。
+
+##### 4.5 `circles`
+
+```ts
+{ cx: number; cy: number; r?: number /* 默认 5 */; color: Color }
+```
+
+##### 4.6 `labels`
+
+```ts
+{ x: number; y: number; text: string; color?: Color; fontSize?: number; fontFamily?: string }
+```
+
+`y` 为文字基线坐标，组件不做垂直居中（与 `boxes`/`ops` 内部文字不同，那里内置了 `+5` 基线偏移）。
+
+#### 5. 导出常量
+
+| 常量                                           | 值                                                                               | 用途                                                                        |
+| ---------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `ORANGE` `GREEN` `TEAL` `BLUE` `PURPLE` `PINK` | 固定色相的 `oklch(...)` 字符串，色环上均匀间隔 60°（色相 70/130/190/250/310/10） | 需要与主题色相无关的固定强调色时使用（例如区分多路数据流）                  |
+| `AMBER` `LIME` `CYAN` `INDIGO` `VIOLET` `ROSE` | 与上面 6 个交错，色相 40/100/160/220/280/340                                     | 与原 6 色搭配使用时，两组合计 12 色在色环上均匀间隔 30°，可区分更多路数据流 |
+
+尺寸常量（`RW/RH/RRX`、`OW/OH/ORX`、`CW/CH/CRX`）和只服务于单一盒子风格的配色常量（`BOX_FILL/BOX_STROKE`、`OP_FILL/OP_STROKE`、`CUSTOM_FILL/CUSTOM_STROKE`）不再导出，已内联进组件内部的 `REGISTER_BOX`/`OP_BOX`/`CUSTOM_BOX` 定义——只有一个消费者的常量没必要单独拆出来。需要这些默认尺寸/配色时直接不传对应字段即可用上默认值，不需要（也拿不到）这些常量本身。
+
+#### 6. 深色模式
+
+- 组件挂载时同步读取 `document.documentElement` 是否带 `dark` class 作为初始值（避免 SSR/首帧闪烁）。
+- 之后通过 `MutationObserver` 监听 `<html class>` 变化，并监听 `prefers-color-scheme`（仅当 `localStorage.theme` 未设置或为 `'system'` 时生效）。
+- 所有 `{light, dark}` 颜色随主题切换自动重新渲染，无需手动传参。
+
+#### 7. 示例
+
+```mdx
 <DFD
-  client:load
-  boxes={[
-    { x: 76, y: 52, label: "%rax" },
-    { x: 196, y: 52, label: "%rdx" },
-    { x: 316, y: 52, label: "%xmm0" },
-  ]}
-  ops={[
-    { x: 432, y: 132, label: "load" },
-    { x: 432, y: 206, label: "mul" },
-    { x: 432, y: 280, label: "add" },
-    { x: 432, y: 352, label: "cmp" },
-  ]}
-  lines={[
-    { x1: 76, y1: 70, x2: 76, y2: 426, color: TEAL },
-    { x1: 196, y1: 132, x2: 388, y2: 132, color: TEAL },
-  ]}
-  polylines={[
+  width={400}
+  height={200}
+  registers={[{ x: 60, y: 100, label: "%rax" }]}
+  ops={[{ x: 200, y: 100, label: "ALU", fill: ORANGE }]}
+  custom={[
     {
-      points: [
-        [316, 70],
-        [316, 206],
-        [388, 206],
-      ],
-      color: PINK,
+      x: 340,
+      y: 100,
+      label: "cache",
+      w: 100,
+      h: 50,
+      rx: 12,
+      fill: TEAL,
+      stroke: TEAL,
+      strokeWidth: 1.5,
     },
   ]}
-  paths={[{ d: "M 476 216 C 518 216 518 196 476 196", color: PINK }]}
-  circles={[{ cx: 76, cy: 358, color: ORANGE }]}
+  lines={[{ x1: 100, y1: 100, x2: 156, y2: 100, color: BLUE }]}
+  labels={[{ x: 200, y: 40, text: "示意：寄存器 → ALU → 缓存" }]}
 />
 ```
 
-#### 坐标系
+#### 9. 扩展：把 `custom` 特化成可复用的预设风格
 
-SVG 采用**左上角原点**坐标系：
+`registers`/`ops` 本质上就是「`custom` + 一组固定默认值」。在组件内部改动之前，可以先在调用侧用同样的模式沉淀新风格，验证效果后再决定要不要把它提进组件。
 
-```
-(0,0) ────→ X 正方向
-  │
-  │
-  ↓
-Y 正方向
-```
-
-- `x` 属性：距画布**左边缘**的像素距离
-- `y` 属性：距画布**上边缘**的像素距离
-- 所有框和节点的 `x, y` 都是**中心点坐标**（组件会自动偏移一半宽高来定位矩形）
-
-示例——`{ x: 76, y: 52 }` 在画布左上角偏右 76px、偏下 52px 的位置。
-
-#### Props
-
-| Prop        | 类型                        | 默认值       | 说明                     |
-| ----------- | --------------------------- | ------------ | ------------------------ |
-| `width`     | `number`                    | `520`        | 画布宽度                 |
-| `height`    | `number`                    | `480`        | 画布高度                 |
-| `bg`        | `string \| { light, dark }` | 自动跟随主题 | 画布背景色               |
-| `ariaLabel` | `string`                    | `'数据流图'` | 无障碍标签               |
-| `boxes`     | `Box[]`                     | `[]`         | 寄存器风格矩形           |
-| `ops`       | `Op[]`                      | `[]`         | 运算节点风格矩形         |
-| `lines`     | `Line[]`                    | `[]`         | 直线（自动加箭头）       |
-| `polylines` | `Polyline[]`                | `[]`         | 折线（自动加箭头）       |
-| `paths`     | `Path[]`                    | `[]`         | 贝塞尔曲线（自动加箭头） |
-| `circles`   | `Circle[]`                  | `[]`         | 圆点                     |
-| `labels`    | `Label[]`                   | `[]`         | 纯文字标签（透明背景）   |
-
-#### 直线（lines）语法
-
-每条线默认自动加箭头。如果不需要箭头，加 `noArrow: true`：
-
-```svelte
-<DFD lines={[
-  { x1: 76, y1: 70, x2: 76, y2: 426, color: TEAL },
-  { x1: 196, y1: 132, x2: 388, y2: 132, color: TEAL, noArrow: true },
-]}/>
-```
-
-#### 折线（polylines）语法
-
-`points` 传入坐标点数组，依次连线：
-
-```svelte
-<DFD polylines={[
-  // L 型折线：起点 → 转折 → 终点
-  { points: [[316, 70], [316, 206], [388, 206]], color: RED },
-  // 多段折线
-  { points: [[432, 224], [432, 408], [316, 408], [316, 426]], color: RED, noArrow: true },
-]}/>
-```
-
-#### 路径（paths）语法
-
-`paths` 用于绘制曲线、自环等 SVG `<path>` 图形，`d` 属性直接写 SVG path 命令：
-
-| 命令                                          | 含义           | 示例                        |
-| --------------------------------------------- | -------------- | --------------------------- |
-| `M x y`                                       | 移动到 (x, y)  | `M 100 100`                 |
-| `L x y`                                       | 直线到 (x, y)  | `L 200 200`                 |
-| `C x1 y1 x2 y2 x y`                           | 三次贝塞尔曲线 | `C 150 100 250 100 200 200` |
-| `Q x1 y1 x y`                                 | 二次贝塞尔曲线 | `Q 150 100 200 200`         |
-| `A rx ry x-axis-rotation large-arc sweep x y` | 圆弧           | `A 30 30 0 0 1 100 100`     |
-
-示例——自环（三次贝塞尔曲线回到起点右侧）：
-
-```svelte
-<DFD paths={[
-  { d: "M 476 216 C 518 216 518 196 476 196", color: RED },
-]}/>
-```
-
-等价写法——起点 `M 476 216`，控制点 1 `518 216`，控制点 2 `518 196`，终点 `476 196`。<br>
-如果不需要箭头，加 `noArrow: true`：
-
-```svelte
-<DFD paths={[
-  { d: "M 100 100 Q 200 50 300 100", color: TEAL, noArrow: true },
-]}/>
-```
-
-#### 圆点（circles）语法
-
-```svelte
-<DFD circles={[
-  { cx: 76, cy: 358, r: 5, color: ORANGE },   // r 默认 5
-  { cx: 196, cy: 132, color: TEAL },            // 省略 r 则用 5
-]}/>
-```
-
-#### 文字标签（labels）语法
-
-透明背景、无边框的纯文字，常用于图注/标注：
-
-```svelte
-<DFD labels={[
-  // 基础：跟随主题色，默认字号 13
-  { x: 200, y: 100, text: "循环开始" },
-  // 自定义颜色和字号
-  { x: 200, y: 130, text: "关键路径",
-    color: "#e05252", fontSize: 16 },
-  // 使用导出色板常量
-  { x: 200, y: 160, text: "数据依赖", color: TEAL, fontSize: 14 },
-  // 自定义字体
-  { x: 200, y: 190, text: "标注",
-    fontFamily: "'Inter', sans-serif", fontSize: 12 },
-]}/>
-```
-
-每个 label 的属性：
-
-| 属性         | 类型                        | 默认值                            | 说明         |
-| ------------ | --------------------------- | --------------------------------- | ------------ |
-| `x`, `y`     | `number`                    | —                                 | 文字中心坐标 |
-| `text`       | `string`                    | —                                 | 显示内容     |
-| `color`      | `string \| { light, dark }` | 跟随主题文字色                    | 字体颜色     |
-| `fontSize`   | `number`                    | `13`                              | 字号         |
-| `fontFamily` | `string`                    | `'JetBrains Mono', monospace ...` | 字体         |
-
-#### 颜色系统
-
-颜色支持三种传入方式：
-
-- **固定色**：`"#FFA500"` — 深/浅模式保持同一颜色
-- **主题色**：`{ light: "#c47a00", dark: "#FFA500" }` — 分别指定两种模式下的颜色
-- **站点主题联动**：使用 `oklch(... var(--hue))` — 跟随用户在站点设置中选的主题色相
-
-第三种方式是默认行为——组件内置色板全部使用 `oklch()` + `var(--hue)`，当用户修改站点主题色相时，所有框、节点、连线的颜色会自动联动。`boxes` 和 `ops` 还通过 `calc(var(--hue) + 45)` 做了色相偏移以保持视觉区分度。
-
-示例：自定义一个始终为绿色的框
-
-```svelte
-<DFD boxes={[
-  { x: 100, y: 100, label: "常量",
-    fill: "#d4edda", stroke: "#28a745", textColor: "#155724" }
-]}/>
-```
-
-示例：自定义一个跟随主题切换的框
-
-```svelte
-<DFD boxes={[
-  { x: 100, y: 100, label: "动态",
-    fill: { light: "#fff3cd", dark: "#3d2e00" },
-    stroke: { light: "#ffc107", dark: "#ffab00" } }
-]}/>
-```
-
-示例：使用 oklch 跟随站点主题色相
-
-```svelte
-<DFD boxes={[
-  { x: 100, y: 100, label: "跟随主题",
-    fill: "oklch(0.92 0.05 var(--hue))",
-    stroke: "oklch(0.55 0.18 var(--hue))" }
-]}/>
-```
-
-#### 导出色板常量
-
-组件导出以下常量，可在 MDX 中直接引用：
-
-| 常量       | 值                     | 用途                         |
-| ---------- | ---------------------- | ---------------------------- |
-| `ORANGE`   | `oklch(0.65 0.18 70)`  | 主线色                       |
-| `GREEN`    | `oklch(0.65 0.15 130)` | 辅助线色（偏移 60°）         |
-| `TEAL`     | `oklch(0.60 0.20 250)` | 运算数据流色（偏移 120°）    |
-| `BLUE`     | `oklch(0.60 0.15 310)` | 控制/元数据流色（偏移 180°） |
-| `PURPLE`   | `oklch(0.70 0.18 370)` | 地址/内存流色（偏移 240°）   |
-| `PINK`     | `oklch(0.65 0.15 430)` | 特殊/异常流色（偏移 300°）   |
-| `RW`, `RH` | `80`, `36`             | 寄存器盒宽高                 |
-| `RRX`      | `4`                    | 寄存器盒圆角半径             |
-| `OW`, `OH` | `88`, `36`             | 运算节点宽高                 |
-| `ORX`      | `10`                   | 运算节点圆角半径             |
-
-#### 颜色不随主题变化
-
-如果希望某个元素在深/浅模式下颜色一致，直接传 hex 字符串即可，不要用 `{ light, dark }` 对象。
-
-#### 去掉箭头
-
-每条线默认自动加箭头。如果某条线不需要箭头，加 `noArrow: true`：
-
-```svelte
-<DFD lines={[
-  { x1: 0, y1: 0, x2: 100, y2: 0, color: TEAL, noArrow: true },
-]}/>
-```
-
-#### 添加新的框格风格
-
-如需新增一类矩形（比如"内存块"），复制 `boxes`/`ops` 的渲染逻辑即可。打开 `DataFlowDiagram.svelte`，在 `<script>` 中新增色板常量：
+##### 9.1 数据层：定义默认值 + 合并函数
 
 ```js
-const MEM_FILL = { light: "#e8e8ff", dark: "#1a1a3e" };
-const MEM_STROKE = { light: "#6366f1", dark: "#818cf8" };
+// presets/cacheBox.js
+import { TEAL } from "../components/DataFlowDiagram.svelte";
+
+// 风格定义：字段名与 registers/ops 完全一致（w/h/rx/fill/stroke/textColor/strokeWidth...）
+export const CACHE_BOX = {
+  w: 100,
+  h: 50,
+  rx: 12,
+  fill: TEAL,
+  stroke: TEAL,
+  strokeWidth: 1.5,
+};
+
+// 合并函数：单个节点的显式字段优先，缺省字段回退到风格默认值
+// （与组件内部 normalizeBox 的合并顺序保持一致）
+export function withPreset(items, preset) {
+  return items.map((item) => ({ ...preset, ...item }));
+}
 ```
 
-然后在模板中新增 `{#each}`：
+##### 9.2 调用层：喂给 `custom`
 
-```svelte
-<!-- memory blocks -->
-{#each mems as m}
-  <g>
-    <rect x={m.x - (m.w ?? RW)/2} y={m.y - (m.h ?? RH)/2}
-      width={m.w ?? RW} height={m.h ?? RH} rx={4}
-      fill={resolve(m.fill ?? MEM_FILL)}
-      stroke={resolve(m.stroke ?? MEM_STROKE)} stroke-width="2"
-    />
-    <text x={m.x} y={m.y + 5} text-anchor="middle"
-      font-family="'Courier New', monospace" font-size="13"
-      fill={resolve(m.textColor ?? TEXT)}>{m.label}</text>
-  </g>
-{/each}
+```mdx
+import DFD from "../components/DataFlowDiagram.svelte";
+import { CACHE_BOX, withPreset } from "../presets/cacheBox.js";
+
+<DFD
+  custom={withPreset(
+    [
+      { x: 340, y: 100, label: "L1 cache" },
+      { x: 340, y: 160, label: "L2 cache" },
+    ],
+    CACHE_BOX,
+  )}
+/>
 ```
 
-然后在 Props 中新增 `mems` 属性，MDX 中即可使用 `mems={[...]}`。
+调用方只需要写 `x/y/label`，风格细节（尺寸、配色、边框宽度）统一由 `CACHE_BOX` 决定，效果与内置的 `registers`/`ops` 一致。
+
+##### 9.3 如果这个风格用得足够多：提进组件
+
+等某个预设风格（比如上面的 cache）在多篇笔记里反复出现，值得把它提升为组件内置的第三个"一等公民" prop，做法是照抄 `ops` 的模式：
+
+1. 仿照 `REGISTER_BOX`/`OP_BOX` 的写法，在组件内直接定义一个内联的 `CACHE_BOX = { w, h, rx, fill: {light,dark}, stroke: {light,dark}, strokeWidth }` 默认值对象——尺寸和配色都写在这一处，不需要额外导出常量（参考 §5 的做法：只服务于单一风格的值直接内联）。
+
+2. 新增 `cache = []` prop，`let cacheBoxes = $derived(cache.map((b) => normalizeBox(b, CACHE_BOX)))`。
+3. 模板里加一段 `{#each cacheBoxes as c}{@render nodeBox(c)}{/each}`。
+
+因为 `normalizeBox`/`nodeBox` 已经是通用的，新增一个预设风格只需要重复这三步，不需要改渲染逻辑本身。

@@ -10,16 +10,20 @@ lang: "zh_CN"
 ---
 
 import DFD, {
-  ORANGE,
-  GREEN,
-  TEAL,
-  BLUE,
-  PURPLE,
+  WHITE,
+  BLACK,
   PINK,
-  RW,
-  RH,
-  OW,
-  OH,
+  AMBER,
+  ORANGE,
+  LIME,
+  GREEN,
+  CYAN,
+  TEAL,
+  INDIGO,
+  BLUE,
+  VIOLET,
+  PURPLE,
+  ROSE,
 } from "@/components/custom/DataFlowDiagram.svelte";
 
 # 第一部分 基础概念
@@ -470,7 +474,7 @@ void combine4(vec_ptr v, data_t *dest){
   client:load
   width={520}
   height={550}
-  boxes={[
+  registers={[
     // 顶部寄存器 ( 底边 y = 70 )
     { x: 76, y: 52, label: "%rax" },
     { x: 196, y: 52, label: "%rdx" },
