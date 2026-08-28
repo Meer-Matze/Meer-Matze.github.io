@@ -3,7 +3,7 @@
   // 色环上均匀拉开 30°（固定色相，避免 calc() 在 SSR 中解析失败）
   export const WHITE  = 'oklch(0.95 0.020 var(--hue))';
   export const BLACK  = 'oklch(0.12 0.020 var(--hue))';
-  
+
   export const PINK   = 'oklch(0.65 0.15 10)';
   export const AMBER  = 'oklch(0.70 0.16 40)';
   export const ORANGE = 'oklch(0.65 0.18 70)';
@@ -17,15 +17,11 @@
   export const PURPLE = 'oklch(0.70 0.18 310)';
   export const ROSE   = 'oklch(0.65 0.18 340)';
 
-  // 改动记录：
-  // - 已删除未使用的 Box / RegisterBox / OpBox / Brace 导出类
-  // - 原 `boxes` prop 更名为 `registers`；新增 `custom` prop（完全自定义盒子）
-  // - RW/RH/RRX/OW/OH/ORX/CW/CH/CRX 这些只服务于单一盒子风格的尺寸常量，
-  //   以及 BOX_FILL/BOX_STROKE、OP_FILL/OP_STROKE、CUSTOM_FILL/CUSTOM_STROKE 这些
-  //   只服务于单一盒子风格的配色常量，均已内联进各自的 REGISTER_BOX/OP_BOX/CUSTOM_BOX
-  //   定义里，不再单独导出或声明——没有第二处引用的常量没必要拆出来
-  // - braces 新增 text/textColor/fontSize/fontFamily：文字锚定在大括号突起的顶点
-  //   （apex）外侧，默认不传 text 则不渲染任何文字
+  // 导出字体
+  export const FONT_MATH = "Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif";
+  export const FONT_SERIF = "'Times New Roman', 'Songti SC', 'SimSun', serif";
+  export const FONT_SANS  = "Misans, 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif";
+  export const FONT_MONO = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
 </script>
 
 <script>
@@ -85,11 +81,11 @@
     return dark ? c.dark : c.light;
   }
 
-  // ── 跨多种元素共用的默认色板 ──
+  // ── 默认常量 ──
   const BG   = { light: 'oklch(0.95 0.020 var(--hue))', dark: 'oklch(0.17 0.020 var(--hue))' };
-  const TEXT = { light: 'oklch(0.20 0.01 var(--hue))', dark: 'oklch(0.85 0.01 var(--hue))' };
+  const TEXT_COLOR = { light: 'oklch(0.20 0.01 var(--hue))', dark: 'oklch(0.85 0.01 var(--hue))' };
   const FONT_SIZE = 13;
-  const FONT_FAMILY = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+  const FONT_STYLE = 'normal';
   const BRACE_STROKE_WIDTH = 2.5;
 
   // ── 各盒子风格的默认值：尺寸/配色只服务于单一风格，直接内联，不再单独拆常量 ──
@@ -110,7 +106,7 @@
   const CUSTOM_BOX = {
     w: 88, h: 40, rx: 8,
     // 中性灰，不跟随 --hue，不带任何预设语义——用户不传 fill/stroke 时也只得到一个不抢眼的盒子
-    fill:   { light: 'oklch(0.94 0 0)', dark: 'oklch(0.24 0 0)' },
+    fill:   BG,
     stroke: { light: 'oklch(0.65 0 0)', dark: 'oklch(0.55 0 0)' },
     strokeWidth: 2,
   };
@@ -134,9 +130,9 @@
       rx: box.rx ?? defaults.rx,
       fill: resolve(box.fill ?? defaults.fill),
       stroke: resolve(box.stroke ?? defaults.stroke),
-      textColor: resolve(box.textColor ?? TEXT),
+      textColor: resolve(box.textColor ?? TEXT_COLOR),
       fontSize: box.fontSize ?? FONT_SIZE,
-      fontFamily: box.fontFamily ?? FONT_FAMILY,
+      fontFamily: box.fontFamily ?? FONT_MONO,
       strokeWidth: box.strokeWidth ?? defaults.strokeWidth,
       label: box.label,
     };
@@ -150,14 +146,14 @@
       x2: brace.x2,
       y2: brace.y2,
       side: brace.side ?? 'auto',
-      color: resolve(brace.color ?? TEXT),
+      color: resolve(brace.color ?? TEXT_COLOR),
       strokeWidth: brace.strokeWidth ?? BRACE_STROKE_WIDTH,
       dash: brace.dash ?? 0,
       // 默认无内容：不传 text 时不渲染任何文字
       text: brace.text,
-      textColor: resolve(brace.textColor ?? TEXT),
+      textColor: resolve(brace.textColor ?? TEXT_COLOR),
       fontSize: brace.fontSize ?? FONT_SIZE,
-      fontFamily: brace.fontFamily ?? FONT_FAMILY,
+      fontFamily: brace.fontFamily ?? FONT_MONO,
       labelX: label.x,
       labelY: label.y,
       labelAnchor: label.anchor,
@@ -271,7 +267,7 @@
   xmlns="http://www.w3.org/2000/svg"
   role="img"
   aria-label={ariaLabel}
-  style="background:{resolve(bg ?? BG)}; width:100%; max-width:{width}px; display:block; border-radius:8px;"
+  style="background:{resolve(bg ?? BG)}; width:100%; max-width:{width}px; display:block; margin: 0 auto; border-radius:8px;"
 >
   <defs>
     {#each markerColors as color}
@@ -285,6 +281,21 @@
       </marker>
     {/each}
   </defs>
+
+  <!-- registers（寄存器风格） -->
+  {#each registerBoxes as b}
+    {@render nodeBox(b)}
+  {/each}
+
+  <!-- ops（运算节点风格） -->
+  {#each opBoxes as o}
+    {@render nodeBox(o)}
+  {/each}
+
+  <!-- custom（完全自定义盒子，无预设语义配色，w/h/rx/fill/stroke/strokeWidth 均可自由覆盖） -->
+  {#each customBoxes as c}
+    {@render nodeBox(c)}
+  {/each}
 
   <!-- lines -->
   {#each normalizedLines as { x1, y1, x2, y2, color, noArrow = false }}
@@ -343,28 +354,14 @@
     <circle {cx} {cy} {r} fill={color} />
   {/each}
 
-  <!-- registers（寄存器风格） -->
-  {#each registerBoxes as b}
-    {@render nodeBox(b)}
-  {/each}
-
-  <!-- ops（运算节点风格） -->
-  {#each opBoxes as o}
-    {@render nodeBox(o)}
-  {/each}
-
-  <!-- custom（完全自定义盒子，无预设语义配色，w/h/rx/fill/stroke/strokeWidth 均可自由覆盖） -->
-  {#each customBoxes as c}
-    {@render nodeBox(c)}
-  {/each}
-
   <!-- labels（纯文字，无背景和边框） -->
   {#each labels as l}
     <text
       x={l.x} y={l.y} text-anchor="middle"
-      font-family={l.fontFamily ?? FONT_FAMILY}
+      font-family={l.fontFamily ?? FONT_MONO}
       font-size={l.fontSize ?? FONT_SIZE}
-      fill={resolve(l.color ?? TEXT)}
+      font-style={l.fontStyle ?? FONT_STYLE}
+      fill={resolve(l.color ?? TEXT_COLOR)}
     >
       {l.text}
     </text>
