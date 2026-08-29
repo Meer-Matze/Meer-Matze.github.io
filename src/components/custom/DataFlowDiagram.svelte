@@ -150,7 +150,7 @@
       strokeWidth: brace.strokeWidth ?? BRACE_STROKE_WIDTH,
       dash: brace.dash ?? 0,
       // 默认无内容：不传 text 时不渲染任何文字
-      text: brace.text,
+      label: brace.label,
       textColor: resolve(brace.textColor ?? TEXT_COLOR),
       fontSize: brace.fontSize ?? FONT_SIZE,
       fontFamily: brace.fontFamily ?? FONT_MONO,
@@ -175,6 +175,12 @@
 
   function normalizeCircle(c) {
     return { ...c, color: resolve(c.color) };
+  }
+
+  function splitBoxLabel(label) {
+    return String(label ?? '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .split(/\r?\n/);
   }
 
   // ── 大括号 ──
@@ -328,6 +334,9 @@
 
   <!-- braces（大括号） -->
   {#each braceItems as brace}
+    {@const lines = splitBoxLabel(brace.label)}
+    {@const lineHeight = Math.round(brace.fontSize * 1.2)}
+    {@const offsetY = ((lines.length - 1) * lineHeight) / 2}
     <path
       d={bracePath(brace)}
       stroke={brace.color}
@@ -338,13 +347,15 @@
       pathLength="1"
       stroke-dasharray={normalizeDashRatio(brace.dash)}
     />
-    {#if brace.text}
+    {#if brace.label}
       <text
-        x={brace.labelX} y={brace.labelY} text-anchor={brace.labelAnchor}
+        x={brace.labelX} y={brace.labelY - offsetY} text-anchor={brace.labelAnchor}
         font-family={brace.fontFamily} font-size={brace.fontSize}
         fill={brace.textColor}
       >
-        {brace.text}
+        {#each lines as line, index}
+          <tspan x={brace.labelX} y={brace.labelY - offsetY + index * lineHeight}>{line}</tspan>
+        {/each}
       </text>
     {/if}
   {/each}
@@ -356,20 +367,28 @@
 
   <!-- labels（纯文字，无背景和边框） -->
   {#each labels as l}
+    {@const lines = splitBoxLabel(l.text)}
+    {@const lineHeight = Math.round((l.fontSize ?? FONT_SIZE) * 1.2)}
+    {@const offsetY = ((lines.length - 1) * lineHeight) / 2}
     <text
-      x={l.x} y={l.y} text-anchor="middle"
+      x={l.x} y={l.y - offsetY} text-anchor="middle"
       font-family={l.fontFamily ?? FONT_MONO}
       font-size={l.fontSize ?? FONT_SIZE}
       font-style={l.fontStyle ?? FONT_STYLE}
       fill={resolve(l.color ?? TEXT_COLOR)}
     >
-      {l.text}
+      {#each lines as line, index}
+        <tspan x={l.x} y={l.y - offsetY + index * lineHeight}>{line}</tspan>
+      {/each}
     </text>
   {/each}
 </svg>
 
 <!-- registers/ops/custom 渲染结构一致，仅默认值不同，提取为共享 snippet -->
 {#snippet nodeBox(item)}
+  {@const lines = splitBoxLabel(item.label)}
+  {@const lineHeight = Math.round(item.fontSize * 1.2)}
+  {@const offsetY = ((lines.length - 1) * lineHeight) / 2}
   <g>
     <rect
       x={item.x - item.w / 2} y={item.y - item.h / 2}
@@ -379,11 +398,13 @@
       stroke-width={item.strokeWidth}
     />
     <text
-      x={item.x} y={item.y + 5} text-anchor="middle"
+      x={item.x} y={item.y - offsetY + 5} text-anchor="middle"
       font-family={item.fontFamily} font-size={item.fontSize}
       fill={item.textColor}
     >
-      {item.label}
+      {#each lines as line, index}
+        <tspan x={item.x} y={item.y - offsetY + 5 + index * lineHeight}>{line}</tspan>
+      {/each}
     </text>
   </g>
 {/snippet}

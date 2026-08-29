@@ -669,6 +669,185 @@ MMU 翻译每个虚拟地址时还会更新两个内核缺页处理程序会用�
 
 Linux 为每个进程维护一个单独的虚拟地址空间，包括代码、数据、堆、共享库以及栈段，内核虚拟内存位于用户栈之上。内核虚拟内存包含内核中的代码和数据结构，部分区域被映射到所有进程共享的物理页面（如内核代码和全局数据结构）。Linux 还把一组连续的虚拟页面（大小等于系统 DRAM 总量）映射到相应的一组连续物理页面，为内核提供便利的方式来访问物理内存中任何特定位置——例如访问页表，或对映射到特定物理内存位置的设备执行内存映射 I/O。
 
+<DFD
+  client:load
+  width={800}
+  height={680}
+  custom={[
+    {
+      x: 400,
+      y: 60,
+      label: "与进程相关的数据结构<br>（例如，页表、task和 mm结构，内核栈）",
+      w: 380,
+      h: 100,
+      rx: 1,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 140,
+      label: "物理内存",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 200,
+      label: "内核代码和数据",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 245,
+      label: "用户栈",
+      w: 380,
+      h: 30,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 295,
+      w: 380,
+      h: 70,
+      rx: 0,
+      stroke: VIOLET,
+      fill: "oklch(0.30 0.8 225 / .25)",
+    },
+    {
+      x: 400,
+      y: 360,
+      label: "共享库的内存映射区域",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 430,
+      w: 380,
+      h: 80,
+      rx: 0,
+      stroke: VIOLET,
+      fill: "oklch(0.30 0.8 225 / .25)",
+    },
+    {
+      x: 400,
+      y: 500,
+      label: "运行时堆<br>（malloc分配的）",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 545,
+      label: "未初始化的数据段（.bss）",
+      w: 380,
+      h: 30,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 575,
+      label: "初始化的数据段（.data）",
+      w: 380,
+      h: 30,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 605,
+      label: "代码段（.text）",
+      w: 380,
+      h: 30,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 640,
+      w: 380,
+      h: 40,
+      rx: 0,
+      stroke: VIOLET,
+      fill: "oklch(0.30 0.8 225 / .25)",
+    },
+  ]}
+  lines={[
+    { x1: 180, y1: 260, x2: 210, y2: 260, color: ROSE }, //rsp
+    { x1: 180, y1: 470, x2: 210, y2: 470, color: ROSE }, //brk
+    { x1: 180, y1: 620, x2: 210, y2: 620, color: ROSE }, //0x40000000
+    { x1: 400, y1: 260, x2: 400, y2: 285, color: VIOLET },
+    { x1: 400, y1: 330, x2: 400, y2: 305, color: VIOLET },
+    { x1: 400, y1: 470, x2: 400, y2: 435, color: VIOLET },
+  ]}
+  braces={[
+    {
+      x1: 200,
+      y1: 12,
+      x2: 200,
+      y2: 108,
+      side: "left",
+      color: ORANGE,
+      label: "对每个进程<br>都不相同",
+      fontSize: 18,
+    },
+    {
+      x1: 200,
+      y1: 112,
+      x2: 200,
+      y2: 228,
+      side: "left",
+      color: ORANGE,
+      label: "对每个进程<br>都一样",
+      fontSize: 18,
+    },
+    {
+      x1: 600,
+      y1: 12,
+      x2: 600,
+      y2: 228,
+      color: ORANGE,
+      label: "内核虚拟内存",
+      fontSize: 18,
+    },
+    {
+      x1: 600,
+      y1: 232,
+      x2: 600,
+      y2: 658,
+      color: ORANGE,
+      label: "进程虚拟内存",
+      fontSize: 18,
+    },
+  ]}
+  labels={[
+    { x: 155, y: 265, text: "%rsp", fontSize: 18 },
+    { x: 160, y: 475, text: "brk", fontSize: 18 },
+    { x: 120, y: 625, text: "0x40000000", fontSize: 18 },
+    { x: 195, y: 665, text: "0", fontSize: 18 },
+  ]}
+/>
+
 **Linux 虚拟内存区域**：Linux 将虚拟内存组织成一些**区域**（area，也叫段）的集合，一个区域是已经存在的（已分配的）虚拟内存连续片，这些页以某种方式相关联，例如代码段、数据段、堆、共享库段、用户栈。区域的概念很重要，因为它允许虚拟地址空间有间隙——内核不用记录不存在的虚拟页，这样的页不占用任何额外资源。
 
 内核为每个进程维护一个 `task_struct`，其中一个条目指向 `mm_struct`，描述虚拟内存的当前状态。感兴趣的两个字段：`pgd` 指向第一级页表（页全局目录）的基址；`mmap` 指向一个 `vm_area_struct`（区域结构）的链表，每个描述当前虚拟地址空间的一个区域。区域结构包含 `vm_start`（起始处）、`vm_end`（结束处）、`vm_prot`（读写权限）、`vm_flags`（是否与其他进程共享）、`vm_next`（下一区域结构）等字段。

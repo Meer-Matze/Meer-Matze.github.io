@@ -117,7 +117,20 @@ type Color = string | { light: string; dark: string };
 }
 ```
 
-`text` 锚定在大括号中间突起的顶点（apex）外侧、留出固定间距处：水平大括号（`top`/`bottom`）文字水平居中，垂直大括号（`left`/`right`）文字垂直居中并朝远离大括号的方向对齐。不传 `text` 时不会渲染任何 `<text>` 元素。
+`text` 锚定在大括号中间突起的顶点（apex）外侧、留出固定间距处：水平大括号（`top`/`bottom`）文字水平居中，垂直大括号（`left`/`right`）文字垂直居中并朝远离大括号的方向对齐。不传 `text` 时不会渲染任何 `<text>` 元素。`text` 也支持换行，可以直接写真实换行或 `<br>`。
+
+```mdx
+braces={[
+{
+x1: 100,
+y1: 80,
+x2: 100,
+y2: 220,
+side: 'right',
+text: '第一行\n第二行',
+},
+]}
+```
 
 ##### 4.5 `circles`
 
@@ -131,7 +144,14 @@ type Color = string | { light: string; dark: string };
 { x: number; y: number; text: string; color?: Color; fontSize?: number; fontFamily?: string; fontStyle?: string }
 ```
 
-`y` 为文字基线坐标，组件不做垂直居中（与 `boxes`/`ops` 内部文字不同，那里内置了 `+5` 基线偏移）。
+`text` 支持换行。可以直接写真实换行，也可以写 `<br>`；组件会按行拆开渲染。`y` 仍然是文字基线附近的参考坐标。
+
+```mdx
+labels={[
+{ x: 200, y: 40, text: "第一行\n第二行" },
+{ x: 200, y: 90, text: "高缓存命中率<br>低访存开销" },
+]}
+```
 
 #### 5. 导出常量
 
