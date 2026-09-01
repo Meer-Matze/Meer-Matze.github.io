@@ -117,8 +117,7 @@
   }
 
   function normalizeDashRatio(dash = 0) {
-    const ratio = clamp(dash, 0, 0.95);
-    return ratio > 0 ? `${1 - ratio} ${ratio}` : undefined;
+    return dash > 0 ? `${16 * dash} ${16 * dash}` : undefined;
   }
 
   function normalizeBox(box, defaults) {
@@ -304,9 +303,10 @@
   {/each}
 
   <!-- lines -->
-  {#each normalizedLines as { x1, y1, x2, y2, color, noArrow = false }}
+  {#each normalizedLines as { x1, y1, x2, y2, color, noArrow = false, dash = 0 }}
     <line {x1} {y1} {x2} {y2}
       stroke={color} stroke-width="2"
+      stroke-dasharray={normalizeDashRatio(dash)}
       marker-end={color && !noArrow ? 'url(#' + mid(color) + ')' : undefined}
     />
   {/each}

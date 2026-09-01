@@ -91,8 +91,10 @@ type Color = string | { light: string; dark: string };
 ##### 4.2 `lines`
 
 ```ts
-{ x1: number; y1: number; x2: number; y2: number; color: Color; noArrow?: boolean }
+{ x1: number; y1: number; x2: number; y2: number; color: Color; noArrow?: boolean; dash?: number }
 ```
+
+`dash` 取值 `0~1`，和 `polylines` / `paths` 一致：`0` 表示实线，越接近 `1` 虚线间隔越大（内部 clamp 到 `0.95`）。
 
 ##### 4.3 `polylines` / `paths`
 
