@@ -2,25 +2,23 @@ import type { MusicPlayerConfig } from "../types/musicConfig";
 
 // 音乐播放器配置
 export const musicPlayerConfig: MusicPlayerConfig = {
-  // 禁用音乐播放器方法：
-  // 模板默认侧边栏和导航栏两个都显示
-  // 1. 侧边栏：在sidebarConfig.ts侧边栏配置把音乐组件enable设为false禁用即可
-  // 2. 导航栏：在本配置文件把showInNavbar设为false禁用即可
-
   // 是否在导航栏显示音乐播放器入口
   showInNavbar: false,
 
+  // 是否在侧边栏显示音乐播放器组件
+  showInSidebar: false,
+
   // 使用方式："meting" 使用 Meting API，"local" 使用本地音乐列表
-  mode: "meting",
+  mode: "local",
 
   // 默认音量 (0-1)
   volume: 0.7,
 
   // 播放模式：'list'=列表循环, 'one'=单曲循环, 'random'=随机播放
-  playMode: "one",
+  playMode: "list",
 
   // 是否显启用歌词
-  showLyrics: true,
+  showLyrics: false,
 
   // Meting API 配置
   meting: {
