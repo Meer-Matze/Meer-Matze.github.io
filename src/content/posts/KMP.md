@@ -4,7 +4,8 @@ published: 2026-04-01
 description: "KMP算法的解释和实现"
 image: ""
 tags: [字符串]
-category: "算法"
+category: "数据结构与算法"
+series: "算法"
 draft: false
 lang: "zh_CN"
 ---

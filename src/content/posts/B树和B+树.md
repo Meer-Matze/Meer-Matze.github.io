@@ -4,7 +4,8 @@ published: 2026-07-23
 description: "B树和B+树的定义、性质、操作及应用"
 image: ""
 tags: [树]
-category: "数据结构"
+category: "数据结构与算法"
+series: "数据结构"
 draft: false
 lang: "zh_CN"
 ---

@@ -4,7 +4,8 @@ published: 2026-03-31
 description: "ST表的使用心得"
 image: ""
 tags: [ST表]
-category: "数据结构"
+category: "数据结构与算法"
+series: "数据结构"
 draft: false
 lang: ""
 ---

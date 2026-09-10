@@ -4,7 +4,8 @@ published: 2026-09-08
 description: "Unix I/O 模型、基本文件操作、健壮 I/O 与元数据"
 image: ""
 tags: [计算机原理]
-category: "CSAPP"
+category: "计算机基础"
+series: "CSAPP"
 draft: false
 lang: "zh_CN"
 ---
@@ -68,28 +69,6 @@ $$
 其他文件类型包含**命名通道**（named pipe）、 **符号链接**（symbolic link），以及**字符和块设备**（character and block device），这些不在本书的讨论范畴。
 
 Linux 内核将所有文件都组织成一个**目录层次结构**（directory hierarchy），由名为 /（斜杠）的**根目录**确定。系统中的每个文件都是根目录的直接或间接的后代。图 10-1 显示了 Linux 系统的目录层次结构的一部分。
-
-```mermaid
-treeView-beta
-    bin/
-        bash
-    dev/
-        ttyl
-    etc/
-        group
-        passwd/
-    home/
-        droh/
-            hello.c
-        bryant/
-    usr/
-        include/
-            stdio.h
-            sys/
-                unistd.h
-        bin/
-            vim
-```
 
 作为其上下文的一部分，每个进程都有一个**当前工作目录**（current working directory）来确定其在目录层次结构中的当前位置。你可以用 cd 命令来修改 shell 中的当前工作目录。
 
