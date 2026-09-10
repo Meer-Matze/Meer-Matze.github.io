@@ -39,7 +39,7 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
     //   "original" - 使用各语言图标的原始品牌色（如JS黄色、TS蓝色等）
     //   "theme"    - 使用代码块前景色
     //   "#ff6600"  - 自定义十六进制颜色值
-    color: "mono",
+    color: "original",
     // 需要排除的语言列表（这些语言不会显示Logo）
     excludedLangs: [],
   },
