@@ -70,7 +70,7 @@ $$
 Linux 内核将所有文件都组织成一个**目录层次结构**（directory hierarchy），由名为 /（斜杠）的**根目录**确定。系统中的每个文件都是根目录的直接或间接的后代。图 10-1 显示了 Linux 系统的目录层次结构的一部分。
 
 ```mermaid
-treeView
+treeView-beta
     bin/
         bash
     dev/
