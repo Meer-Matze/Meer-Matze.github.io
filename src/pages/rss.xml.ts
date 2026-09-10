@@ -9,24 +9,24 @@ import pkg from "../../package.json";
 export const prerender = true;
 
 export async function GET(context: APIContext): Promise<Response> {
-  const includeContent = (siteConfig.feed?.contentMode ?? "full") === "full";
-  const blog = await getSortedPosts();
-  const entries = await renderFeedEntries(blog, { includeContent });
-  const feedItems: RSSFeedItem[] = entries.map((entry) => ({
-    title: entry.title,
-    pubDate: entry.published,
-    description: entry.description,
-    link: entry.link,
-    ...(includeContent ? { content: entry.content } : {}),
-  }));
-  return rss({
-    title: siteConfig.title,
-    description: siteConfig.subtitle || "No description",
-    site: context.site ?? "https://firefly.cuteleaf.cn",
-    customData: `<templateTheme>Firefly</templateTheme>
+	const includeContent = (siteConfig.feed?.contentMode ?? "full") === "full";
+	const blog = await getSortedPosts();
+	const entries = await renderFeedEntries(blog, { includeContent });
+	const feedItems: RSSFeedItem[] = entries.map((entry) => ({
+		title: entry.title,
+		pubDate: entry.published,
+		description: entry.description,
+		link: entry.link,
+		...(includeContent ? { content: entry.content } : {}),
+	}));
+	return rss({
+		title: siteConfig.title,
+		description: siteConfig.subtitle || "No description",
+		site: context.site ?? "https://firefly.cuteleaf.cn",
+		customData: `<templateTheme>Firefly</templateTheme>
 		<templateThemeVersion>${pkg.version}</templateThemeVersion>
 		<templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl>
 		<lastBuildDate>${formatDateI18nWithTime(new Date())}</lastBuildDate>`,
-    items: feedItems,
-  });
+		items: feedItems,
+	});
 }

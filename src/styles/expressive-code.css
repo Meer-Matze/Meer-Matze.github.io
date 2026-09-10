@@ -66,10 +66,10 @@
 
 /* ec-lang-logo 亮暗色适配 - 覆盖插件默认的 data-theme=light/dark 选择器 */
 /* 项目使用 data-theme='one-dark-pro' / data-theme='one-light' 作为主题标识 */
-html[data-theme="one-light"] {
+html[data-theme='one-light'] {
   --ec-lang-logo: #111;
 }
-html[data-theme="one-dark-pro"] {
+html[data-theme='one-dark-pro'] {
   --ec-lang-logo: #fff;
 }
 
@@ -147,6 +147,7 @@ body.wallpaper-transparent .expressive-code .ec-collapse__gradient {
 .rehype-code-group .rcg-block > .expressive-code {
   margin: 0 !important;
 }
+
 
 /* ===== 代码块复制按钮 ===== */
 /*

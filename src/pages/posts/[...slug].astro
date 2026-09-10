@@ -669,6 +669,7 @@ const seriesData = await getSeriesPosts(entry);
           if (textEl && textEl.dataset.template) {
             textEl.textContent = `，${textEl.dataset.template.replace("{days}", daysDiff.toString())}`;
           }
+
           const warningEl = document.getElementById('outdated-warning');
           if (warningEl) {
             warningEl.classList.remove('hidden');
