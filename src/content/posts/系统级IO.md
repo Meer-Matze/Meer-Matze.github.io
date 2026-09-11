@@ -133,43 +133,48 @@ int open(char *filename, int flags, mode_t mode);
 
 `open` 把 `filename` 转换成一个描述符，返回的描述符通常是当前最小未使用的描述符值。
 
-`flags` 指定访问方式：`O_RDONLY`（只读）、`O_WRONLY`（只写）、`O_RDWR`（可读可写）。还可以和以下标志组合：`O_CREAT`（文件不存在则创建）、`O_TRUNC`（打开时截断已有文件）、`O_APPEND`（每次写时都写到文件末尾）。
+- `flags` 指定访问方式：
+  - `O_RDONLY`（只读）
+  - `O_WRONLY`（只写）
+  - `O_RDWR`（可读可写）
+  - `O_CREAT`（文件不存在则创建）
+  - `O_TRUNC`（打开时截断已有文件）
+  - `O_APPEND`（每次写时都写到文件末尾）。
+    > [!example]
+    >
+    > ```c
+    > fd = Open("foo.txt", O_RDONLY, 0);               /* 只读打开 */
+    > fd = Open("foo.txt", O_WRONLY | O_APPEND, 0);    /* 只写打开，写入时追加到末尾 */
+    > ```
+- `mode` 仅在创建新文件时生效，指定访问权限位：
 
-`mode` 仅在创建新文件时生效，指定访问权限位：
+  |   掩码    | 含义                   |
+  | :-------: | ---------------------- |
+  | `S_IRUSR` | 拥有者可读             |
+  | `S_IWUSR` | 拥有者可写             |
+  | `S_IXUSR` | 拥有者可执行           |
+  | `S_IRGRP` | 拥有者所在组成员可读   |
+  | `S_IWGRP` | 拥有者所在组成员可写   |
+  | `S_IXGRP` | 拥有者所在组成员可执行 |
+  | `S_IROTH` | 其他用户可读           |
+  | `S_IWOTH` | 其他用户可写           |
+  | `S_IXOTH` | 其他用户可执行         |
 
-```c
-fd = Open("foo.txt", O_RDONLY, 0);               /* 只读打开 */
-fd = Open("foo.txt", O_WRONLY | O_APPEND, 0);    /* 只写打开，写入时追加到末尾 */
-```
+  > [!note]
+  > 这组权限位在 `sys/stat.h` 中定义。文件权限并不是绝对安全机制，而是操作系统对访问控制的基础约束。
 
-### 访问权限位
+作为上下文的一部分，`umask`（user file-creation mode mask）会影响新建文件的默认权限，使用 `open` 创建新文件时，最终权限是 `mode & ~umask`。
 
-| 掩码      | 含义           |
-| --------- | -------------- |
-| `S_IRUSR` | 拥有者可读     |
-| `S_IWUSR` | 拥有者可写     |
-| `S_IXUSR` | 拥有者可执行   |
-| `S_IRGRP` | 组成员可读     |
-| `S_IWGRP` | 组成员可写     |
-| `S_IXGRP` | 组成员可执行   |
-| `S_IROTH` | 其他用户可读   |
-| `S_IWOTH` | 其他用户可写   |
-| `S_IXOTH` | 其他用户可执行 |
-
-> [!note]
-> 这组权限位在 `sys/stat.h` 中定义。文件权限并不是绝对安全机制，而是操作系统对访问控制的基础约束。
-
-`umask` 会影响新建文件的默认权限：
-
-```c
-#define DEF_MODE   S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
-#define DEF_UMASK  S_IWGRP | S_IWOTH
-
-umask(DEF_UMASK);
-fd = Open("foo.txt", O_CREAT | O_TRUNC | O_WRONLY, DEF_MODE);
-```
-
-最终权限是 `DEF_MODE & ~DEF_UMASK`：拥有者读写，组成员只读，其他用户只读。
+> [!example]
+>
+> ```c
+> #define DEF_MODE   S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
+> #define DEF_UMASK  S_IWGRP | S_IWOTH
+> umask(DEF_UMASK);
+> fd = Open("foo.txt", O_CREAT | O_TRUNC | O_WRONLY, DEF_MODE);
+> ```
+>
+> 最终权限是 `DEF_MODE & ~DEF_UMASK`：拥有者读写，组成员只读，其他用户只读。
 
 关闭文件使用 `close`：
 
@@ -180,19 +185,7 @@ int close(int fd);
 /* 返回：成功返回 0，失败返回 -1 */
 ```
 
-> [!warning]
-> 关闭一个已经关闭的描述符会出错，不要重复释放同一描述符。
-
-**练习**：以下程序输出什么？
-
-```c
-fd1 = Open("foo.txt", O_RDONLY, 0);
-Close(fd1);
-fd2 = Open("baz.txt", O_RDONLY, 0);
-printf("fd2 = %d\n", fd2);
-```
-
-答案：`fd2 = 3`。进程启动时已有 0、1、2 三个描述符；第一次 `open` 返回 3；`close` 释放了 3；下一次 `open` 再次使用最小未使用描述符，因此也返回 3。
+> [!warning] 关闭一个已经关闭的描述符会出错，不要重复释放同一描述符
 
 ## 10.4 读和写文件
 
