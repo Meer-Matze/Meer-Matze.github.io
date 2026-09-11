@@ -199,27 +199,17 @@ ssize_t write(int fd, const void *buf, size_t n);
 /* 返回：成功返回写入的字节数；出错返回 -1 */
 ```
 
-`read` 从当前文件位置复制最多 `n` 个字节到 `buf`；`write` 从 `buf` 复制最多 `n` 个字节到文件。
+- `read` 从当前文件位置复制最多 `n` 个字节到 `buf`
+- `write` 从 `buf` 复制最多 `n` 个字节到文件。
 
-一次一字节地把标准输入复制到标准输出：
+> [!info] `size_t` 和 `ssize_t` 的区别
+>
+> - `size_t` 定义为 `unsigned long`
+> - `ssize_t` 定义为 `long`
+>
+> `read` 和 `write` 需要返回`-1`来表示错误，故使用 `ssize_t`。
 
-```c
-#include "csapp.h"
-
-int main(void)
-{
-    char c;
-    while (Read(STDIN_FILENO, &c, 1) != 0)
-        Write(STDOUT_FILENO, &c, 1);
-    exit(0);
-}
-```
-
-### 短计数
-
-`read` 和 `write` 经常返回**短计数**——实际传输的字节数少于请求的字节数，这不一定表示错误。
-
-`read` 常见原因：
+在某些情况下，`read` 和 `write` 传送的字节比应用程序要求的要少。这些**短计数**（short count）不表示有错误。出现这样情况的原因有：
 
 - 读到 EOF：请求 50 字节，但文件只剩 20 字节
 - 从终端读取文本：一次读到的是一整行，而不是任意长度
@@ -233,6 +223,9 @@ int main(void)
 
 > [!warning]
 > 对网络程序而言，短计数必须被当成正常情况处理。健壮程序不能假设一次 `read` 或 `write` 一定完成全部请求。
+
+> [!info] short count的翻译
+> 在CSAPP中，short count被翻译为"不足值"。这里使用常用直译“短计数”，更符合计算机术语的习惯。
 
 ---
 
