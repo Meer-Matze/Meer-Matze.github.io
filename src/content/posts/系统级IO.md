@@ -238,72 +238,89 @@ ssize_t write(int fd, const void *buf, size_t n);
 - **无缓冲的 I/O**：`rio_readn`、`rio_writen`——直接反复调用底层 `read`/`write`
 - **带缓冲的 I/O**：`rio_readlineb`、`rio_readnb`——通过内部缓冲区读取
 
-> [!tip]
-> 如果要写网络程序，RIO 是更稳妥的选择，它隐藏了很多短读、短写和信号中断的细节。
+> [!tip] 如果要写网络程序，RIO 是更稳妥的选择，它隐藏了很多短读、短写和信号中断的细节
 
 ### 10.5.1 RIO 的无缓冲 I/O
 
-```c
+- `rio_readn` 函数从描述符 `fd` 的当前文件位置最多传送 $n$ 个字节到内存位置 `usrbuf`
+  - `rio_read` 函数在遇到 EOF 时只能返回一个短计数
+- `rio_writen` 函数从位置 `usrbuf` 传送 $n$ 个字节到描述符 `fd`
+  - `rio_writen` 函数决不会返回短计数。
+
+对同一个描述符，可以任意交错地调用 `rio_readn` 和 `rio_writen`。
+
+```c title="csapp.c"
 ssize_t rio_readn(int fd, void *usrbuf, size_t n)
 {
-    size_t nleft = n;
-    ssize_t nread;
-    char *bufp = usrbuf;
+    size_t nleft = n;          // 还剩下多少字节需要读
+    ssize_t nread;             // 每次 read 实际读到的字节数
+    char *bufp = usrbuf;       // 当前要写入用户缓冲区的位置指针
 
-    while (nleft > 0) {
+    while (nleft > 0) {        // 只要还有字节没读完就继续
         if ((nread = read(fd, bufp, nleft)) < 0) {
-            if (errno == EINTR)
-                nread = 0;
+            // 情况1：read 出错
+            if (errno == EINTR)     // 被信号中断（这是可恢复的）
+                nread = 0;          // 假装这次读了 0 字节，下次循环再试
             else
-                return -1;
+                return -1;          // 真正的错误，直接返回
         }
         else if (nread == 0)
-            break;
-        nleft -= nread;
-        bufp += nread;
+            break;                  // 情况2：读到 EOF，跳出循环
+                                    // 情况3：nread > 0，正常读到了数据
+
+        nleft -= nread;             // 更新剩余未读字节数
+        bufp += nread;              // 缓冲区指针向前移动
     }
-    return (n - nleft);
+    return (n - nleft);             // 返回实际总共读到的字节数
 }
 ```
 
-```c
+```c title="csapp.c"
 ssize_t rio_writen(int fd, void *usrbuf, size_t n)
 {
-    size_t nleft = n;
-    ssize_t nwritten;
-    char *bufp = usrbuf;
+    size_t nleft = n;          // 还剩下多少字节需要写
+    ssize_t nwritten;          // 每次 write 实际写出去的字节数
+    char *bufp = usrbuf;       // 当前要从用户缓冲区读出的位置指针
 
-    while (nleft > 0) {
+    while (nleft > 0) {        // 只要还有字节没写完就继续
         if ((nwritten = write(fd, bufp, nleft)) <= 0) {
-            if (errno == EINTR)
-                nwritten = 0;
+            // 情况1：write 出错或返回 0（写通常不会返回 0）
+            if (errno == EINTR)     // 被信号中断
+                nwritten = 0;       // 假装写了 0 字节，下次循环再试
             else
-                return -1;
+                return -1;          // 真正错误，返回
         }
-        nleft -= nwritten;
-        bufp += nwritten;
+        // 情况2：nwritten > 0，正常写出去了
+
+        nleft -= nwritten;         // 更新剩余未写字节数
+        bufp += nwritten;          // 缓冲区指针向前移动
     }
-    return n;
+    return n;                      // 全部写完，返回原始请求的字节数
 }
 ```
 
-两者的实现思路相同：维持"还剩多少字节未处理"的计数，反复调用底层 `read`/`write`，遇到 `EINTR` 时重试，读到 EOF 时结束。它们把短读/短写包装成了更稳定的语义。
+> [!warning]
+> 注意，如果 `rio_readn` 和 `rio_writen` 函数被一个从应用信号处理程序的返回中断，那么每个函数都会手遍地重启 `read` 或 `write`。为了尽可能有较好的可移植性，我们允许被中断的系统调用，且在必要时重启它们。
 
 ### 10.5.2 RIO 的带缓冲输入函数
 
-若程序需要从文本文件中逐行读取，直接用裸 `read` 很低效——每个字节都要陷入内核。RIO 提供读缓冲区机制：
+以逐行读取文本文件为例，若使用 `read`，就需要一个字节一个字节地读取，直到遇到换行符或 EOF。为了避免频繁调用 `read`，使用缓冲区将尽量多的字节一次性读入内存，然后再从缓冲区中逐字节读取。
 
-```c
+RIO 提供读缓冲区机制：
+
+```c title="csapp.h"
 #define RIO_BUFSIZE 8192
 
 typedef struct {
-    int rio_fd;
-    int rio_cnt;
-    char *rio_bufptr;
-    char rio_buf[RIO_BUFSIZE];
+    int rio_fd;                 // 内部缓冲区描述符
+    int rio_cnt;                // 内部缓冲区中未读的字节数
+    char *rio_bufptr;           // 内部缓冲区中下一个要读的字节位置
+    char rio_buf[RIO_BUFSIZE];  // 内部缓冲区
 } rio_t;
+```
 
-void rio_readinitb(rio_t *rp, int fd)
+```c title="csapp.c"
+void rio_readinitb(rio_t *rp, int fd)   // read init buffer
 {
     rp->rio_fd = fd;
     rp->rio_cnt = 0;
@@ -317,17 +334,19 @@ void rio_readinitb(rio_t *rp, int fd)
 static ssize_t rio_read(rio_t *rp, char *usrbuf, size_t n)
 {
     int cnt;
-    while (rp->rio_cnt <= 0) {
+    while (rp->rio_cnt <= 0) {  // 缓冲区为空，调用 read 读入新数据
         rp->rio_cnt = read(rp->rio_fd, rp->rio_buf, sizeof(rp->rio_buf));
         if (rp->rio_cnt < 0) {
-            if (errno != EINTR)
+            if (errno != EINTR) // read 出错且不是被信号中断
                 return -1;
         }
-        else if (rp->rio_cnt == 0)
+        else if (rp->rio_cnt == 0)  // EOF
             return 0;
         else
-            rp->rio_bufptr = rp->rio_buf;
+            rp->rio_bufptr = rp->rio_buf;   // 重置缓冲区指针
     }
+
+    // 复制缓冲区中 min(n, rio_cnt) 字节到用户缓冲区
     cnt = n;
     if (rp->rio_cnt < n)
         cnt = rp->rio_cnt;
@@ -338,20 +357,48 @@ static ssize_t rio_read(rio_t *rp, char *usrbuf, size_t n)
 }
 ```
 
-`rio_readlineb` 逐字节读取，直到遇到换行符或达到 `maxlen-1`；`rio_readnb` 类似 `rio_readn`，但从读缓冲区中读取。一次一行地复制标准输入到标准输出：
+于是，我们可以完成逐行读取的函数 `rio_readlineb` 和读取指定字节数的函数 `rio_readnb`：
 
-```c
-#include "csapp.h"
-
-int main(int argc, char **argv)
+```c title="csapp.c"
+ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
 {
-    int n;
-    rio_t rio;
-    char buf[MAXLINE];
+    int n, rc;              // n: 已经读到的字节数，rc: rio_read 返回值(读到的字节数)
+    char c, *bufp = usrbuf;
 
-    Rio_readinitb(&rio, STDIN_FILENO);
-    while ((n = Rio_readlineb(&rio, buf, MAXLINE)) != 0)
-        Rio_writen(STDOUT_FILENO, buf, n);
+    for (n = 1; n < maxlen; n++) {  // 逐字节读取，直到遇到换行符或达到 maxlen
+        if ((rc = rio_read(rp, &c, 1)) == 1) {
+            *bufp++ = c;
+            if (c == '\n') {
+                n++;
+                break;
+            }
+        } else if (rc == 0) {
+            if (n == 1)
+                return 0; // EOF 且还没读到任何字节
+            else
+                break;    // EOF 且已经读到一些字节
+        } else
+            return -1;    // read 出错
+    }
+    *bufp = 0;
+    return n - 1;
+}
+
+ssize_t rio_readnb(rio_t *rp, void *usrbuf, size_t n)
+{
+    size_t nleft = n;       // 还剩下多少字节需要读
+    ssize_t nread;          // 每次 rio_read 实际读到的字节数
+    char *bufp = usrbuf;
+
+    while (nleft > 0) {
+        if ((nread = rio_read(rp, bufp, nleft)) < 0)
+            return -1;          // rio_read 出错
+        else if (nread == 0)
+            break;              // EOF
+        nleft -= nread;
+        bufp += nread;
+    }
+    return (n - nleft);
 }
 ```
 
@@ -371,36 +418,59 @@ int fstat(int fd, struct stat *buf);
 
 `stat` 接收文件名，`fstat` 接收文件描述符。`struct stat` 中最重要的成员：
 
-```c
+```c title="sys/stat.h"
+/* Metadata returned by the stat and fstat functions */
 struct stat {
-    dev_t   st_dev;
-    ino_t   st_ino;
-    mode_t  st_mode;   /* 访问权限位和文件类型 */
-    nlink_t st_nlink;
-    uid_t   st_uid;
-    gid_t   st_gid;
-    off_t   st_size;   /* 文件字节数 */
-    time_t  st_atime;
-    time_t  st_mtime;
-    time_t  st_ctime;
+    dev_t         st_dev;      /* Device */
+    ino_t         st_ino;      /* inode */
+    mode_t        st_mode;     /* Protection and file type */
+    nlink_t       st_nlink;    /* Number of hard links */
+    uid_t         st_uid;      /* User ID of owner */
+    gid_t         st_gid;      /* Group ID of owner */
+    dev_t         st_rdev;     /* Device type (if inode device) */
+    off_t         st_size;     /* Total size, in bytes */
+    unsigned long st_blksize;  /* Block size for filesystem I/O */
+    unsigned long st_blocks;   /* Number of blocks allocated */
+    time_t        st_atime;    /* Time of last access */
+    time_t        st_mtime;    /* Time of last modification */
+    time_t        st_ctime;    /* Time of last change */
 };
 ```
 
-常用类型判断宏：`S_ISREG(m)`（普通文件）、`S_ISDIR(m)`（目录文件）、`S_ISSOCK(m)`（socket）。
+`st_size` 成员包含了文件的字节数大小。`st_mode` 成员则编码了文件访问许可位和文件类型。Linux 在 `sys/stat.h` 中定义了宏谓词来确定 `st_mode` 成员的文件类型：
 
-```c
-struct stat stat_buf;
-Stat(argv[1], &stat_buf);
-
-if (S_ISREG(stat_buf.st_mode))
-    type = "regular";
-else if (S_ISDIR(stat_buf.st_mode))
-    type = "directory";
-else
-    type = "other";
-
-readok = (stat_buf.st_mode & S_IRUSR) ? "yes" : "no";
+```c title="sys/stat.h"
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)   // 判断是否为普通文件
+#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)   // 判断是否为目录
+#define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK) // 判断是否为套接字
 ```
+
+> [!example] 解释一个文件的 `st_mode` 位
+>
+> ```c
+> #include "csapp.h"
+>
+> int main (int argc, char **argv)
+> {
+>    struct stat stat;
+>    char *type, *readok;
+>
+>    Stat(argv[1], &stat);
+>    if (S_ISREG(stat.st_mode))     /* Determine file type */
+>        type = "regular";
+>    else if (S_ISDIR(stat.st_mode))
+>        type = "directory";
+>    else
+>        type = "other";
+>    if ((stat.st_mode & S_IRUSR))  /* Check read access */
+>        readok = "yes";
+>    else
+>        readok = "no";
+>
+>    printf("type: %s, read: %s\n", type, readok);
+>    exit(0);
+> }
+> ```
 
 ## 10.7 读取目录内容
 
