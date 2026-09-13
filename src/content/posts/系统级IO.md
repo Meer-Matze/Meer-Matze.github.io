@@ -416,7 +416,7 @@ int fstat(int fd, struct stat *buf);
 /* 返回：成功返回 0，失败返回 -1 */
 ```
 
-`stat` 接收文件名，`fstat` 接收文件描述符。`struct stat` 中最重要的成员：
+`stat` 接收文件名，`fstat` 接收文件描述符，二者均可填充 `struct stat` 结构体。
 
 ```c title="sys/stat.h"
 /* Metadata returned by the stat and fstat functions */
@@ -436,6 +436,26 @@ struct stat {
     time_t        st_ctime;    /* Time of last change */
 };
 ```
+
+> [!note] inode 的概念
+> inode（index node） 是 Linux 内核用来表示文件的一个数据结构。每个文件都有一个 inode，包含了文件的元数据（metadata），如文件类型、权限、拥有者、大小、时间戳等。inode 还包含了指向文件数据块的指针。
+>
+> 文件名和 inode 是分离的，文件名只是一个指向 inode 的链接。
+>
+> 目录本身也是文件，同样拥有 inode，其数据内容是一张“文件名 → inode 号”的映射表。
+>
+> `stat` 和 `fstat` 函数返回的 `struct stat` 结构体就是 inode 部分内容的一个副本。其中 `st_ino` 成员正是 inode 号码。
+>
+> > [!info] inode 号的作用域
+> > inode 号只在**同一个文件系统**内唯一。不同分区或文件系统可以有相同的 inode 号。
+>
+> > [!info] 硬链接与软链接
+> >
+> > - **硬链接**：多个文件名指向**同一个 inode**，共享所有数据和元数据，`st_nlink` 会增加。
+> > - **符号链接（软链接）**：是一个特殊的文件，它自己有独立的 inode，内容只是一个路径字符串。
+>
+> > [!info] 删除文件的真实含义
+> > 删除一个文件名（`unlink`）只是减少该 inode 的硬链接计数。只有当链接数变成 0，**并且**没有进程还打开着这个文件时，内核才会真正释放 inode 和数据块。
 
 `st_size` 成员包含了文件的字节数大小。`st_mode` 成员则编码了文件访问许可位和文件类型。Linux 在 `sys/stat.h` 中定义了宏谓词来确定 `st_mode` 成员的文件类型：
 
@@ -479,34 +499,48 @@ struct stat {
 #include <dirent.h>
 
 DIR *opendir(const char *name);
+// 返回：成功返回目录流指针，失败返回 NULL
 struct dirent *readdir(DIR *dirp);
+// 返回：成功返回下一个目录项，失败或为空时返回 NULL
 int closedir(DIR *dirp);
+// 返回：成功返回 0，失败返回 -1
 ```
 
-`opendir` 返回目录流，`readdir` 返回下一个目录项，`closedir` 关闭目录流。每个目录项：
+`opendir` 返回**目录流**（directory stream）指针，`readdir` 返回下一个目录项，`closedir` 关闭目录流。每个目录项：
 
 ```c
 struct dirent {
-    ino_t d_ino;      /* inode 编号 */
-    char  d_name[256]; /* 文件名 */
+    ino_t d_ino;        /* inode 编号 */
+    char  d_name[256];  /* 文件名 */
 };
 ```
 
-```c
-DIR *streamp = Opendir(argv[1]);
-struct dirent *dep;
-
-errno = 0;
-while ((dep = readdir(streamp)) != NULL)
-    printf("Found file: %s\n", dep->d_name);
-if (errno != 0)
-    unix_error("readdir error");
-
-Closedir(streamp);
-```
-
-> [!warning]
-> `readdir` 到达结尾时返回 `NULL`，但也可能在错误时返回 `NULL`。正确做法是像上面这样先清零 `errno`，循环结束后检查它，以区分"到结尾"和"真正出错"。
+> [!example] 读取目录内容的示例程序：
+>
+> ```c
+> #include "csapp.h"
+>
+> int main(int argc, char **argv)
+> {
+>     DIR *streamp;
+>     struct dirent *dep;
+>
+>     streamp = Opendir(argv[1]);
+>
+>     errno = 0;
+>     while ((dep = readdir(streamp)) != NULL) {
+>         printf("Found file: %s\n", dep->d_name);
+>     }
+>     if (errno != 0)
+>         unix_error("readdir error");
+>
+>     Closedir(streamp);
+>     exit(0);
+> }
+> ```
+>
+> > [!warning]
+> > `readdir` 到达结尾时返回 `NULL`，但也可能在错误时返回 `NULL`。正确做法是像上面这样先清零 `errno`，循环结束后检查它，以区分"到结尾"和"真正出错"。
 
 ---
 
