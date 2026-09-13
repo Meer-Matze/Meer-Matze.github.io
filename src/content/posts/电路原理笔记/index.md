@@ -6,7 +6,8 @@ image: ""
 tags: [电路, 笔记]
 category: "大学数理"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
+slug: circuit-principle-notes
 ---
 
 # 第一章 电路元件与电路基本定律

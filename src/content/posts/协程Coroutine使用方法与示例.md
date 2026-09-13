@@ -6,7 +6,7 @@ image: ""
 tags: [coroutine, C++]
 category: "编程技术"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
 ---
 
 # 协程的概念

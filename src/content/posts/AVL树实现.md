@@ -7,7 +7,7 @@ tags: [二叉树, 树, 代码实现]
 category: "数据结构与算法"
 series: "数据结构"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
 ---
 
 # AVL树

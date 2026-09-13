@@ -3,10 +3,11 @@ title: 新启航
 published: 2026-03-28
 description: "a fresh new start"
 image: ""
+slug: start
 tags: [hello world]
 category: "闲聊"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
 ---
 
 # 一个全新的开始！

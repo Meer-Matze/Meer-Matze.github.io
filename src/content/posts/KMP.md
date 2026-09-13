@@ -7,7 +7,7 @@ tags: [字符串]
 category: "数据结构与算法"
 series: "算法"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
 ---
 
 # 前缀表

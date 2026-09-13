@@ -7,7 +7,7 @@ tags: [树]
 category: "数据结构与算法"
 series: "数据结构"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
 ---
 
 # B树

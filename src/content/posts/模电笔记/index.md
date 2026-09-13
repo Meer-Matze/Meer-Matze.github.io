@@ -6,7 +6,8 @@ image: ""
 tags: [模电, 笔记]
 category: "大学数理"
 draft: false
-lang: "zh_CN"
+lang: "zh-CN"
+slug: analog-circuit-notes
 ---
 
 # 前言
