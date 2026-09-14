@@ -1,6 +1,7 @@
 ---
 title: 第十章 系统级I/O
 published: 2026-09-08
+updated: 2026-09-14
 description: "Unix I/O 模型、基本文件操作、健壮 I/O 与元数据"
 image: ""
 tags: [计算机原理]
@@ -8,6 +9,7 @@ category: "计算机基础"
 series: "CSAPP"
 draft: false
 lang: "zh-CN"
+slug: csapp-10
 ---
 
 输入/输出（I/O）是在主存和外部设备（例如磁盘驱动器、终端和网络）之间复制数据的过程。输入操作是从 I/O 设备复制数据到主存，而输出操作是从主存复制数据到 I/O 设备。
@@ -551,10 +553,17 @@ struct dirent {
 内核用三个相关的数据结构表示打开的文件：
 
 - **描述符表**：每个进程独有，存放其打开文件的描述符
-- **文件表**：所有进程共享，保存当前文件位置、引用计数和 v-node 指针
-- **v-node 表**：所有进程共享，保存文件的元数据
+- **文件表**：所有进程共享，保存
+  - 当前文件位置
+  - 引用计数：当前指向该表项的描述符表项数
+  - v-node 指针
+- **v-node 表**：所有进程共享，保存文件的部分元数据
 
-这三层结构解释了文件共享的关键语义：多个描述符可以引用同一个文件；以同一个名字调用两次 `open` 会得到两个不同的打开文件表项，各自有自己的文件位置；父子进程 `fork` 后，子进程继承父进程的描述符表（描述符值相同），但这些描述符指向的是同一批文件表项，因而共享文件位置。
+那么，我们就可以三种打开文件的情形：
+
+1. 两次独立打开不同的文件，描述符、文件表项和 v-node 表项都不同
+2. 两次独立打开同一文件，描述符、打开文件表项不同，但 v-node 表项相同
+3. `fork` 后子进程复制父进程的描述符表
 
 三道练习题分别对应三种情形：
 
@@ -564,32 +573,27 @@ struct dirent {
 | `fork` 后父子进程共用同一描述符 | 共享同一项                | 共享，一方读写会影响另一方后续读写 |
 | `dup2(fd2, fd1)` 后             | `fd1` 改为指向 `fd2` 的项 | 与 `fd2` 共享同一位置              |
 
-**练习**：`fd1`、`fd2` 各自独立 `open` 同一文件后各读一字节，输出什么？
+> [!question]
+> 假设磁盘文件 foobar.txt 由 6 个 ASCII 码字符 “foobar” 组成。那么，下列程序（部分）的输出是什么？
+>
+> ```c
+> fd1 = Open("foobar.txt", O_RDONLY, 0);
+> fd2 = Open("foobar.txt", O_RDONLY, 0);
+> Read(fd1, &c, 1);
+> Read(fd2, &c, 1);
+> printf("c = %c； ", c);
+>
+> fd = Open("foobar.txt", O_RDONLY, 0);
+> if (Fork() == 0) {
+>     Read(fd, &c, 1);
+>     exit(0);
+> }
+> Wait(NULL);
+> Read(fd, &c, 1);
+> printf("c = %c\n", c);
+> ```
 
-```c
-fd1 = Open("foobar.txt", O_RDONLY, 0);
-fd2 = Open("foobar.txt", O_RDONLY, 0);
-Read(fd1, &c, 1);
-Read(fd2, &c, 1);
-printf("c = %c\n", c);
-```
-
-答案：`c = f`。`fd1` 和 `fd2` 各自有独立的打开文件表项，各自维护自己的当前位置，`fd2` 读到的仍是文件第一个字节。
-
-**练习**：`fork` 后子进程先读一字节，父进程等待后再读，输出什么？
-
-```c
-fd = Open("foobar.txt", O_RDONLY, 0);
-if (Fork() == 0) {
-    Read(fd, &c, 1);
-    exit(0);
-}
-Wait(NULL);
-Read(fd, &c, 1);
-printf("c = %c\n", c);
-```
-
-答案：`c = o`。父子进程共享同一个打开文件表项，子进程读完一个字节后，父进程读取的就是下一个字节。
+答案：:spoiler[`c = f； c = o`]
 
 ## 10.9 I/O 重定向
 
@@ -608,20 +612,21 @@ int dup2(int oldfd, int newfd);
 /* 返回：成功返回非负描述符，失败返回 -1 */
 ```
 
-`dup2` 把 `oldfd` 对应的文件表项复制到 `newfd`。如果 `newfd` 已经打开，`dup2` 会先关闭它。`dup2(4, 1)` 会把标准输出重定向到描述符 4 对应的文件。
+`dup2` 把 `oldfd` 对应的文件表项复制到 `newfd`。如果 `newfd` 已经打开，`dup2` 会先关闭它。
 
-**练习**：
+> [!question]
+> 假设磁盘文件 foobar.txt 由 6 个 ASCII 码字符 “foobar” 组成，那么下列程序的输出是什么？
+>
+> ```c
+> fd1 = Open("foobar.txt", O_RDONLY, 0);
+> fd2 = Open("foobar.txt", O_RDONLY, 0);
+> Read(fd2, &c, 1);
+> Dup2(fd2, fd1);
+> Read(fd1, &c, 1);
+> printf("c = %c\n", c);
+> ```
 
-```c
-fd1 = Open("foobar.txt", O_RDONLY, 0);
-fd2 = Open("foobar.txt", O_RDONLY, 0);
-Read(fd2, &c, 1);
-Dup2(fd2, fd1);
-Read(fd1, &c, 1);
-printf("c = %c\n", c);
-```
-
-答案：`c = o`。`fd1` 被重定向到 `fd2` 后，二者指向同一个打开文件表项，共享同一文件位置；`fd2` 先读了第一个字节，随后 `fd1` 读到的是第二个字节。
+答案：:spoiler[`c = o`。`fd1` 被重定向到 `fd2` 后，二者指向同一个打开文件表项，共享同一文件位置；`fd2` 先读了第一个字节，随后 `fd1` 读到的是第二个字节。]
 
 ---
 
@@ -629,32 +634,39 @@ printf("c = %c\n", c);
 
 ## 10.10 标准 I/O
 
-C 语言提供一组高级 I/O 函数，称为**标准 I/O 库**（standard I/O library），如 `fopen`、`fclose`、`fread`、`fwrite`、`printf`、`scanf`。核心抽象是 **FILE 流**（stream），每个流对应一个 `FILE` 结构体，带有内部缓冲区。程序开始时就有三个标准流 `stdin`、`stdout`、`stderr`，分别对应描述符 0、1、2。
+C 语言提供一组高级 I/O 函数，称为**标准 I/O 库**（standard I/O library），如
 
-> [!tip]
-> 对大多数磁盘和终端 I/O，标准 I/O 是首选。它以缓冲方式减少系统调用次数，代码也更简洁。
+- `fopen`、`fclose`：打开和关闭文件
+- `fread`、`fwrite`：读写字节
+- `fgets`、`fputs`：读写字符串
+- `printf`、`scanf`：格式化输出和输入
 
-标准 I/O 的缓冲分三种模式：
+标准 I/O 库将一个打开的文件模型化为一个流。对于程序员而言，一个流就是一个指向 FILE 类型的结构的指针。
 
-- **全缓冲**（fully buffered）：典型如磁盘文件，缓冲区填满或调用 `fflush` 时才真正写出
-- **行缓冲**（line buffered）：典型如连到终端的流，遇到换行符就刷新
-- **无缓冲**（unbuffered）：如 `stderr`，每次调用立即写出，保证错误信息第一时间可见
+> [!info] 流缓冲区
+> 大部分流都有一个内部缓冲区，用于临时存储读写的数据，避免频繁的系统调用。
+>
+> 标准 I/O 的缓冲分三种模式：
+>
+> - **全缓冲**（fully buffered）：典型如磁盘文件，缓冲区填满或调用 `fflush` 时才真正写出
+> - **行缓冲**（line buffered）：典型如连到终端的流，遇到换行符就刷新
+> - **无缓冲**（unbuffered）：如 `stderr`，每次调用立即写出，保证错误信息第一时间可见
 
-> [!note]
-> 这也是"为什么 `printf` 输出有时不会立刻显示在终端上"的常见困惑来源——若标准输出被重定向到文件，缓冲模式会从行缓冲切换为全缓冲，输出要等到缓冲区满或程序退出才写出。
-
-标准 I/O 的缺点：不适合处理网络 socket 上的 I/O；对同一流先输出后输入、或先输入后输出时有额外限制。
-
-## 10.11 综合：我该使用哪些 I/O 函数？
+## 10.11 我该使用哪些 I/O 函数？
 
 - **优先用标准 I/O**：处理磁盘文件和终端时，标准 I/O 是最直接的选择
 - **不要用 `scanf` 或 `rio_readlineb` 读二进制文件**：它们是文本接口，不适合任意字节流
 - **对网络 socket 使用 RIO**：网络 I/O 要处理短读、短写和信号中断，RIO 更稳妥
 
 > [!warning]
-> 标准 I/O 流并不总能与 socket 兼容：
+> 标准 I/O 流并不总能与 socket 兼容，这是因为标准 I/O 有以下限制：
 >
 > 1. 不能在不调用 `fflush`、`fseek`、`fsetpos`、`rewind` 的情况下，连续执行"输出后输入"
+>    - `fseek`、`fsetpos`、`rewind` 均使用了 `lseek`函数。
 > 2. 不能在不调用 `fseek`、`fsetpos`、`rewind` 的情况下，连续执行"输入后输出"，除非输入已经到达文件末尾
+>
+> 而对 socket 使用 lseek 函数是非法的，那么，为了满足限制1，需要时常调用 `fflush`；为了满足限制2，唯一的办法是对同一个 socket 打开两个标准 I/O 流：一个只读，一个只写。
+>
+> 注意到，对同一个 socket 打开两个标准 I/O 流是危险的，因为关闭时要同时关闭两个流，但关闭一个已经关闭的 socket 会导致错误，而在多线程下，这种错误是不可接受的。
 
-这些限制使标准 I/O 很难直接用于网络程序。通常的做法是：用 `sprintf` 先格式化字符串，再用 `rio_writen` 发送到 socket；对输入则用 `rio_readlineb` 读取整行，再用 `sscanf` 解析字段。
+这些限制使标准 I/O 很难直接用于网络程序。如果想要格式化输出：用 `sprintf` 先格式化字符串，再用 `rio_writen` 发送到 socket；对输入则用 `rio_readlineb` 读取整行，再用 `sscanf` 解析字段。
