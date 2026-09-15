@@ -6,11 +6,11 @@ import { siteConfig } from "./siteConfig"; // 站点基础配置（用于派生 
 
 /** 解析导航栏模式：navbarMode 优先，否则按旧 stickyNavbar 兼容映射（true→fixed，false→static） */
 export function resolveNavbarMode(navbar: {
-	navbarMode?: NavbarMode;
-	stickyNavbar?: boolean;
+  navbarMode?: NavbarMode;
+  stickyNavbar?: boolean;
 }): NavbarMode {
-	if (navbar.navbarMode) return navbar.navbarMode;
-	return navbar.stickyNavbar === false ? "static" : "fixed";
+  if (navbar.navbarMode) return navbar.navbarMode;
+  return navbar.stickyNavbar === false ? "static" : "fixed";
 }
 
 /** 当前导航栏模式（已按 navbarMode / 旧 stickyNavbar 解析），供各消费方统一读取 */
@@ -18,43 +18,42 @@ export const navbarMode: NavbarMode = resolveNavbarMode(siteConfig.navbar);
 
 // 类型导出
 export type {
-	AdConfig,
-	AnalyticsConfig,
-	AnnouncementConfig,
-	BackgroundWallpaperConfig,
-	BooknavFaviconConfig,
-	BooknavGroup,
-	BooknavItem,
-	BooknavPageConfig,
-	CommentConfig,
-	CoverImageConfig,
-	DisplaySettingsConfig,
-	DynamicConfig,
-	ExpressiveCodeConfig,
-	FooterConfig,
-	GalleryAlbum,
-	GalleryConfig,
-	LicenseConfig,
-	MermaidConfig,
-	MusicPlayerConfig,
-	NavBarConfig,
-	PlantUMLConfig,
-	ProfileConfig,
-	SakuraConfig,
-	SidebarLayoutConfig,
-	SiteConfig,
-	SponsorConfig,
-	SponsorItem,
-	SponsorMethod,
-	WidgetComponentConfig,
-	WidgetComponentType,
-	WidgetSpecificConfig,
+  AdConfig,
+  AnalyticsConfig,
+  AnnouncementConfig,
+  BackgroundWallpaperConfig,
+  BooknavFaviconConfig,
+  BooknavGroup,
+  BooknavItem,
+  BooknavPageConfig,
+  CommentConfig,
+  CoverImageConfig,
+  DisplaySettingsConfig,
+  DynamicConfig,
+  ExpressiveCodeConfig,
+  GalleryAlbum,
+  GalleryConfig,
+  LicenseConfig,
+  MermaidConfig,
+  MusicPlayerConfig,
+  NavBarConfig,
+  PlantUMLConfig,
+  ProfileConfig,
+  SakuraConfig,
+  SidebarLayoutConfig,
+  SiteConfig,
+  SponsorConfig,
+  SponsorItem,
+  SponsorMethod,
+  WidgetComponentConfig,
+  WidgetComponentType,
+  WidgetSpecificConfig,
 } from "../types/config";
 export type {
-	BuiltinFontProvider,
-	CustomFontProvider,
-	FontDefinition,
-	FontSelectionConfig,
+  BuiltinFontProvider,
+  CustomFontProvider,
+  FontDefinition,
+  FontSelectionConfig,
 } from "../types/fontConfig"; // 字体类型定义
 export { analyticsConfig } from "./analyticsConfig"; // 统计分析配置
 export { announcementConfig } from "./announcementConfig"; // 公告配置
@@ -69,7 +68,6 @@ export { dynamicConfig } from "./dynamicConfig"; // 动态页面配置
 export { sakuraConfig } from "./effectsConfig"; // 动画特效配置（樱花等）
 export { expressiveCodeConfig } from "./expressiveCodeConfig"; // 代码高亮配置
 export { fontConfig, fontsList } from "./fontConfig"; // 字体配置
-export { footerConfig } from "./footerConfig"; // 页脚配置
 export { friendsPageConfig, getEnabledFriends } from "./friendsConfig"; // 友链配置
 export { galleryConfig } from "./galleryConfig"; // 相册配置
 export { licenseConfig } from "./licenseConfig"; // 许可证配置

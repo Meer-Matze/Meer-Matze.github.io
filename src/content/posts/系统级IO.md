@@ -7,6 +7,7 @@ image: ""
 tags: [计算机原理]
 category: "计算机基础"
 series: "CSAPP"
+seriesOrder: 10
 draft: false
 lang: "zh-CN"
 slug: csapp-10

@@ -119,8 +119,11 @@ export const siteConfig: SiteConfig = {
     menuAlign: "center",
     // 导航栏图标和标题是否跟随主题色
     followTheme: false,
-    // 导航栏是否固定在顶部并始终可见
-    stickyNavbar: true,
+    // 导航栏模式navbarMode：
+    // "static"：不固定，随页面滚动消失
+    // "fixed"：固定在顶部常显
+    // "dynamic"：固定在顶部，下滑隐藏、轻微上滑显示
+    navbarMode: "dynamic",
   },
 
   // 站点开始日期，用于统计运行天数
@@ -130,8 +133,21 @@ export const siteConfig: SiteConfig = {
   // 示例："Asia/Shanghai", "UTC", 如果为空，则按照构建服务器的时区进行时区转换
   timezone: "Asia/Shanghai",
 
+  // 页面开关配置 - 控制特定页面的访问权限，设为false会返回404并自动隐藏对应的导航栏菜单项
+
   // 分类导航栏开关，在首页和归档页顶部显示分类快捷导航
   categoryBar: true,
+
+  // 分类导航栏按钮样式
+  // "pill"：胶囊，主题色浅底圆角
+  // "rectangle"：矩形，配色同胶囊，仅圆角更小
+  categoryStyle: "rectangle",
+
+  // 标签样式，作用于文章列表底部标签、标签页和侧边栏标签
+  // "pill"：胶囊，主题色底圆角
+  // "pill-gray"：胶囊，中性灰底圆角
+  // "rectangle"：矩形，主题色底小圆角
+  tagStyle: "pill",
 
   // 归档页是否折叠非最新年份文章，禁用后默认展开全部年份
   foldArticle: true,
@@ -214,15 +230,15 @@ export const siteConfig: SiteConfig = {
     // 文章页底部的"上次编辑时间"卡片开关
     showLastModified: true,
     // 文章过期阈值（天数），超过此天数才显示"上次编辑"卡片
-    outdatedThreshold: 30,
+    outdatedThreshold: 90,
     // 是否显示文章页的分享按钮
     share: true,
     // 是否显示上一篇/下一篇文章导航
     postNavigation: true,
     // 是否显示相关文章推荐
-    relatedPosts: true,
+    relatedPosts: false,
     // 是否显示随机文章推荐
-    randomPosts: true,
+    randomPosts: false,
     // OpenGraph图片功能，注意开启后要渲染很长时间，不建议本地调试的时候开启
     generateOgImages: true,
     // 沉浸阅读配置：电脑端文章详情页右下角按钮，进入后只留文章卡片+左侧目录
