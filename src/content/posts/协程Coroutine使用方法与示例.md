@@ -7,6 +7,7 @@ tags: [coroutine, C++]
 category: "编程技术"
 draft: false
 lang: "zh-CN"
+slug: coroutine-usage-and-example
 ---
 
 # 协程的概念

@@ -7,6 +7,7 @@ tags: [网络编程, Windows, C++]
 category: "编程技术"
 draft: false
 lang: "zh-CN"
+slug: iocp-and-proactor
 ---
 
 在高性能网络编程中，**Proactor** 模式和 **IOCP**（Input/Output Completion Port）是两个核心概念。本文旨在以简洁严谨的语言，为新手介绍它们的工作原理及使用方法。

@@ -7,6 +7,7 @@ tags: [socket, reactor, epoll, linux, kernel]
 category: "编程技术"
 draft: false
 lang: "zh-CN"
+slug: reactor-and-epoll
 ---
 
 # 一、 前置知识铺垫

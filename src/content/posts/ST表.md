@@ -7,7 +7,8 @@ tags: [ST表]
 category: "数据结构与算法"
 series: "数据结构"
 draft: false
-lang: ""
+lang: "zh-CN"
+slug: sparse-table
 ---
 
 最近写洛谷[P7167](https://www.luogu.com.cn/problem/P7167)的时候，用单调栈发现TLE了，然后学习了ST表，想着记录一些ST的使用方法。

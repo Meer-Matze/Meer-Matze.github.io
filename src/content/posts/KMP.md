@@ -8,6 +8,7 @@ category: "数据结构与算法"
 series: "算法"
 draft: false
 lang: "zh-CN"
+slug: kmp
 ---
 
 # 前缀表

@@ -8,6 +8,7 @@ category: "数据结构与算法"
 series: "数据结构"
 draft: false
 lang: "zh-CN"
+slug: b-tree-and-b-plus-tree
 ---
 
 # B树

@@ -7,6 +7,7 @@ tags: [Socket, 网络编程]
 category: "编程技术"
 draft: false
 lang: "zh-CN"
+slug: c-network-socket-programming-basics
 ---
 
 # 一、Socket 的本质与抽象机制
