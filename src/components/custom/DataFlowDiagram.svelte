@@ -1,8 +1,7 @@
 <script module>
   // ─── 导出常量（供 MDX 引用） ───
-  // 色环上均匀拉开 30°（固定色相，避免 calc() 在 SSR 中解析失败）
-  export const WHITE  = 'oklch(0.95 0.020 var(--hue))';
-  export const BLACK  = 'oklch(0.12 0.020 var(--hue))';
+  // 色环上均匀拉开 30°
+  export const WB = { light: 'oklch(0.12 0.020 var(--hue))', dark: 'oklch(0.95 0.020 var(--hue))' };  // 浅色模式下为黑色，深色模式下为白色
 
   export const PINK   = 'oklch(0.65 0.15 10)';
   export const AMBER  = 'oklch(0.70 0.16 40)';
@@ -34,8 +33,8 @@
     registers = [],         // 寄存器风格盒子（原 boxes）：{ x, y, label, w?, h?, rx?, fill?, stroke?, textColor?, fontSize?, fontFamily?, strokeWidth? }
     ops = [],                // 运算节点风格盒子：字段同上
     custom = [],              // 完全自定义盒子：字段同上，默认值仅作兜底，不带寄存器/运算节点的语义配色
-    lines = [],              // { x1, y1, x2, y2, color, noArrow? } — color 支持字符串或 {light,dark}
-    polylines = [],          // { points: [[x,y],...], color, noArrow?, dash? }
+    lines = [],              // { x1, y1, x2, y2, color, noArrow?, dash?, strokeWidth? } — color 支持字符串或 {light,dark}
+    polylines = [],          // { points: [[x,y],...], color, noArrow?, dash?, strokeWidth? }
     paths = [],               // { d: 'M...', color, noArrow?, dash? }
     braces = [],               // { x1, y1, x2, y2, side?, color?, strokeWidth?, dash? }
     circles = [],               // { cx, cy, r?, color }
@@ -97,8 +96,6 @@
   };
   const OP_BOX = {
     w: 88, h: 36, rx: 10,
-    // 需验证：module 顶部注释称 calc() 在 SSR 中解析失败,故导出常量固定了色相；
-    // 这里仍用 calc(var(--hue) + 45)。若 SSR 构建有问题需要改成固定偏移色相。
     fill:   { light: 'oklch(0.93 0.05 calc(var(--hue) + 45))', dark: 'oklch(0.20 0.06 calc(var(--hue) + 45))' },
     stroke: { light: 'oklch(0.60 0.18 calc(var(--hue) + 45))', dark: 'oklch(0.70 0.15 calc(var(--hue) + 45))' },
     strokeWidth: 2.5,
@@ -160,13 +157,66 @@
   }
 
   // 连线/圆点类元素的 color 统一走 resolve()，与 box/brace/label 保持一致的 {light,dark} 主题对象支持
-  function normalizeLine(line) {
-    return { ...line, color: resolve(line.color) };
+  // 计算箭头尖端偏移量：markerUnits="strokeWidth" 时，箭头长度为 markerWidth * strokeWidth
+  // 我们设置 markerWidth=5，所以箭头长度 = 5 * strokeWidth
+  // 线条需要缩短这个长度，使箭头尖端正好落在用户指定的 x2,y2
+  function calcArrowOffset(strokeWidth) {
+    return 5 * (strokeWidth ?? 2);
   }
 
-  function normalizePolyline(pl) {
-    return { ...pl, color: resolve(pl.color) };
+function normalizeLine(line) {
+  const strokeWidth = line.strokeWidth ?? 2;
+  const offset = calcArrowOffset(strokeWidth);
+  const dx = line.x2 - line.x1;
+  const dy = line.y2 - line.y1;
+  const len = Math.hypot(dx, dy);
+
+  let x2 = line.x2;
+  let y2 = line.y2;
+
+  if (!line.noArrow && len > 0) {
+    const shortened = Math.min(offset, len);
+    x2 -= (dx / len) * shortened;
+    y2 -= (dy / len) * shortened;
   }
+
+  return {
+    ...line,
+    color: resolve(line.color),
+    strokeWidth,
+    x2,
+    y2,
+  };
+}
+
+function normalizePolyline(pl) {
+  const strokeWidth = pl.strokeWidth ?? 2;
+  const offset = calcArrowOffset(strokeWidth);
+  const points = pl.points.map(p => [...p]);
+
+  if (!pl.noArrow && points.length >= 2) {
+    const p1 = points.at(-2);
+    const p2 = points.at(-1);
+
+    const dx = p2[0] - p1[0];
+    const dy = p2[1] - p1[1];
+    const len = Math.hypot(dx, dy);
+
+    if (len > 0) {
+      const shortened = Math.min(offset, len);
+
+      p2[0] -= (dx / len) * shortened;
+      p2[1] -= (dy / len) * shortened;
+    }
+  }
+
+  return {
+    ...pl,
+    points,
+    color: resolve(pl.color),
+    strokeWidth,
+  };
+}
 
   function normalizePath(p) {
     return { ...p, color: resolve(p.color) };
@@ -278,11 +328,11 @@
     {#each markerColors as color}
       <marker
         id={mid(color)}
-        markerWidth="10" markerHeight="7"
-        refX="10" refY="3.5"
-        orient="auto" markerUnits="userSpaceOnUse"
+        markerWidth="5" markerHeight="3"
+        refX="0" refY="1.75"
+        orient="auto" markerUnits="strokeWidth"
       >
-        <polygon points="0 0, 10 3.5, 0 7" fill={color} />
+        <polygon points="0 0.5, 5 1.75, 0 3" fill={color} />
       </marker>
     {/each}
   </defs>
@@ -303,19 +353,19 @@
   {/each}
 
   <!-- lines -->
-  {#each normalizedLines as { x1, y1, x2, y2, color, noArrow = false, dash = 0 }}
+  {#each normalizedLines as { x1, y1, x2, y2, color, noArrow = false, dash = 0, strokeWidth = 2 }}
     <line {x1} {y1} {x2} {y2}
-      stroke={color} stroke-width="2"
+      stroke={color} stroke-width={strokeWidth}
       stroke-dasharray={normalizeDashRatio(dash)}
       marker-end={color && !noArrow ? 'url(#' + mid(color) + ')' : undefined}
     />
   {/each}
 
   <!-- polylines -->
-  {#each normalizedPolylines as { points, color, noArrow = false, dash = 0 }}
+  {#each normalizedPolylines as { points, color, noArrow = false, dash = 0, strokeWidth = 2 }}
     <polyline
       points={points.map(p => p.join(',')).join(' ')}
-      stroke={color} stroke-width="2" fill="none"
+      stroke={color} stroke-width={strokeWidth} fill="none"
       pathLength="1"
       stroke-dasharray={normalizeDashRatio(dash)}
       marker-end={color && !noArrow ? 'url(#' + mid(color) + ')' : undefined}
@@ -325,7 +375,7 @@
   <!-- paths -->
   {#each normalizedPaths as { d, color, noArrow = false, dash = 0 }}
     <path {d}
-      stroke={color} stroke-width="2" fill="none"
+      stroke={color} stroke-width={strokeWidth} fill="none"
       pathLength="1"
       stroke-dasharray={normalizeDashRatio(dash)}
       marker-end={color && !noArrow ? 'url(#' + mid(color) + ')' : undefined}

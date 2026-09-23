@@ -12,8 +12,7 @@ Svelte 5 组件，用于在 MDX 中绘制数据流图（寄存器、运算节点
 
 ```mdx
 import DFD, {
-  WHITE,
-  BLACK,
+  WB
   PINK,
   AMBER,
   ORANGE,
@@ -91,7 +90,7 @@ type Color = string | { light: string; dark: string };
 ##### 4.2 `lines`
 
 ```ts
-{ x1: number; y1: number; x2: number; y2: number; color: Color; noArrow?: boolean; dash?: number }
+{ x1: number; y1: number; x2: number; y2: number; color: Color; noArrow?: boolean; dash?: number; strokeWidth?: number }
 ```
 
 `dash` 取值 `0~1`，和 `polylines` / `paths` 一致：`0` 表示实线，越接近 `1` 虚线间隔越大（内部 clamp 到 `0.95`）。
@@ -100,7 +99,7 @@ type Color = string | { light: string; dark: string };
 
 ```ts
 // polylines
-{ points: [number, number][]; color: Color; noArrow?: boolean; dash?: number }
+{ points: [number, number][]; color: Color; noArrow?: boolean; dash?: number; strokeWidth?: number }
 // paths
 { d: string; color: Color; noArrow?: boolean; dash?: number }
 ```
@@ -129,7 +128,7 @@ y1: 80,
 x2: 100,
 y2: 220,
 side: 'right',
-text: '第一行\n第二行',
+label: '第一行\n第二行',
 },
 ]}
 ```
@@ -159,7 +158,9 @@ labels={[
 
 1. 颜色
 
-- `WHITE`/`BLACK`/`PINK`/`AMBER`/`ORANGE`/`LIME`/`GREEN`/`CYAN`/`TEAL`/`INDIGO`/`BLUE`/`VIOLET`/`PURPLE`/`ROSE`
+- `WB`/`PINK`/`AMBER`/`ORANGE`/`LIME`/`GREEN`/`CYAN`/`TEAL`/`INDIGO`/`BLUE`/`VIOLET`/`PURPLE`/`ROSE`
+
+WB 在浅色模式下是黑色，深色模式下是白色。其他颜色均为固定颜色。
 
 2. 字体 默认为`FONT_MONO`
 
