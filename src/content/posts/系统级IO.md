@@ -10,7 +10,7 @@ series: "CSAPP"
 seriesOrder: 10
 draft: false
 lang: "zh-CN"
-slug: csapp-10
+slug: csapp10
 ---
 
 输入/输出（I/O）是在主存和外部设备（例如磁盘驱动器、终端和网络）之间复制数据的过程。输入操作是从 I/O 设备复制数据到主存，而输出操作是从主存复制数据到 I/O 设备。

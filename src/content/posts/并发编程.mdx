@@ -10,26 +10,26 @@ series: "CSAPP"
 seriesOrder: 12
 draft: false
 lang: "zh-CN"
-slug: csapp-12
+slug: csapp12
 ---
 
 import DFD, {
-WB,
-PINK,
-AMBER,
-ORANGE,
-LIME,
-GREEN,
-CYAN,
-TEAL,
-INDIGO,
-BLUE,
-VIOLET,
-PURPLE,
-ROSE,
+  WB,
+  TEAL,
+  PINK,
+  AMBER,
+  ORANGE,
+  LIME,
+  GREEN,
+  CYAN,
+  INDIGO,
+  BLUE,
+  VIOLET,
+  PURPLE,
+  ROSE,
 } from "@/components/custom/DataFlowDiagram.svelte";
 
-在[[csapp-8|第八章]]提到，如果两个逻辑控制流在时间上重叠，那么它们就是**并发的**（concurrent）。这种现象称为**并发**（concurrency），出现在计算机系统的许多层面。
+在[[csapp8|第八章]]提到，如果两个逻辑控制流在时间上重叠，那么它们就是**并发的**（concurrent）。这种现象称为**并发**（concurrency），出现在计算机系统的许多层面。
 
 > [!important] 本章目标
 > 掌握进程、I/O 多路复用和线程的并发模型，理解共享变量、信号量、竞争和死锁，并能构造并发网络服务器。
@@ -60,10 +60,10 @@ ROSE,
 >
 > 并发还引入了线程安全、可重入性、竞争、死锁等困难问题：
 >
-> - 被线程调用的函数必须线程安全（四类线程不安全函数各有对应的处理方式）
+> - 被线程调用的函数必须线程安全，有四类线程不安全函数
 > - 可重入函数是线程安全函数的真子集，通常更高效
 > - 竞争源于对调度顺序的错误假设
-> - 死锁源于线程等待永远不会发生的事件——遵循互斥锁加锁顺序规则可以避免。
+> - 死锁源于线程等待永远不会发生的事件
 
 ---
 
@@ -391,11 +391,11 @@ void check_clients(pool *p)
 
 ### 12.2.2 I/O 多路复用技术的优劣
 
-| 优点                                                                            | 缺点                                                                                 |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 比基于进程的设计提供更多行为控制（如为不同客户端提供不同服务）                  | 编码复杂——示例服务器代码量约为基于进程版本的三倍                                     |
-| 运行在单一进程上下文中，流之间共享数据容易<br>可以像调试顺序程序一样用 GDB 调试 | 不能充分利用多核处理器                                                               |
-| 不需要进程上下文切换来调度新流，通常更高效                                      | 并发粒度越小，复杂性越高——若流读取部分文本行时其他流无法前进，恶意客户端可利用这一点 |
+| 优点                                                                             | 缺点                                                                                    |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 比基于进程的设计提供更多行为控制（如为不同客户端提供不同服务）                   | 编码复杂——示例服务器代码量约为基于进程版本的三倍                                        |
+| 运行在单一进程上下文中，流之间共享数据容易<br/>可以像调试顺序程序一样用 GDB 调试 | 不能充分利用多核处理器                                                                  |
+| 不需要进程上下文切换来调度新流，通常更高效                                       | 并发粒度越小，复杂性越高<br/>若流读取部分文本行时其他流无法前进，恶意客户端可利用这一点 |
 
 > [!note] 并发粒度
 > 并发粒度是每个逻辑流在一个时间片中执行的指令数量。示例中粒度是读取一整行所需的指令数量。
@@ -775,144 +775,150 @@ $H_i$、$T_i$ 只操作本地栈变量，$L_i$、$U_i$、$S_i$ 操作共享变�
 两个临界区交集形成的状态空间区域叫**不安全区**（unsafe region，不包括与它交界的边缘状态）。绕开不安全区的轨迹线是**安全轨迹线**（safe trajectory），接触不安全区的是**不安全轨迹线**（unsafe trajectory）。
 
 <DFD
-client:load
-width={600}
-height={520}
-ariaLabel="线程轨迹与写 cnt 临界区示意图"
-circles={[
-// 原坐标整体向右+80、向上-80（并整体再+60保证 y≥0），格点间距仍为70
-// 行 j=0 (y=380)
-{ cx: 160, cy: 380, r: 3.5, color: WB },
-{ cx: 230, cy: 380, r: 3.5, color: WB },
-{ cx: 300, cy: 380, r: 3.5, color: WB },
-{ cx: 370, cy: 380, r: 3.5, color: WB },
-{ cx: 440, cy: 380, r: 3.5, color: WB },
-{ cx: 510, cy: 380, r: 3.5, color: WB },
-// 行 j=1 (y=310) H2
-{ cx: 160, cy: 310, r: 3.5, color: WB },
-{ cx: 230, cy: 310, r: 3.5, color: WB },
-{ cx: 300, cy: 310, r: 3.5, color: WB },
-{ cx: 370, cy: 310, r: 3.5, color: WB },
-{ cx: 440, cy: 310, r: 3.5, color: WB },
-{ cx: 510, cy: 310, r: 3.5, color: WB },
-// 行 j=2 (y=240) L2
-{ cx: 160, cy: 240, r: 3.5, color: WB },
-{ cx: 230, cy: 240, r: 3.5, color: WB },
-{ cx: 300, cy: 240, r: 3.5, color: WB },
-{ cx: 370, cy: 240, r: 3.5, color: WB },
-{ cx: 440, cy: 240, r: 3.5, color: WB },
-{ cx: 510, cy: 240, r: 3.5, color: WB },
-// 行 j=3 (y=170) U2
-{ cx: 160, cy: 170, r: 3.5, color: WB },
-{ cx: 230, cy: 170, r: 3.5, color: WB },
-{ cx: 300, cy: 170, r: 3.5, color: WB },
-{ cx: 370, cy: 170, r: 3.5, color: WB },
-{ cx: 440, cy: 170, r: 3.5, color: WB },
-{ cx: 510, cy: 170, r: 3.5, color: WB },
-// 行 j=4 (y=100) S2
-{ cx: 160, cy: 100, r: 3.5, color: WB },
-{ cx: 230, cy: 100, r: 3.5, color: WB },
-{ cx: 300, cy: 100, r: 3.5, color: WB },
-{ cx: 370, cy: 100, r: 3.5, color: WB },
-{ cx: 440, cy: 100, r: 3.5, color: WB },
-{ cx: 510, cy: 100, r: 3.5, color: WB },
-// 行 j=5 (y=30) T2
-{ cx: 160, cy: 30, r: 3.5, color: WB },
-{ cx: 230, cy: 30, r: 3.5, color: WB },
-{ cx: 300, cy: 30, r: 3.5, color: WB },
-{ cx: 370, cy: 30, r: 3.5, color: WB },
-{ cx: 440, cy: 30, r: 3.5, color: WB },
-{ cx: 510, cy: 30, r: 3.5, color: WB },
-]}
-custom={[
-// 不安全区中心同步平移
-{
-x: 335,
-y: 205,
-label: "不安全区",
-w: 210,
-h: 210,
-rx: 4,
-fill: { light: "#cce5ff", dark: "#1a3a5c" },
-stroke: { light: "#6699cc", dark: "#4a7aa0" },
-strokeWidth: 1.5,
-textColor: WB,
-fontSize: 14,
-},
-]}
-polylines={[
-// 坐标轴
-{ points: [[160, 380], [510, 380]], color: WB, noArrow: true },
-{ points: [[160, 380], [160, 30]], color: WB, noArrow: true },
-]}
-lines={[
-// 安全轨迹箭头
-{ x1: 160, y1: 380, x2: 160, y2: 325, color: WB },
-{ x1: 160, y1: 310, x2: 160, y2: 255, color: WB },
-{ x1: 160, y1: 240, x2: 160, y2: 185, color: WB },
-{ x1: 160, y1: 170, x2: 220, y2: 170, color: WB },
-{ x1: 230, y1: 170, x2: 230, y2: 115, color: WB },
-{ x1: 230, y1: 100, x2: 290, y2: 100, color: WB },
-{ x1: 300, y1: 100, x2: 360, y2: 100, color: WB },
-{ x1: 370, y1: 100, x2: 370, y2: 45, color: WB },
-{ x1: 370, y1: 30, x2: 430, y2: 30, color: WB },
-{ x1: 440, y1: 30, x2: 500, y2: 30, color: WB },
+    client:load
+    width={650}
+    height={460}
+    ariaLabel="线程轨迹与写 cnt 临界区示意图"
+    circles={[
+        // 行 j=0 (y=380)
+        { cx: 160, cy: 380, r: 2.8, color: ORANGE },
+        { cx: 230, cy: 380, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 380, r: 2.8, color: ORANGE },
+        { cx: 370, cy: 380, r: 2.8, color: ORANGE },
+        { cx: 440, cy: 380, r: 2.8, color: ORANGE },
+        { cx: 510, cy: 380, r: 2.8, color: ORANGE },
+        // 行 j=1 (y=310) H2
+        { cx: 160, cy: 310, r: 2.8, color: ORANGE },
+        { cx: 230, cy: 310, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 310, r: 2.8, color: ORANGE },
+        { cx: 370, cy: 310, r: 2.8, color: ORANGE },
+        { cx: 440, cy: 310, r: 2.8, color: ORANGE },
+        { cx: 510, cy: 310, r: 2.8, color: ORANGE },
+        // 行 j=2 (y=240) L2
+        { cx: 160, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 230, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 370, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 440, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 510, cy: 240, r: 2.8, color: ORANGE },
+        // 行 j=3 (y=170) U2
+        { cx: 160, cy: 170, r: 2.8, color: ORANGE },
+        { cx: 230, cy: 170, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 170, r: 2.8, color: ORANGE },
+        { cx: 370, cy: 170, r: 2.8, color: ORANGE },
+        { cx: 440, cy: 170, r: 2.8, color: ORANGE },
+        { cx: 510, cy: 170, r: 2.8, color: ORANGE },
+        // 行 j=4 (y=100) S2
+        { cx: 160, cy: 100, r: 2.8, color: ORANGE },
+        { cx: 230, cy: 100, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 100, r: 2.8, color: ORANGE },
+        { cx: 370, cy: 100, r: 2.8, color: ORANGE },
+        { cx: 440, cy: 100, r: 2.8, color: ORANGE },
+        { cx: 510, cy: 100, r: 2.8, color: ORANGE },
+        // 行 j=5 (y=30) T2
+        { cx: 160, cy: 30, r: 2.8, color: ORANGE },
+        { cx: 230, cy: 30, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 30, r: 2.8, color: ORANGE },
+        { cx: 370, cy: 30, r: 2.8, color: ORANGE },
+        { cx: 440, cy: 30, r: 2.8, color: ORANGE },
+        { cx: 510, cy: 30, r: 2.8, color: ORANGE },
+    ]}
+    custom={[
+        // 不安全区中心同步平移
+        {
+            x: 335,
+            y: 205,
+            label: "不安全区",
+            w: 210,
+            h: 210,
+            rx: 4,
+            fill: { light: "#cce5ff", dark: "#1a3a5c" },
+            stroke: { light: "#6699cc", dark: "#4a7aa0" },
+            strokeWidth: 1.5,
+            textColor: BLUE,
+            fontSize: 16,
+        },
+    ]}
+    lines={[
+        // 坐标轴
+        { x1: 160, y1: 380, x2: 525, y2: 380, color: LIME, noArrow: true, strokeWidth: 2 },
+        { x1: 160, y1: 380, x2: 160, y2: 15, color: LIME, noArrow: true, strokeWidth: 2 },
+        // 安全轨迹箭头
+        { x1: 160, y1: 380, x2: 160, y2: 310, color: TEAL, strokeWidth: 3 },
+        { x1: 160, y1: 310, x2: 160, y2: 240, color: TEAL, strokeWidth: 3 },
+        { x1: 160, y1: 240, x2: 160, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 160, y1: 170, x2: 230, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 230, y1: 170, x2: 230, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 230, y1: 100, x2: 300, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 300, y1: 100, x2: 370, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 100, x2: 370, y2: 30, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 30, x2: 440, y2: 30, color: TEAL, strokeWidth: 3 },
+        { x1: 440, y1: 30, x2: 510, y2: 30, color: TEAL, strokeWidth: 3 },
+        { x1: 160, y1: 240, x2: 160, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 160, y1: 170, x2: 230, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 230, y1: 170, x2: 230, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 230, y1: 100, x2: 300, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 300, y1: 100, x2: 370, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 100, x2: 370, y2: 30, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 30, x2: 440, y2: 30, color: TEAL, strokeWidth: 3 },
+        { x1: 440, y1: 30, x2: 510, y2: 30, color: TEAL, strokeWidth: 3 },
 
-    // 不安全轨迹箭头
-    { x1: 160, y1: 380, x2: 220, y2: 380, color: WB },
-    { x1: 230, y1: 380, x2: 290, y2: 380, color: WB },
-    { x1: 300, y1: 380, x2: 360, y2: 380, color: WB },
-    { x1: 370, y1: 380, x2: 370, y2: 325, color: WB },
-    { x1: 370, y1: 310, x2: 370, y2: 255, color: WB },
-    { x1: 370, y1: 240, x2: 370, y2: 185, color: WB },
-    { x1: 370, y1: 170, x2: 430, y2: 170, color: WB },
-    { x1: 440, y1: 170, x2: 500, y2: 170, color: WB },
-    { x1: 510, y1: 170, x2: 510, y2: 115, color: WB },
-    { x1: 510, y1: 100, x2: 510, y2: 45, color: WB },
+        // 不安全轨迹箭头
+        { x1: 160, y1: 380, x2: 230, y2: 380, color: TEAL, strokeWidth: 3 },
+        { x1: 230, y1: 380, x2: 300, y2: 380, color: TEAL, strokeWidth: 3 },
+        { x1: 300, y1: 380, x2: 370, y2: 380, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 380, x2: 370, y2: 310, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 310, x2: 370, y2: 240, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 240, x2: 370, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 370, y1: 170, x2: 440, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 440, y1: 170, x2: 510, y2: 170, color: TEAL, strokeWidth: 3 },
+        { x1: 510, y1: 170, x2: 510, y2: 100, color: TEAL, strokeWidth: 3 },
+        { x1: 510, y1: 100, x2: 510, y2: 30, color: TEAL, strokeWidth: 3 },
 
-]}
-braces={[
-// 底部临界区
-{
-x1: 230,
-y1: 430,
-x2: 440,
-y2: 430,
-side: "bottom",
-color: WB,
-label: "写 cnt 的临界区",
-fontSize: 13,
-},
-// 左侧临界区
-{
-x1: 110,
-y1: 100,
-x2: 110,
-y2: 310,
-side: "left",
-color: WB,
-label: "写cnt的\n临界区",
-fontSize: 13,
-},
-]}
-labels={[
-{ x: 160, y: 10, text: "线程2", fontSize: 14, color: WB },
-{ x: 540, y: 395, text: "线程1", fontSize: 14, color: WB },
-{ x: 260, y: 15, text: "安全轨迹线", fontSize: 13, color: WB },
-{ x: 540, y: 130, text: "不安全轨迹线", fontSize: 13, color: WB },
-// 横轴标签
-{ x: 230, y: 398, text: "H1", fontSize: 12, color: WB },
-{ x: 300, y: 398, text: "L1", fontSize: 12, color: WB },
-{ x: 370, y: 398, text: "U1", fontSize: 12, color: WB },
-{ x: 440, y: 398, text: "S1", fontSize: 12, color: WB },
-{ x: 510, y: 398, text: "T1", fontSize: 12, color: WB },
-// 纵轴标签
-{ x: 135, y: 315, text: "H2", fontSize: 12, color: WB },
-{ x: 135, y: 245, text: "L2", fontSize: 12, color: WB },
-{ x: 135, y: 175, text: "U2", fontSize: 12, color: WB },
-{ x: 135, y: 105, text: "S2", fontSize: 12, color: WB },
-{ x: 135, y: 35, text: "T2", fontSize: 12, color: WB },
-]}
+    ]}
+    braces={[
+    // 底部临界区
+        {
+            x1: 230,
+            y1: 405,
+            x2: 440,
+            y2: 405,
+            side: "bottom",
+            color: CYAN,
+            label: "写 cnt 的临界区",
+            fontSize: 13,
+        },
+        // 左侧临界区
+        {
+            x1: 120,
+            y1: 100,
+            x2: 120,
+            y2: 310,
+            side: "left",
+            color: CYAN,
+            label: "写cnt的\n临界区",
+            fontSize: 13,
+        },
+    ]}
+    labels={[
+        { x: 160, y: 13, text: "线程2", fontSize: 14},
+        { x: 555, y: 387, text: "线程1", fontSize: 14 },
+        { x: 240, y: 80, text: "安全轨迹线", fontSize: 16, color: TEAL },
+        { x: 580, y: 120, text: "不安全轨迹线", fontSize: 16, color: TEAL },
+        // 横轴标签
+        { x: 230, y: 398, text: "H1", fontSize: 12 },
+        { x: 300, y: 398, text: "L1", fontSize: 12 },
+        { x: 370, y: 398, text: "U1", fontSize: 12 },
+        { x: 440, y: 398, text: "S1", fontSize: 12 },
+        { x: 510, y: 398, text: "T1", fontSize: 12 },
+        // 纵轴标签
+        { x: 142, y: 315, text: "H2", fontSize: 12 },
+        { x: 142, y: 245, text: "L2", fontSize: 12 },
+        { x: 142, y: 175, text: "U2", fontSize: 12 },
+        { x: 142, y: 105, text: "S2", fontSize: 12 },
+        { x: 142, y: 35, text: "T2", fontSize: 12 },
+    ]}
+
 />
 
 要保证共享数据结构的并发程序正确执行，必须同步线程，使它们总是走安全轨迹线——信号量正是这样一种经典工具。
@@ -960,7 +966,223 @@ void V(sem_t *s); /* Wrapper function for sem_post */
 
 $P$ 和 $V$ 操作创建了一组不可行状态，叫**禁止区**（forbidden region）——因为信号量不变性，禁止区完全包括了不安全区，所以每条实际可行的轨迹线都是安全的，不管运行时指令顺序如何，程序都会正确地增加计数器值。
 
-<DFD/>
+<DFD 
+    client:load
+    width={560}
+    height={420}
+    ariaLabel="禁止区示意图"
+    circles={[
+        // 行 j=0 (y=390)
+        { cx: 100, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 390, r: 2.8, color: ORANGE },
+        // 行 j=1 (y=340) H2
+        { cx: 100, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 340, r: 2.8, color: ORANGE },
+        // 行 j=2 (y=290) PS
+        { cx: 100, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 290, r: 2.8, color: ORANGE },
+        // 行 j=3 (y=240) L2
+        { cx: 100, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 240, r: 2.8, color: ORANGE },
+        // 行 j=4 (y=190) U2
+        { cx: 100, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 190, r: 2.8, color: ORANGE },
+        // 行 j=5 (y=140) S2
+        { cx: 100, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 140, r: 2.8, color: ORANGE },
+        // 行 j=6 (y=90) T2
+        { cx: 100, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 90, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 90, r: 2.8, color: ORANGE },
+        // 行 j=7 (y=40) T2
+        { cx: 100, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 40, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 40, r: 2.8, color: ORANGE },
+    ]}
+    custom={[
+        // 禁止区
+        {
+            x: 275,
+            y: 215,
+            w: 158,
+            h: 158,
+            rx: 2,
+            stroke: { light: "#ff6666", dark: "#cc4a4a" },
+            strokeWidth: 1.8,
+        },        
+        // 不安全区
+        {
+            x: 275,
+            y: 215,
+            label: "不安全区",
+            w: 144,
+            h: 144,
+            rx: 4,
+            fill: { light: "#cce5ff", dark: "#1a3a5c" },
+            stroke: { light: "#6699cc", dark: "#4a7aa0" },
+            strokeWidth: 1.5,
+            textColor: BLUE,
+            fontSize: 16,
+        },
+        //
+        {
+            x: 40,
+            y: 395,
+            label: " 初始\ns=1",
+            w: 60,
+            h: 40,
+            rx: 1,
+        }
+    ]}
+    lines={[
+        // 坐标轴
+        { x1: 100, y1: 390, x2: 470, y2: 390, color: LIME, noArrow: true, strokeWidth: 2 },
+        { x1: 100, y1: 390, x2: 100, y2: 25, color: LIME, noArrow: true, strokeWidth: 2 },
+    ]}
+    labels={[
+        // 横轴标签
+        { x: 150, y: 408, text: "H1", fontSize: 12 },
+        { x: 200, y: 408, text: "P(S)", fontSize: 12 },
+        { x: 250, y: 408, text: "L1", fontSize: 12 },
+        { x: 300, y: 408, text: "U1", fontSize: 12 },
+        { x: 350, y: 408, text: "S1", fontSize: 12 },
+        { x: 400, y: 408, text: "V(S)", fontSize: 12 },
+        { x: 450, y: 408, text: "T1", fontSize: 12 },
+        // 纵轴标签
+        { x: 83, y: 340, text: "H2", fontSize: 12 },
+        { x: 83, y: 290, text: "P(S)", fontSize: 12 },
+        { x: 83, y: 240, text: "L2", fontSize: 12 },
+        { x: 83, y: 190, text: "U2", fontSize: 12 },
+        { x: 83, y: 140, text: "S2", fontSize: 12 },
+        { x: 83, y: 90, text: "V(S)", fontSize: 12 },
+        { x: 83, y: 40, text: "T2", fontSize: 12 },
+        // 坐标轴
+        { x: 100, y: 17, text: "线程2", fontSize: 14},
+        { x: 490, y: 395, text: "线程1", fontSize: 14 },
+        // 禁止区
+        { x:275, y: 120, text: "禁止区", fontSize: 16},
+        // 每个点右上角的数字
+        // 第一行 y=390-5
+        { x: 105, y: 385, text: "1", fontSize: 9},
+        { x: 155, y: 385, text: "1", fontSize: 9},
+        { x: 205, y: 385, text: "0", fontSize: 9},
+        { x: 255, y: 385, text: "0", fontSize: 9},
+        { x: 305, y: 385, text: "0", fontSize: 9},
+        { x: 355, y: 385, text: "0", fontSize: 9},
+        { x: 405, y: 385, text: "1", fontSize: 9},
+        { x: 455, y: 385, text: "1", fontSize: 9},
+        // 第二行 y=340-5
+        { x: 105, y: 335, text: "1", fontSize: 9},
+        { x: 155, y: 335, text: "1", fontSize: 9},
+        { x: 205, y: 335, text: "0", fontSize: 9},
+        { x: 255, y: 335, text: "0", fontSize: 9},
+        { x: 305, y: 335, text: "0", fontSize: 9},
+        { x: 355, y: 335, text: "0", fontSize: 9},
+        { x: 405, y: 335, text: "1", fontSize: 9},
+        { x: 455, y: 335, text: "1", fontSize: 9},
+        // 第三行 y=290-5
+        { x: 105, y: 285, text: "0", fontSize: 9},
+        { x: 155, y: 285, text: "0", fontSize: 9},
+        { x: 210, y: 285, text: "-1", fontSize: 9},
+        { x: 255, y: 285, text: "-1", fontSize: 9},
+        { x: 305, y: 285, text: "-1", fontSize: 9},
+        { x: 340, y: 285, text: "-1", fontSize: 9},
+        { x: 405, y: 285, text: "0", fontSize: 9},
+        { x: 455, y: 285, text: "0", fontSize: 9},
+        // 第四行 y=240-5
+        { x: 105, y: 235, text: "0", fontSize: 9},
+        { x: 155, y: 235, text: "0", fontSize: 9},
+        { x: 210, y: 235, text: "-1", fontSize: 9},
+        { x: 255, y: 235, text: "-1", fontSize: 9},
+        { x: 305, y: 235, text: "-1", fontSize: 9},
+        { x: 340, y: 235, text: "-1", fontSize: 9},
+        { x: 405, y: 235, text: "0", fontSize: 9},
+        { x: 455, y: 235, text: "0", fontSize: 9},
+        // 第五行 y=190-5
+        { x: 105, y: 185, text: "0", fontSize: 9},
+        { x: 155, y: 185, text: "0", fontSize: 9},
+        { x: 210, y: 185, text: "-1", fontSize: 9},
+        { x: 255, y: 185, text: "-1", fontSize: 9},
+        { x: 305, y: 185, text: "-1", fontSize: 9},
+        { x: 340, y: 185, text: "-1", fontSize: 9},
+        { x: 405, y: 185, text: "0", fontSize: 9},
+        { x: 455, y: 185, text: "0", fontSize: 9},
+        // 第六行 y=140-5
+        { x: 105, y: 135, text: "0", fontSize: 9},
+        { x: 155, y: 135, text: "0", fontSize: 9},
+        { x: 210, y: 150, text: "-1", fontSize: 9},
+        { x: 255, y: 150, text: "-1", fontSize: 9},
+        { x: 305, y: 150, text: "-1", fontSize: 9},
+        { x: 340, y: 150, text: "-1", fontSize: 9},
+        { x: 405, y: 135, text: "0", fontSize: 9},
+        { x: 455, y: 135, text: "0", fontSize: 9},
+        // 第七行 y=90-5
+        { x: 105, y: 85, text: "1", fontSize: 9},
+        { x: 155, y: 85, text: "1", fontSize: 9},
+        { x: 205, y: 85, text: "0", fontSize: 9},
+        { x: 255, y: 85, text: "0", fontSize: 9},
+        { x: 305, y: 85, text: "0", fontSize: 9},
+        { x: 355, y: 85, text: "0", fontSize: 9},
+        { x: 405, y: 85, text: "1", fontSize: 9},
+        { x: 455, y: 85, text: "1", fontSize: 9},
+        // 第八行 y=40-5
+        { x: 105, y: 35, text: "1", fontSize: 9},
+        { x: 155, y: 35, text: "1", fontSize: 9},
+        { x: 205, y: 35, text: "0", fontSize: 9},
+        { x: 255, y: 35, text: "0", fontSize: 9},
+        { x: 305, y: 35, text: "0", fontSize: 9},
+        { x: 355, y: 35, text: "0", fontSize: 9},
+        { x: 405, y: 35, text: "1", fontSize: 9},
+        { x: 455, y: 35, text: "1", fontSize: 9},
+    ]}
+
+/>
 
 用信号量正确同步计数器程序：
 
@@ -1523,7 +1745,7 @@ int rand_r(unsigned int *nextp)
 - **深层复制**（deep copy）的代价：像 `gethostbyname` 返回的是指向复杂 `hostent` 结构的指针，结构内部还嵌着字符串数组和 IP 地址数组，深层复制意味着要递归复制这些嵌套内容，而不只是复制顶层结构体本身。这正是为什么直接用可重入版本 `gethostbyname_r` 几乎总是更省事的选择，它从设计上就避免了这层复制
 - **对第 2 类函数无效**——`rand` 依赖跨调用的静态状态，加锁-复制解决不了这个问题，只能重写成 `rand_r` 这样的可重入版本
 
-因此 Linux 系统为大多数线程不安全函数提供了以 `_r` 后缀结尾的可重入版本，建议尽可能使用它们。但注意到有一些被弃用的函数也在上表中，例如 `gethostbyaddr`、`gethostbyname`、`inet_ntoa`，已经被可重入的 `getaddrinfo`、`getnameinfo`、`inet_ntop` 取代。（见[[csapp-11|第十一章]]）
+因此 Linux 系统为大多数线程不安全函数提供了以 `_r` 后缀结尾的可重入版本，建议尽可能使用它们。但注意到有一些被弃用的函数也在上表中，例如 `gethostbyaddr`、`gethostbyname`、`inet_ntoa`，已经被可重入的 `getaddrinfo`、`getnameinfo`、`inet_ntop` 取代。（见[[csapp11#1147-主机和服务的转换|第十一章]]）
 
 ### 12.7.4 竞争
 
@@ -1592,7 +1814,136 @@ void *thread(void *vargp)
 
 **死锁**（deadlock）指一组线程被阻塞，等待一个永远不会为真的条件。**死锁区域**（deadlock region）是指在进度图中，右上方区域被禁止区封锁的点，使得一旦进程进入其中，无论向上还是向右都不可避免的撞上禁止区从而死锁。
 
-<DFD/>
+<DFD 
+    client:load
+    width={600}
+    height={480}
+    ariaLabel="死锁示意图"
+    circles={[
+        // x坐标轴(y=440)
+        { cx: 100, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 150, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 200, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 250, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 300, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 350, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 400, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 450, cy: 440, r: 2.8, color: ORANGE },
+        { cx: 500, cy: 440, r: 2.8, color: ORANGE },
+        // y坐标轴(x=100)
+        { cx: 100, cy: 390, r: 2.8, color: ORANGE },
+        { cx: 100, cy: 340, r: 2.8, color: ORANGE },
+        { cx: 100, cy: 290, r: 2.8, color: ORANGE },
+        { cx: 100, cy: 240, r: 2.8, color: ORANGE },
+        { cx: 100, cy: 190, r: 2.8, color: ORANGE },
+        { cx: 100, cy: 140, r: 2.8, color: ORANGE },
+        { cx: 100, cy: 90 , r: 2.8, color: ORANGE },
+        { cx: 100, cy: 40 , r: 2.8, color: ORANGE },
+    ]}
+    custom={[
+        // 禁止区
+        {
+            x: 275,
+            y: 165,
+            label: "s的禁止区",
+            w: 150,
+            h: 150,
+            rx: 2,
+            fill: "oklch(0.34 0.8 345 /.5)",
+            stroke: { light: "#ff6666d5", dark: "#cc4a4ad5" },
+            strokeWidth: 1.8,
+            fontSize: 14,
+        },
+        {
+            x: 375,
+            y: 265,
+            label: "t的禁止区",
+            w: 150,
+            h: 150,
+            rx: 2,
+            fill: "oklch(0.34 0.8 345 /.5)",
+            stroke: { light: "#ff6666d5", dark: "#cc4a4ad5" },
+            strokeWidth: 1.8,
+            fontSize: 14,
+        },
+        // 死锁区域
+        {
+            x: 250,
+            y: 290,
+            w: 100,
+            h: 100,
+            rx: 2,
+            fill: { light: "#6d40d7d6", dark: "#581b81d6" },
+            stroke: { light: "#ff6666d5", dark: "#cc4a4ad5" },
+            strokeWidth: 1.8,
+        },
+        // 初始
+        {
+            x: 40,
+            y: 430,
+            label: " 初始\ns=1\nt=1",
+            w: 60,
+            h: 60,
+            rx: 1,
+        }
+    ]}
+    lines={[
+        // 坐标轴
+        { x1: 100, y1: 440, x2: 520, y2: 440, color: LIME, noArrow: true, strokeWidth: 2 },
+        { x1: 100, y1: 440, x2: 100, y2: 25, color: LIME, noArrow: true, strokeWidth: 2 },
+        // 有死锁的轨迹线
+        { x1: 100, y1: 440, x2: 150, y2: 440, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 440, x2: 150, y2: 390, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 390, x2: 200, y2: 390, color: TEAL, strokeWidth: 3},
+        { x1: 200, y1: 390, x2: 200, y2: 340, color: TEAL, strokeWidth: 3},
+        { x1: 200, y1: 340, x2: 250, y2: 340, color: TEAL, strokeWidth: 3},
+        { x1: 250, y1: 340, x2: 250, y2: 290, color: TEAL, strokeWidth: 3},
+        // 无死锁的轨迹线
+        { x1: 100, y1: 440, x2: 100, y2: 390, color: TEAL, strokeWidth: 3},
+        { x1: 100, y1: 390, x2: 100, y2: 340, color: TEAL, strokeWidth: 3},
+        { x1: 100, y1: 340, x2: 100, y2: 290, color: TEAL, strokeWidth: 3},
+        { x1: 100, y1: 290, x2: 150, y2: 290, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 290, x2: 150, y2: 240, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 240, x2: 150, y2: 190, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 190, x2: 150, y2: 140, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 140, x2: 150, y2: 90, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 90, x2: 150, y2: 40, color: TEAL, strokeWidth: 3},
+        { x1: 150, y1: 40, x2: 200, y2: 40, color: TEAL, strokeWidth: 3},
+        { x1: 200, y1: 40, x2: 250, y2: 40, color: TEAL, strokeWidth: 3},
+        { x1: 250, y1: 40, x2: 300, y2: 40, color: TEAL, strokeWidth: 3},
+        { x1: 300, y1: 40, x2: 350, y2: 40, color: TEAL, strokeWidth: 3},
+        { x1: 350, y1: 40, x2: 400, y2: 40, color: TEAL, strokeWidth: 3},
+
+    ]}
+    labels={[
+        // 横轴标签
+        { x: 200, y: 458, text: "P(s)", fontSize: 12 },
+        { x: 300, y: 458, text: "P(t)", fontSize: 12 },
+        { x: 400, y: 458, text: "V(s)", fontSize: 12 },
+        { x: 500, y: 458, text: "V(t)", fontSize: 12 },
+        { x: 150, y: 455, text: ". . .", fontSize: 12 },
+        { x: 250, y: 455, text: ". . .", fontSize: 12 },
+        { x: 350, y: 455, text: ". . .", fontSize: 12 },
+        { x: 450, y: 455, text: ". . .", fontSize: 12 },
+        // 纵轴标签
+        { x: 83, y: 340, text: "P(t)", fontSize: 12 },
+        { x: 83, y: 240, text: "P(s)", fontSize: 12 },
+        { x: 83, y: 140, text: "V(t)", fontSize: 12 },
+        { x: 83, y: 40, text: "V(s)", fontSize: 12 },
+        { x: 83, y: 390, text: ".\n.\n.", fontSize: 12 },
+        { x: 83, y: 290, text: ".\n.\n.", fontSize: 12 },
+        { x: 83, y: 190, text: ".\n.\n.", fontSize: 12 },
+        { x: 83, y: 90 , text: ".\n.\n.", fontSize: 12 },
+        // 坐标轴
+        { x: 540, y: 445, text: "线程1", fontSize: 12 },
+        { x: 100, y: 20, text: "线程2", fontSize: 12 },
+        // 死锁区域
+        { x: 250, y: 360, text: "死锁区", fontSize: 14 },
+        { x: 250, y: 280, text: "死锁状态", fontSize: 14 },
+        { x: 430, y: 43, text: "...", fontSize: 24, color: TEAL }
+    ]}
+
+/>
 
 死锁是一个相当困难的问题，因为它不总是可预测的。一些幸运的执行轨迹线将绕开死锁区域，而其他的将会陷入这个区域。对于程序员来说，这其中隐含的着实令人惊慌。你可以运行一个程序 1000 次不出任何问题，但是下一次它就死锁了。或者程序在一台机器上可能运行得很好，但是在另外的机器上就会死锁。最糟糕的是，错误常常是不可重复的，因为不同的执行有不同的轨迹线。
 
