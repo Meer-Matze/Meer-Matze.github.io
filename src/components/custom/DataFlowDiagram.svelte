@@ -158,10 +158,10 @@
 
   // 连线/圆点类元素的 color 统一走 resolve()，与 box/brace/label 保持一致的 {light,dark} 主题对象支持
   // 计算箭头尖端偏移量：markerUnits="strokeWidth" 时，箭头长度为 markerWidth * strokeWidth
-  // 我们设置 markerWidth=5，所以箭头长度 = 5 * strokeWidth
+  // 我们设置 markerWidth=3，所以箭头长度 = 3 * strokeWidth
   // 线条需要缩短这个长度，使箭头尖端正好落在用户指定的 x2,y2
   function calcArrowOffset(strokeWidth) {
-    return 5 * (strokeWidth ?? 2);
+    return 3 * (strokeWidth ?? 2);
   }
 
 function normalizeLine(line) {
@@ -328,11 +328,11 @@ function normalizePolyline(pl) {
     {#each markerColors as color}
       <marker
         id={mid(color)}
-        markerWidth="5" markerHeight="3"
+        markerWidth="3" markerHeight="3"
         refX="0" refY="1.75"
         orient="auto" markerUnits="strokeWidth"
       >
-        <polygon points="0 0.5, 5 1.75, 0 3" fill={color} />
+        <polygon points="0 0.5, 3 1.75, 0 3" fill={color} />
       </marker>
     {/each}
   </defs>
