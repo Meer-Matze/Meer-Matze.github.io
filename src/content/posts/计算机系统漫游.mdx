@@ -758,6 +758,184 @@ L1 和 L2 高速缓存用**静态随机访问存储器**（SRAM）技术实现�
 
 从上至下，访问速度越来越慢、容量越来越大、每字节造价越来越便宜。寄存器文件位于层次结构顶部（第 0 级 L0），三层高速缓存 L1 到 L3 占据第 1 到第 3 层，主存在第 4 层，依此类推。
 
+<DFD
+  client:load
+  width={1000}
+  height={600}
+  ariaLabel="存储器层次结构"
+  lines={[
+    {
+      x1: 30,
+      y1: 275,
+      x2: 30,
+      y2: 35,
+      color: "oklch(0.78 0.34 188)",
+      strokeWidth: 5,
+    },
+    {
+      x1: 30,
+      y1: 345,
+      x2: 30,
+      y2: 585,
+      color: "oklch(0.78 0.34 188)",
+      strokeWidth: 5,
+    },
+  ]}
+  polylines={[
+    {
+      points: [
+        [420, 30],
+        [119, 590],
+        [721, 590],
+        [420, 30],
+        [377, 110],
+        [463, 110],
+        [506, 190],
+        [334, 190],
+        [291, 270],
+        [549, 270],
+        [592, 350],
+        [248, 350],
+        [205, 430],
+        [635, 430],
+        [678, 510],
+        [162, 510],
+      ],
+      color: "oklch(0.78 0.34 88)",
+      noArrow: true,
+      strokeWidth: 4,
+    },
+  ]}
+  braces={[
+    {
+      x1: 510,
+      y1: 75,
+      x2: 510,
+      y2: 145,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "CPU寄存器保存来自\n高速缓存存储器的字",
+    },
+    {
+      x1: 553,
+      y1: 155,
+      x2: 553,
+      y2: 225,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "L1高速缓存保存取自\nL2高速缓存的高速缓存行",
+    },
+    {
+      x1: 596,
+      y1: 235,
+      x2: 596,
+      y2: 305,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "L2高速缓存保存取自\nL3高速缓存的高速缓存行",
+    },
+    {
+      x1: 639,
+      y1: 315,
+      x2: 639,
+      y2: 385,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "L3高速缓存保存取自\n磁盘的高速缓存行",
+    },
+    {
+      x1: 682,
+      y1: 395,
+      x2: 682,
+      y2: 465,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "主存保存取自\n本地磁盘的磁盘块",
+    },
+    {
+      x1: 725,
+      y1: 475,
+      x2: 725,
+      y2: 545,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "本地磁盘保存取自\n远程网络服务器上磁盘的文件",
+    },
+  ]}
+  labels={[
+    {
+      x: 75,
+      y: 170,
+      text: "更小\n\n更快\n\n（每字节）\n\n更贵的\n\n存储设备",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 75,
+      y: 450,
+      text: "更大\n\n更慢\n\n（每字节）\n\n更便宜的\n\n存储设备",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    { x: 375, y: 75, text: "L0:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 332, y: 155, text: "L1:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 289, y: 235, text: "L2:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 246, y: 315, text: "L3:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 203, y: 395, text: "L4:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 160, y: 475, text: "L5:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 117, y: 555, text: "L6:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 420, y: 100, text: "寄存器", fontSize: 18, fontFamily: FONT_SERIF },
+    {
+      x: 420,
+      y: 160,
+      text: "L1高速缓存\n（SRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 240,
+      text: "L2高速缓存\n（SRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 320,
+      text: "L3高速缓存\n（SRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 400,
+      text: "主存\n（DRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 480,
+      text: "本地二级存储\n（本地磁盘）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 560,
+      text: "远程二级存储\n（分布式文件系统、Web 服务器）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+  ]}
+/>
+
 存储器层次结构的主要思想是：上一层存储器作为低一层存储器的高速缓存。因此
 
 - 寄存器文件是 L1 的高速缓存
@@ -781,6 +959,112 @@ shell 加载和运行 hello 程序，以及 hello 程序输出消息时，都没
 2. 向应用程序提供简单一致的机制来控制复杂又通常大不相同的低级硬件设备
 
 操作系统通过**进程**、**虚拟内存**、**文件**这三个基本抽象概念实现这两个功能。如图所示，文件是对 I/O 设备的抽象，虚拟内存是对主存和磁盘 I/O 设备的抽象，进程是对处理器、主存和 I/O 设备的抽象。
+
+<DFD
+  client:load
+  width={800}
+  height={350}
+  ariaLabel="操作系统抽象"
+  custom={[
+    {
+      x: 175,
+      y: 300,
+      w: 225,
+      h: 60,
+      rx: 2,
+      label: "处理器",
+      stroke: AMBER,
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 400,
+      y: 300,
+      w: 225,
+      h: 60,
+      rx: 2,
+      label: "主存",
+      stroke: AMBER,
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 625,
+      y: 300,
+      w: 225,
+      h: 60,
+      rx: 2,
+      label: "I/O 设备",
+      stroke: AMBER,
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+  ]}
+  lines={[
+    {
+      x1: 62.5,
+      y1: 60,
+      x2: 62.5,
+      y2: 265,
+      color: "oklch(0.52 0.55 266)",
+      noArrow: true,
+      dash: 0.7,
+    },
+    {
+      x1: 287.5,
+      y1: 160,
+      x2: 287.5,
+      y2: 265,
+      color: "oklch(0.52 0.55 266)",
+      noArrow: true,
+      dash: 0.7,
+    },
+    {
+      x1: 737.5,
+      y1: 60,
+      x2: 737.5,
+      y2: 238,
+      color: "oklch(0.52 0.55 266)",
+      noArrow: true,
+      dash: 0.7,
+    },
+  ]}
+  braces={[
+    {
+      x1: 512.5,
+      y1: 255,
+      x2: 737.5,
+      y2: 255,
+      side: "top",
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "文件",
+    },
+    {
+      x1: 287.5,
+      y1: 155,
+      x2: 737.5,
+      y2: 155,
+      side: "top",
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "虚拟内存",
+    },
+    {
+      x1: 62.5,
+      y1: 55,
+      x2: 737.5,
+      y2: 55,
+      side: "top",
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "进程",
+    },
+  ]}
+/>
 
 > [!note] Unix、POSIX 和标准 Unix 规范
 > 20 世纪 60 年代，IBM OS/360 和 Multics 等大型操作系统兴起。贝尔实验室于 1969 年退出 Multics 项目后，Ken Thompson、Dennis Ritchie、Doug McIlroy 和 Joe Ossanna 在 DEC PDP-7 上开发了更小的 Unix，1973 年用 C 重写，1974 年开始正式发布。
@@ -812,6 +1096,210 @@ hello 这样的程序运行时，操作系统提供一种假象，好像系统�
 
 当应用程序需要操作系统的某些操作（如读写文件）时，执行一条特殊的系统调用指令，将控制权传给内核，内核执行请求的操作后返回应用程序。
 
+<DFD
+  client:load
+  width={800}
+  height={300}
+  ariaLabel="进程上下文切换"
+  lines={[
+    // 横线
+    {
+      x1: 230,
+      y1: 60,
+      x2: 620,
+      y2: 60,
+      color: "oklch(0.67 0.25 236 /.53)",
+      noArrow: true,
+      strokeWidth: 1.5,
+    },
+    {
+      x1: 230,
+      y1: 100,
+      x2: 620,
+      y2: 100,
+      color: "oklch(0.67 0.25 236 /.53)",
+      noArrow: true,
+      strokeWidth: 1.5,
+    },
+    {
+      x1: 230,
+      y1: 140,
+      x2: 620,
+      y2: 140,
+      color: "oklch(0.67 0.25 236 /.53)",
+      noArrow: true,
+      strokeWidth: 1.5,
+    },
+    {
+      x1: 230,
+      y1: 180,
+      x2: 620,
+      y2: 180,
+      color: "oklch(0.67 0.25 236 /.53)",
+      noArrow: true,
+      strokeWidth: 1.5,
+    },
+    {
+      x1: 230,
+      y1: 220,
+      x2: 620,
+      y2: 220,
+      color: "oklch(0.67 0.25 236 /.53)",
+      noArrow: true,
+      strokeWidth: 1.5,
+    },
+    {
+      x1: 230,
+      y1: 260,
+      x2: 620,
+      y2: 260,
+      color: "oklch(0.67 0.25 236 /.53)",
+      noArrow: true,
+      strokeWidth: 1.5,
+    },
+    // 分割线
+    {
+      x1: 400,
+      y1: 20,
+      x2: 400,
+      y2: 285,
+      color: "oklch(0.58 0.45 252 /.93)",
+      noArrow: true,
+      strokeWidth: 2,
+      dash: 0.72,
+    },
+    // 时间
+    {
+      x1: 50,
+      y1: 60,
+      x2: 50,
+      y2: 260,
+      color: "oklch(0.68 0.45 200)",
+      strokeWidth: 3,
+    },
+    // read
+    {
+      x1: 200,
+      y1: 100,
+      x2: 228,
+      y2: 100,
+      color: "oklch(0.64 0.45 270)",
+      strokeWidth: 2.5,
+      dash: 0.5,
+    },
+    // 磁盘中断
+    {
+      x1: 200,
+      y1: 180,
+      x2: 228,
+      y2: 180,
+      color: "oklch(0.64 0.45 270)",
+      strokeWidth: 2.5,
+      dash: 0.5,
+    },
+    // 返回
+    {
+      x1: 200,
+      y1: 220,
+      x2: 228,
+      y2: 220,
+      color: "oklch(0.64 0.45 270)",
+      strokeWidth: 2.5,
+      dash: 0.5,
+    },
+    // 进程
+    {
+      x1: 330,
+      y1: 60,
+      x2: 330,
+      y2: 100,
+      color: PINK,
+      strokeWidth: 3,
+    },
+    {
+      x1: 330,
+      y1: 100,
+      x2: 460,
+      y2: 140,
+      color: PINK,
+      strokeWidth: 3,
+    },
+    {
+      x1: 460,
+      y1: 140,
+      x2: 460,
+      y2: 180,
+      color: PINK,
+      strokeWidth: 3,
+    },
+    {
+      x1: 460,
+      y1: 180,
+      x2: 330,
+      y2: 220,
+      color: PINK,
+      strokeWidth: 3,
+    },
+    {
+      x1: 330,
+      y1: 220,
+      x2: 330,
+      y2: 260,
+      color: PINK,
+      strokeWidth: 3,
+    },
+  ]}
+  braces={[
+    {
+      x1: 630,
+      y1: 100,
+      x2: 630,
+      y2: 140,
+      side: "right",
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "上下文切换",
+    },
+    {
+      x1: 630,
+      y1: 180,
+      x2: 630,
+      y2: 220,
+      side: "right",
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "上下文切换",
+    },
+  ]}
+  labels={[
+    { x: 50, y: 45, text: "时间", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 330, y: 40, text: "进程A", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 460, y: 40, text: "进程B", fontSize: 18, fontFamily: FONT_SERIF },
+    {
+      x: 180,
+      y: 105,
+      text: "read",
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    { x: 165, y: 185, text: "磁盘中断", fontSize: 16, fontFamily: FONT_SERIF },
+    {
+      x: 160,
+      y: 225,
+      text: "从read返回",
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    { x: 560, y: 85, text: "用户代码", fontSize: 16, fontFamily: FONT_SERIF },
+    { x: 560, y: 125, text: "内核代码", fontSize: 16, fontFamily: FONT_SERIF },
+    { x: 560, y: 165, text: "用户代码", fontSize: 16, fontFamily: FONT_SERIF },
+    { x: 560, y: 205, text: "内核代码", fontSize: 16, fontFamily: FONT_SERIF },
+    { x: 560, y: 245, text: "用户代码", fontSize: 16, fontFamily: FONT_SERIF },
+  ]}
+/>
+
 > [!warning] 内核不是一个独立的进程，而是代码和数据结构的集合，作为系统管理所有进程的工具
 
 实现进程这个抽象概念需要低级硬件和操作系统软件的紧密合作。第八章将揭示这项工作的原理，以及应用程序如何创建和控制它们的进程。
@@ -827,6 +1315,138 @@ hello 这样的程序运行时，操作系统提供一种假象，好像系统�
 ### 1.6.3 虚拟内存
 
 **虚拟内存**是一个抽象概念，为每个进程提供假象——好像每个进程都独占使用主存。每个进程看到的内存是一致的，称为**虚拟地址空间**。在 Linux 中，地址空间最上面的区域保留给操作系统的代码和数据（对所有进程都一样），底部区域存放用户进程定义的代码和数据（地址从下往上增大）。
+
+<DFD
+  client:load
+  width={800}
+  height={540}
+  custom={[
+    {
+      x: 400,
+      y: 40,
+      label: "内核虚拟内存",
+      w: 380,
+      h: 40,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 90,
+      label: "用户栈\n（运行时创建）",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 155,
+      w: 380,
+      h: 70,
+      rx: 0,
+      stroke: VIOLET,
+      fill: "oklch(0.30 0.8 225 / .25)",
+    },
+    {
+      x: 400,
+      y: 220,
+      label: "共享库的内存映射区域",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 290,
+      w: 380,
+      h: 80,
+      rx: 0,
+      stroke: VIOLET,
+      fill: "oklch(0.30 0.8 225 / .25)",
+    },
+    {
+      x: 400,
+      y: 360,
+      label: "运行时堆<br>（malloc分配的）",
+      w: 380,
+      h: 60,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 412.5,
+      label: "读/写数据",
+      w: 380,
+      h: 45,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 457.5,
+      label: "只读的代码和数据",
+      w: 380,
+      h: 45,
+      rx: 0,
+      fontSize: 18,
+      stroke: VIOLET,
+    },
+    {
+      x: 400,
+      y: 500,
+      w: 380,
+      h: 40,
+      rx: 0,
+      stroke: VIOLET,
+      fill: "oklch(0.30 0.8 225 / .25)",
+    },
+  ]}
+  lines={[
+    { x1: 180, y1: 480, x2: 210, y2: 480, color: ROSE }, // 程序开始
+    { x1: 400, y1: 120, x2: 400, y2: 145, color: VIOLET },
+    { x1: 400, y1: 190, x2: 400, y2: 165, color: VIOLET },
+    { x1: 400, y1: 330, x2: 400, y2: 295, color: VIOLET },
+    { x1: 610, y1: 57, x2: 610, y2: 23, color: ORANGE, strokeWidth: 2.5 },
+  ]}
+  braces={[
+    {
+      x1: 600,
+      y1: 392,
+      x2: 600,
+      y2: 477,
+      color: ORANGE,
+      label: "从 hello 可执行\n文件加载进来的",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+    },
+  ]}
+  labels={[
+    { x: 120, y: 485, text: "程序开始", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 195, y: 525, text: "0", fontSize: 18 },
+    {
+      x: 680,
+      y: 220,
+      text: "printf 函数",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 690,
+      y: 48,
+      text: "用户代码\n不可见的内存",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+  ]}
+/>
 
 - **程序代码和数据**。对所有的进程来说，代码是从同一固定地址开始，紧接着的是和 C 全局变量相对应的数据位置。代码和数据区是直接按照可执行目标文件的内容初始化的，在示例中就是可执行文件 hello。
 
@@ -928,7 +1548,7 @@ $$
 Amdahl 定律一个有趣的特殊情况是 $k \to \infty$。这意味着，将系统某部分加速到该部分花费时间可忽略不计：
 
 $$
-S_{\infty}=\frac{1}{(1-\alpha)}
+S_{\infty}=\frac{1}{1-\alpha}
 $$
 
 例如若 60% 的系统能加速到不花时间的程度，净加速比仍只有 $1/0.4=2.5\times$。
@@ -959,7 +1579,7 @@ Amdahl 定律描述了改善任何过程的一般原则。除了可以用在加�
 
 当单一操作系统内核控制多处理器时，就得到**多处理器系统**。其实从 20 世纪 80 年代开始，在大规模计算中就有这种系统，但直到近20年随着多核处理器和**超线程**（hyperthreading）的出现才变得常见。
 
-多核处理器是将多个 CPU（核）集成到一个集成电路芯片上：典型的 4 核处理器中，每个核都有自己的 L1、L2 高速缓存（L1 分两部分：一份存最近取到的指令、一份存数据），这些核共享更高层次的高速缓存及到主存的接口。
+多核处理器是将多个 CPU（核）集成到一个集成电路芯片上：典型的 4 核处理器中，每个核都有自己的 L1、L2 高速缓存，这些核共享更高层次的高速缓存（L3）及到主存的接口。L1 高速缓存通常分为指令高速缓存和数据高速缓存两部分，L2 高速缓存通常是统一的。
 
 超线程，也称**同时多线程**（simultaneous multi-threading），是一项允许一个 CPU 执行多个控制流的技术：CPU 某些硬件（如程序计数器和寄存器文件）有多个备份，其他部分（如浮点运算单元）只有一份。
 
@@ -974,7 +1594,7 @@ Amdahl 定律描述了改善任何过程的一般原则。除了可以用在加�
 
 #### 2. 指令级并行
 
-较低抽象层次上，现代处理器能同时执行多条指令的属性称为**指令级并行**。早期微处理器如 1978 年的 Intel 8086 需要多个（通常 3~10 个）时钟周期执行一条指令。最近的处理器可以保持每时钟周期 10~20 条指令的执行速率。其实每条指令从开始到结束仍需约 20 个或更多周期，但处理器使用了非常多的聪明技巧来同时处理多达 100 条指令。
+较低抽象层次上，现代处理器能同时执行多条指令的属性称为**指令级并行**。早期微处理器如 1978 年的 Intel 8086 需要多个（通常 3～10 个）时钟周期执行一条指令。最近的处理器可以保持每时钟周期 10～20 条指令的执行速率。其实每条指令从开始到结束仍需约 20 个或更多周期，但处理器使用了非常多的聪明技巧来同时处理多达 100 条指令。
 
 在第四章中，我们将研究**流水线**（pipelining）。在流水线中，执行一条指令的活动被划分成不同步骤，组织成一系列可以并行操作的阶段，从而能达到接近一个时钟周期一条指令的执行速率。
 

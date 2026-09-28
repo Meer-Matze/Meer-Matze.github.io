@@ -240,8 +240,8 @@ function normalizePolyline(pl) {
     const resolvedSide = side === 'auto' ? (horizontal ? 'bottom' : 'right') : side;
     const sign = resolvedSide === 'top' || resolvedSide === 'left' ? -1 : 1;
     const span = horizontal ? Math.abs(x2 - x1) : Math.abs(y2 - y1);
-    const outer = clamp(span * 0.18, 4, 22);
-    const apex = clamp(span * 0.08, 2, 14) + outer;
+    const outer = clamp(span * 0.12, 3, 14);
+    const apex = clamp(span * 0.08, 2, 10) + outer;
     return { horizontal, sign, outer, apex };
   }
 
