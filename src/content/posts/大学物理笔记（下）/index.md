@@ -264,22 +264,22 @@ $$
 整个容器绝热且刚性（$V_{total}=2V$ 恒定），无外界热量交换且不做外功，总内能守恒：
 
 $$
-\Delta U = 0 \implies U_i = U_f
+\Delta E = 0 \implies E_i = E_f
 $$
 
 初始总内能（利用 $U = \frac{i}{2}nRT$）：
 
 $$
-U_i = \frac{i_A}{2}n_A R T_A + \frac{i_B}{2}n_B R T_B = \frac{3}{2}\cdot 1\cdot R\cdot\frac{pV}{R} + \frac{5}{2}\cdot 2\cdot R\cdot\frac{pV}{2R} = \frac{3}{2}pV + \frac{5}{2}pV = 4pV
+E_i = \frac{i_A}{2}n_A R T_A + \frac{i_B}{2}n_B R T_B = \frac{3}{2}\cdot 1\cdot R\cdot\frac{pV}{R} + \frac{5}{2}\cdot 2\cdot R\cdot\frac{pV}{2R} = \frac{3}{2}pV + \frac{5}{2}pV = 4pV
 $$
 
 设混合后终态温度为 $T_f$，终态总内能：
 
 $$
-U_f = \left(\frac{i_A}{2}n_A + \frac{i_B}{2}n_B\right) R T_f = \left(\frac{3}{2}\cdot 1 + \frac{5}{2}\cdot 2\right) R T_f = \frac{13}{2}R T_f
+E_f = \left(\frac{i_A}{2}n_A + \frac{i_B}{2}n_B\right) R T_f = \left(\frac{3}{2}\cdot 1 + \frac{5}{2}\cdot 2\right) R T_f = \frac{13}{2}R T_f
 $$
 
-由 $U_i = U_f$ 解得终态温度：
+由 $E_i = E_f$ 解得终态温度：
 
 $$
 T_f = \frac{8pV}{13R}
@@ -353,13 +353,13 @@ $$
 ## 10.2 热容量与典型过程
 
 - **摩尔热容**：
-  - **定容摩尔热容**：1 mol 理想气体在定容条件下吸收热量 $\mathrm{d} Q_{V,m}$ 时，温度升高 $\mathrm{d}T$，则
+  - **定容摩尔热容**：单位摩尔理想气体在定容条件下吸收热量 $\mathrm{d} Q_{V,m}$ 时，温度升高 $\mathrm{d}T$，则
     $$
-    C_{V,\,m} =\frac{\mathrm{d}Q_{V,m}}{\mathrm{d}T} = \frac{i}{2}R
+    C_{V,\,m} =\frac{\mathrm{d}Q_{V,m}}{\nu\,\mathrm{d}T} = \frac{i}{2}R
     $$
-  - **定压摩尔热容**：1 mol 理想气体在定压条件下吸收热量 $\mathrm{d} Q_{p,m}$ 时，温度升高 $\mathrm{d}T$，则
+  - **定压摩尔热容**：单位摩尔理想气体在定压条件下吸收热量 $\mathrm{d} Q_{p,m}$ 时，温度升高 $\mathrm{d}T$，则
     $$
-    C_{p,m} = \frac{i+2}{2}R
+    C_{p,m} =\frac{\mathrm{d}Q_{p,m}}{\nu\,\mathrm{d}T} =\frac{i+2}{2}R
     $$
   - **迈耶公式**：$C_{p,m} = C_{V,m} + R$
   - **摩尔热容比**：$\gamma = \dfrac{C_{p,m}}{C_{V,m}} = \dfrac{i+2}{i}$
@@ -374,7 +374,7 @@ $$
     $$
   - **等温过程**：$\mathrm{d}T=0$
     $$
-    \mathrm{d} E = 0,\qquad \mathrm{d}Q_T = \mathrm{d}W = \nu RT\ln\frac{V_2}{V_1} = \nu RT\ln\frac{p_1}{p_2}
+    \mathrm{d} E = 0,\qquad Q_T = W = \nu RT\ln\frac{V_2}{V_1} = \nu RT\ln\frac{p_1}{p_2}
     $$
   - **绝热过程**：$\mathrm{d}Q=0$
     $$
@@ -436,7 +436,7 @@ $$
 
 由此可测量 $\gamma = \dfrac{4\pi^2 mV}{p S^2 T^2}$．
 
-## 10.3 循环过程与熵
+## 10.3 循环过程
 
 - **循环过程**：系统经过一系列状态变化后回到初始状态，$\Delta E = 0$，$\Delta S = 0$．
 - **热机**：从高温热源吸热 $Q_1$，对外做功 $W$，向低温热源放热 $Q_2$，效率为
@@ -492,13 +492,21 @@ $$
 
 ## 10.4 熵
 
-- **熵** $S$：
+- **熵**：可逆过程中系统吸收的热量与温度的比值的积分，表示系统的无序程度或不确定性．
+
   $$
-  S = k\ln W
+  S = \int \frac{\mathrm{d}Q_{\text{rev}}}{T}
   $$
-  - 其中 $W$ 为系统可能的微观状态数，$k$ 为玻尔兹曼常数．
-  - 状态函数，可逆过程中 $\mathrm{d}S = \dfrac{\mathrm{d}Q_{\text{rev}}}{T}$
-  - **熵增加原理**：孤立系统中不可逆过程总熵增加．$\Delta S \ge 0$．
+  - 理想气体熵变公式：
+    $$
+    \Delta S = \nu C_{V,m}\ln\frac{T_2}{T_1} + \nu R\ln\frac{V_2}{V_1}
+    $$
+  - 固液体熵变公式：比热容为 $C$，质量为 $m$
+
+    $$
+    \Delta S = mC\int_{T_1}^{T_2} \ln\frac{T_2}{T_1}
+    $$
+
 - 信息熵：如果一个事件有 $N$ 种可能的状态，且每种状态出现的概率为 $p_i$，则该事件的不确定性（信息熵）为
 
   $$
@@ -511,21 +519,128 @@ $$
 ### 典型例题
 
 > [!QUESTION] 例1
-> 证明理想气体绝热自由膨胀过程不可逆
+> 如图所示，1 mol 理想气体在初态 1 时温度 $T_1 = 300\,\mathrm{K}$，经不同过程到达终态 3，其中 1 → 2, 4 → 3 均为等压过程；2 → 3 为等体 过程；1 → 3 为等温过程；1 → 4 为绝热过程，试分别由三条路径计算熵变 $S_3 - S_1$：（1）1 → 2 → 3；（2）1 → 3；（3）1 → 4 → 3．
+> ![例1](10.4-exa-1.png)
 
-**解**：绝热自由膨胀过程中，
-
-$$
-\Delta E = \Delta T = 0
-$$
-
-那么
+**解**：（1）1 → 2 → 3：
 
 $$
-\Delta S = \int_{V_1}^{V_2} \frac{dQ_{rev}}{T} = \int_{V_1}^{V_2} \frac{p dV}{T} = \int_{V_1}^{V_2} \frac{\nu R dV}{V} = \nu R \ln\frac{V_2}{V_1} > 0
+S_3-S_1=\int_{T_1}^{T_2}\frac{\nu C_{p,m}}{T}\mathrm{d}T+\int_{V_2}^{V_3}\frac{\nu C_{V,m}}{T}\mathrm{d}T
+= \nu C_{p,m}\ln\frac{T_2}{T_1} + \nu C_{V,m}\ln\frac{T_3}{T_2}
 $$
 
----
+同时，1 → 2 为等压过程，$\frac{T_2}{T_1} = \frac{V_2}{V_1}$；2 → 3 为等体过程，$\frac{T_3}{T_2} = \frac{p_3}{p_2} = \frac{p_3}{p_1}$；1 → 3 为等温过程，$\frac{V_3}{V_1} = \frac{p_1}{p_3}\implies \frac{T_3}{T_2}=\frac{V_1}{V_2}$．那么
+
+$$
+S_3-S_1 = \nu C_{p,m}\ln\frac{V_2}{V_1} + \nu C_{V,m}\ln\frac{V_1}{V_2} = \nu (C_{p,m}-C_{V,m})\ln\frac{V_2}{V_1} = \nu R\ln\frac{V_2}{V_1} \approx 5.76 \mathrm{J/K}
+$$
+
+（2）1 → 3：
+
+$$
+S_3-S_1 = \int_{V_1}^{V_3}\frac{\nu R}{V}\mathrm{d}V = \nu R\ln\frac{V_3}{V_1} = \nu R\ln\frac{V_2}{V_1} \approx 5.76 \mathrm{J/K}
+$$
+
+（3）1 → 4 → 3：
+
+由于1 → 4为绝热过程，熵变 $\Delta S_{1\to4} = 0$．
+
+$$
+S_3-S_1 = S_4-S_1 + S_3-S_4 = 0+\int_{T_4}^{T_3}\frac{\nu C_{p,m}}{T}\mathrm{d}T = \nu C_{p,m}\ln\frac{T_3}{T_4} = \nu C_{p,m}\ln\frac{T_1}{T_4}
+$$
+
+绝热过程满足 $T V^{\gamma-1} = const$，则
+
+$$
+\frac{T_1}{T_4} = \left(\frac{V_4}{V_1}\right)^{\gamma-1}
+$$
+
+又有 $\frac{V_4}{V_3}=\frac{T_4}{T_1}$，代入得
+
+$$
+\frac{T_1}{T_4} =\left(\frac{V_3}{V_1}\right)^{\frac{\gamma-1}{\gamma}}
+$$
+
+于是
+
+$$
+S_3-S_1 = \frac{\gamma-1}{\gamma}\nu C_{p,m}\ln\frac{V_3}{V_1} = R\ln2 = 5.76 \mathrm{J/K}
+$$
+
+> [!QUESTION] 例2
+> 一封闭绝热筒，被一个与绝热筒密接而无摩擦的导热活塞分为两部分，体积均为 $V_0$。将活塞固定在中间位置，均充满空气，初始温度均为 $T_0$，左侧空气的压强为 $p_0$，右侧空气的压强为 $3p_0$。现将活塞释放，求平衡后两侧空气的压强、温度及熵变。
+
+**解：**
+整个系统为绝热孤立系统，总内能守恒，总体积 $V=2V_0$ 恒定。活塞导热且无摩擦，终态必满足机械平衡（压强相等）和热平衡（温度相等）。
+
+设终态压强为 $p_f$，温度为 $T_f$，左、右侧体积分别为 $V_L, V_R$。
+
+**1. 确定终态温度 $T_f$**
+
+空气视为双原子理想气体，摩尔热容 $C_{V,m}=\frac{5}{2}R$。
+初始物质的量：
+
+$$
+\nu_L = \frac{p_0 V_0}{RT_0}, \quad \nu_R = \frac{3p_0 V_0}{RT_0}, \quad \nu = \frac{4p_0 V_0}{RT_0}
+$$
+
+总内能守恒：
+
+$$
+E_i = \nu_L C_{V,m} T_0 + \nu_R C_{V,m} T_0 = \nu C_{V,m} T_0
+$$
+
+$$
+E_f = \nu_L C_{V,m} T_f + \nu_R C_{V,m} T_f = \nu C_{V,m} T_f
+$$
+
+由 $E_i = E_f$ 得：
+
+$$
+T_f = T_0
+$$
+
+终态温度不变。
+
+**2. 确定终态压强 $p_f$ 与体积 $V_L, V_R$**
+
+终态满足理想气体状态方程：
+
+$$
+p_f V_L = \nu_L R T_f = p_0 V_0, \quad p_f V_R = \nu_R R T_f = 3p_0 V_0
+$$
+
+两式相加，利用 $V_L + V_R = 2V_0$：
+
+$$
+p_f (V_L + V_R) = 4p_0 V_0 \implies p_f \cdot 2V_0 = 4p_0 V_0 \implies p_f = 2p_0
+$$
+
+进而得体积：
+
+$$
+V_L = \frac{p_0 V_0}{p_f} = \frac{V_0}{2}, \quad V_R = \frac{3p_0 V_0}{p_f} = \frac{3V_0}{2}
+$$
+
+**3. 熵变计算**
+
+左侧熵变：
+
+$$
+\Delta S_L = \nu_L R \ln\frac{V_L}{V_0} = \frac{p_0 V_0}{RT_0} R \ln\frac{1}{2} = -\frac{p_0 V_0}{T_0} \ln 2
+$$
+
+右侧熵变：
+
+$$
+\Delta S_R = \nu_R R \ln\frac{V_R}{V_0} = \frac{3p_0 V_0}{RT_0} R \ln\frac{3}{2} = \frac{3p_0 V_0}{T_0} \ln\frac{3}{2}
+$$
+
+系统总熵变：
+
+$$
+\Delta S = \Delta S_L + \Delta S_R = \frac{p_0 V_0}{T_0} \left( -\ln 2 + 3\ln\frac{3}{2} \right) = \frac{p_0 V_0}{T_0} \ln\frac{27}{16} > 0
+$$
 
 # 第11章 振动学基础
 
