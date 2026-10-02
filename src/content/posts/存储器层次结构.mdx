@@ -13,6 +13,24 @@ lang: "zh-CN"
 slug: csapp6
 ---
 
+import DFD, {
+  WB,
+  PINK,
+  AMBER,
+  ORANGE,
+  LIME,
+  GREEN,
+  CYAN,
+  TEAL,
+  INDIGO,
+  BLUE,
+  VIOLET,
+  PURPLE,
+  ROSE,
+  FONT_MATH,
+  FONT_SERIF,
+} from "@/components/custom/DataFlowDiagram.svelte";
+
 存储器系统（memory system）是一个具有不同容量、成本和访问时间的存储设备的层次结构。CPU 寄存器保存着最常用的数据。靠近 CPU 的小的、快速的高速缓存存储器（cache memory）作为一部分存储在相对慢速的主存储器（main memory）中数据和指令的缓冲区域。主存缓存存储在容量较大的、慢速磁盘上的数据，而这些磁盘常常又作为存储在通过网络连接的其他机器的磁盘或磁带上的数据的缓冲区域。
 
 > [!summary] 本章内容
@@ -83,11 +101,11 @@ DRAM 芯片封装在**内存模块（memory module）** 中。例如，用 8 片
 
 **非易失性存储器**（nonvolatile memory）即使在断电后也能保持数据。
 
-| 类型  | 特点                                                                                                 |
-| :---: | ---------------------------------------------------------------------------------------------------- |
-| PROM  | 可编程只读存储器（Programmable ROM），一次性可编程                                                   |
-| EPROM | 可擦除可编程只读存储器（Erasable PROM），可用紫外线擦除                                              |
-| Flash | 闪存（Flash Memory），基于 EEPROM 的非易失性存储器。<br>闪存无处不在，固态硬盘就是基于闪存的存储设备 |
+| 类型  | 特点                                                                                                  |
+| :---: | ----------------------------------------------------------------------------------------------------- |
+| PROM  | 可编程只读存储器（Programmable ROM），一次性可编程                                                    |
+| EPROM | 可擦除可编程只读存储器（Erasable PROM），可用紫外线擦除                                               |
+| Flash | 闪存（Flash Memory），基于 EEPROM 的非易失性存储器。<br/>闪存无处不在，固态硬盘就是基于闪存的存储设备 |
 
 存储在 ROM 中的程序通常称为**固件**（firmware），在计算机系统通电后立即运行，负责初始化硬件和加载操作系统。
 
@@ -148,11 +166,11 @@ $$
 
 **访问时间**（access time）由三部分组成：
 
-| 时间组成                           | 说明                                                                           |            典型值            |
-| ---------------------------------- | ------------------------------------------------------------------------------ | :--------------------------: |
-| **寻道时间**（seek time）          | 磁头移动到目标磁道                                                             |     $3 \sim 9\text{ ms}$     |
-| **旋转延迟**（rotational latency） | 盘片旋转到目标扇区；<br>$T_{avg~rot} =\frac{1}{2} \times \frac{1}{\text{RPM}}$ | 约 $4\text{ ms}$（7200 RPM） |
-| **传输时间**（transfer time）      | 扇区转过磁头下方；<br>$T_{transfer} = \frac{\text{平均扇区数}}{\text{RPM}}$    |     约 $0.02\text{ ms}$      |
+| 时间组成                           | 说明                                                                            |            典型值            |
+| ---------------------------------- | ------------------------------------------------------------------------------- | :--------------------------: |
+| **寻道时间**（seek time）          | 磁头移动到目标磁道                                                              |     $3 \sim 9\text{ ms}$     |
+| **旋转延迟**（rotational latency） | 盘片旋转到目标扇区；<br/>$T_{avg~rot} =\frac{1}{2} \times \frac{1}{\text{RPM}}$ | 约 $4\text{ ms}$（7200 RPM） |
+| **传输时间**（transfer time）      | 扇区转过磁头下方；<br/>$T_{transfer} = \frac{\text{平均扇区数}}{\text{RPM}}$    |     约 $0.02\text{ ms}$      |
 
 #### 4.逻辑磁盘块
 
@@ -283,15 +301,183 @@ int sumarraycols(int a[M][N]) {
 
 典型的存储器层次结构如下：
 
-|  特征  | 层次         | 存储技术           | 保存内容            |
-| :----: | :----------- | :----------------- | ------------------- |
-|  更小  | 寄存器       | —                  | 从高速缓存取出的字  |
-|  更快  | L1 高速缓存  | SRAM               | L2 高速缓存的缓存行 |
-|  更贵  | L2 高速缓存  | SRAM               | L3 高速缓存的缓存行 |
-|        | L3 高速缓存  | SRAM               | 主存的缓存行        |
-|  更大  | 主存         | DRAM               | 本地磁盘的磁盘块    |
-|  更慢  | 本地二级存储 | 磁盘               | 远程服务器上的文件  |
-| 更便宜 | 远程二级存储 | 分布式文件系统/Web | —                   |
+<DFD
+  client:load
+  width={1000}
+  height={600}
+  ariaLabel="存储器层次结构"
+  lines={[
+    {
+      x1: 30,
+      y1: 275,
+      x2: 30,
+      y2: 35,
+      color: "oklch(0.78 0.34 188)",
+      strokeWidth: 5,
+    },
+    {
+      x1: 30,
+      y1: 345,
+      x2: 30,
+      y2: 585,
+      color: "oklch(0.78 0.34 188)",
+      strokeWidth: 5,
+    },
+  ]}
+  polylines={[
+    {
+      points: [
+        [420, 30],
+        [119, 590],
+        [721, 590],
+        [420, 30],
+        [377, 110],
+        [463, 110],
+        [506, 190],
+        [334, 190],
+        [291, 270],
+        [549, 270],
+        [592, 350],
+        [248, 350],
+        [205, 430],
+        [635, 430],
+        [678, 510],
+        [162, 510],
+      ],
+      color: "oklch(0.78 0.34 88)",
+      noArrow: true,
+      strokeWidth: 4,
+    },
+  ]}
+  braces={[
+    {
+      x1: 510,
+      y1: 75,
+      x2: 510,
+      y2: 145,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "CPU寄存器保存来自\n高速缓存存储器的字",
+    },
+    {
+      x1: 553,
+      y1: 155,
+      x2: 553,
+      y2: 225,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "L1高速缓存保存取自\nL2高速缓存的高速缓存行",
+    },
+    {
+      x1: 596,
+      y1: 235,
+      x2: 596,
+      y2: 305,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "L2高速缓存保存取自\nL3高速缓存的高速缓存行",
+    },
+    {
+      x1: 639,
+      y1: 315,
+      x2: 639,
+      y2: 385,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "L3高速缓存保存取自\n磁盘的高速缓存行",
+    },
+    {
+      x1: 682,
+      y1: 395,
+      x2: 682,
+      y2: 465,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "主存保存取自\n本地磁盘的磁盘块",
+    },
+    {
+      x1: 725,
+      y1: 475,
+      x2: 725,
+      y2: 545,
+      color: "oklch(0.52 0.55 266)",
+      fontFamily: FONT_SERIF,
+      fontSize: 18,
+      label: "本地磁盘保存取自\n远程网络服务器上磁盘的文件",
+    },
+  ]}
+  labels={[
+    {
+      x: 75,
+      y: 170,
+      text: "更小\n\n更快\n\n（每字节）\n\n更贵的\n\n存储设备",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 75,
+      y: 450,
+      text: "更大\n\n更慢\n\n（每字节）\n\n更便宜的\n\n存储设备",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    { x: 375, y: 75, text: "L0:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 332, y: 155, text: "L1:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 289, y: 235, text: "L2:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 246, y: 315, text: "L3:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 203, y: 395, text: "L4:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 160, y: 475, text: "L5:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 117, y: 555, text: "L6:", fontSize: 18, fontFamily: FONT_SERIF },
+    { x: 420, y: 100, text: "寄存器", fontSize: 18, fontFamily: FONT_SERIF },
+    {
+      x: 420,
+      y: 160,
+      text: "L1高速缓存\n（SRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 240,
+      text: "L2高速缓存\n（SRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 320,
+      text: "L3高速缓存\n（SRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 400,
+      text: "主存\n（DRAM）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 480,
+      text: "本地二级存储\n（本地磁盘）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 420,
+      y: 560,
+      text: "远程二级存储\n（分布式文件系统、Web 服务器）",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+  ]}
+/>
 
 层次结构的特点是：越往上速度越快、容量越小、单位成本越高；越往下则相反。
 
@@ -369,13 +555,648 @@ LRU 通常在组相联缓存中使用，能较好地利用时间局部性，但�
 - **标记位（tag）**：$t$ 位，$t = m - (b + s)$
 - **数据块（block）**：$B$ 字节
 
+<DFD
+client:load
+width={650}
+height={430}
+ariaLabel="高速缓存存储器组织结构"
+custom={[
+    // 组0~S-1
+    {
+        x: 350,
+        y: 120,
+        w: 350,
+        h: 90,
+        rx: 4,
+        stroke: "oklch(0.68 0.36 237)",
+        fill: "oklch(0.78 0.34 230 / 0.1)",
+    },
+    {
+        x: 350,
+        y: 230,
+        w: 350,
+        h: 90,
+        rx: 4,
+        stroke: "oklch(0.68 0.36 237)",
+        fill: "oklch(0.78 0.34 230 / 0.1)",
+    },
+    {
+        x: 350,
+        y: 370,
+        w: 350,
+        h: 90,
+        rx: 4,
+        stroke: "oklch(0.68 0.36 237)",
+        fill: "oklch(0.78 0.34 230 / 0.1)",
+    },
+    // 有效位
+    {
+        x: 220,
+        y: 100,
+        w: 50,
+        h: 26,
+        rx: 2,
+        label: "valid",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 220,
+        y: 140,
+        w: 50,
+        h: 26,
+        rx: 2,
+        label: "valid",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 220,
+        y: 210,
+        w: 50,
+        h: 26,
+        rx: 2,
+        label: "valid",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 220,
+        y: 250,
+        w: 50,
+        h: 26,
+        rx: 2,
+        label: "valid",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 220,
+        y: 350,
+        w: 50,
+        h: 26,
+        rx: 2,
+        label: "valid",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 220,
+        y: 390,
+        w: 50,
+        h: 26,
+        rx: 2,
+        label: "valid",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    // tag
+    {
+        x: 290,
+        y: 100,
+        w: 60,
+        h: 26,
+        rx: 2,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 290,
+        y: 140,
+        w: 60,
+        h: 26,
+        rx: 2,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 290,
+        y: 210,
+        w: 60,
+        h: 26,
+        rx: 2,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 290,
+        y: 250,
+        w: 60,
+        h: 26,
+        rx: 2,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 290,
+        y: 350,
+        w: 60,
+        h: 26,
+        rx: 2,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 290,
+        y: 390,
+        w: 60,
+        h: 26,
+        rx: 2,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    // data
+    {
+        x: 420,
+        y: 100,
+        w: 170,
+        h: 26,
+        rx: 2,
+        stroke: "oklch(0.55 0.30 194)",
+    },
+    {
+        x: 420,
+        y: 140,
+        w: 170,
+        h: 26,
+        rx: 2,
+        stroke: "oklch(0.55 0.30 194)",
+    },
+    {
+        x: 420,
+        y: 210,
+        w: 170,
+        h: 26,
+        rx: 2,
+        stroke: "oklch(0.55 0.30 194)",
+    },
+    {
+        x: 420,
+        y: 250,
+        w: 170,
+        h: 26,
+        rx: 2,
+        stroke: "oklch(0.55 0.30 194)",
+    },
+    {
+        x: 420,
+        y: 350,
+        w: 170,
+        h: 26,
+        rx: 2,
+        stroke: "oklch(0.55 0.30 194)",
+    },
+    {
+        x: 420,
+        y: 390,
+        w: 170,
+        h: 26,
+        rx: 2,
+        stroke: "oklch(0.55 0.30 194)",
+    },
+
+]}
+polylines={[
+{
+points:[
+[377.5, 87],
+[377.5, 113],
+[420, 113],
+[420, 87],
+[462.5, 87],
+[462.5, 113],
+],
+color: "oklch(0.55 0.30 194)",
+noArrow: true,
+},
+{
+points:[
+[377.5, 127],
+[377.5, 153],
+[420, 153],
+[420, 127],
+[462.5, 127],
+[462.5, 153],
+],
+color: "oklch(0.55 0.30 194)",
+noArrow: true,
+},
+{
+points:[
+[377.5, 197],
+[377.5, 223],
+[420, 223],
+[420, 197],
+[462.5, 197],
+[462.5, 223],
+],
+color: "oklch(0.55 0.30 194)",
+noArrow: true,
+},
+{
+points:[
+[377.5, 237],
+[377.5, 263],
+[420, 263],
+[420, 237],
+[462.5, 237],
+[462.5, 263],
+],
+color: "oklch(0.55 0.30 194)",
+noArrow: true,
+},
+{
+points:[
+[377.5, 337],
+[377.5, 363],
+[420, 363],
+[420, 337],
+[462.5, 337],
+[462.5, 363],
+],
+color: "oklch(0.55 0.30 194)",
+noArrow: true,
+},
+{
+points:[
+[377.5, 377],
+[377.5, 403],
+[420, 403],
+[420, 377],
+[462.5, 377],
+[462.5, 403],
+],
+color: "oklch(0.55 0.30 194)",
+noArrow: true,
+},
+]}
+braces={[
+{
+x1: 195,
+y1: 65,
+x2: 245,
+y2: 65,
+color: "oklch(0.52 0.55 266)",
+side: "top",
+fontFamily: FONT_SERIF,
+fontSize: 18,
+label: "1位",
+},
+{
+x1: 260,
+y1: 65,
+x2: 320,
+y2: 65,
+color: "oklch(0.52 0.55 266)",
+side: "top",
+fontFamily: FONT_SERIF,
+fontSize: 18,
+label: "t位",
+},
+{
+x1: 335,
+y1: 65,
+x2: 505,
+y2: 65,
+color: "oklch(0.52 0.55 266)",
+side: "top",
+fontFamily: FONT_SERIF,
+fontSize: 18,
+label: "B字节",
+},
+{
+x1: 540,
+y1: 75,
+x2: 540,
+y2: 165,
+color: "oklch(0.52 0.55 266)",
+fontFamily: FONT_SERIF,
+fontSize: 18,
+label: "E行",
+},
+{
+x1: 90,
+y1: 75,
+x2: 90,
+y2: 415,
+color: "oklch(0.52 0.55 266)",
+side: "left",
+fontFamily: FONT_SERIF,
+fontSize: 18,
+label: "S组",
+}
+]}
+labels={[
+// date
+// 第一行
+{
+x: 356.25,
+y: 106,
+text: "0",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 398.75,
+y: 106,
+text: "1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 441.25,
+y: 106,
+text: "···",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 483.75,
+y: 106,
+text: "B-1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+// 第二行
+{
+x: 356.25,
+y: 146,
+text: "0",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 398.75,
+y: 146,
+text: "1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 441.25,
+y: 146,
+text: "···",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 483.75,
+y: 146,
+text: "B-1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+// 第三行
+{
+x: 356.25,
+y: 216,
+text: "0",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 398.75,
+y: 216,
+text: "1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 441.25,
+y: 216,
+text: "···",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 483.75,
+y: 216,
+text: "B-1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+// 第四行
+{
+x: 356.25,
+y: 256,
+text: "0",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 398.75,
+y: 256,
+text: "1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 441.25,
+y: 256,
+text: "···",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 483.75,
+y: 256,
+text: "B-1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+// 第五行
+{
+x: 356.25,
+y: 356,
+text: "0",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 398.75,
+y: 356,
+text: "1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 441.25,
+y: 356,
+text: "···",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 483.75,
+y: 356,
+text: "B-1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+// 第六行
+{
+x: 356.25,
+y: 396,
+text: "0",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 398.75,
+y: 396,
+text: "1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 441.25,
+y: 396,
+text: "···",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+{
+x: 483.75,
+y: 396,
+text: "B-1",
+fontSize: 16,
+fontFamily: FONT_SERIF,
+},
+// 组号
+{
+x: 145,
+y: 125,
+text: "set 0：",
+fontSize: 18,
+fontFamily: FONT_SERIF,
+},
+{
+x: 145,
+y: 235,
+text: "set 1：",
+fontSize: 18,
+fontFamily: FONT_SERIF,
+},
+{
+x: 136,
+y: 375,
+text: "set S-1：",
+fontSize: 18,
+fontFamily: FONT_SERIF,
+},
+{
+x: 350,
+y: 303,
+text: "•\n•\n•",
+fontSize: 10,
+}
+]}
+
+/>
+
 #### 2.地址划分
 
 $m$ 位地址被划分为三个部分：
 
-| $t$ 位（标记） | $s$ 位（组索引） | $b$ 位（块偏移） |
-| :------------: | :--------------: | :--------------: |
-|      tag       |    set index     |   block offset   |
+<DFD
+client:load
+width={470}
+height={80}
+ariaLabel="地址划分"
+custom={[
+    {
+        x: 100,
+        y: 45,
+        w: 140,
+        h: 30,
+        rx: 1,
+        label: "tag",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 240,
+        y: 45,
+        w: 140,
+        h: 30,
+        rx: 1,
+        label: "set index",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 380,
+        y: 45,
+        w: 140,
+        h: 30,
+        rx: 1,
+        label: "block offset",
+        stroke: "oklch(0.55 0.30 194)",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+]}
+labels={[
+    {
+        x: 100,
+        y: 20,
+        text: "t位",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 240,
+        y: 20,
+        text: "s位",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 380,
+        y: 20,
+        text: "b位",
+        fontSize: 16,
+        fontFamily: FONT_SERIF,
+    },
+    {
+        x: 30,
+        y: 74,
+        text: "m-1",
+        fontSize: 16,
+        fontFamily: FONT_MATH,
+        fontStyle: "italic",
+    },
+    {
+        x: 450,
+        y: 74,
+        text: "0",
+        fontSize: 16,
+        fontFamily: FONT_MATH,
+        fontStyle: "italic",
+    }
+]}
+
+/>
 
 访问流程：
 
@@ -452,20 +1273,259 @@ float dotprod(float x[8], float y[8]) {
 
 以 Intel Core i7 为例：
 
-```
-CPU 芯片
-├── 核心 0
-│   ├── L1 i-cache（指令缓存）
-│   ├── L1 d-cache（数据缓存）
-│   └── L2 统一缓存（指令+数据）
-├── 核心 1
-│   └── ...
-├── 核心 2
-│   └── ...
-└── 核心 3
-    └── ...
-└── L3 统一缓存（所有核心共享）
-```
+<DFD
+  client:load
+  width={520}
+  height={500}
+  ariaLabel="Core i7 cache hierarchy"
+  custom={[
+    {
+      x: 120,
+      y: 190,
+      w: 190,
+      h: 220,
+      rx: 3,
+      stroke: "oklch(0.4 0.3 30)",
+    },
+    {
+      x: 80,
+      y: 110,
+      w: 90,
+      h: 30,
+      label: "Regs",
+      rx: 2,
+      stroke: ORANGE,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 75,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\nd-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 165,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\ni-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 120,
+      y: 260,
+      w: 170,
+      h: 50,
+      label: "L2 cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 400,
+      y: 190,
+      w: 190,
+      h: 220,
+      rx: 3,
+      stroke: "oklch(0.4 0.3 30)",
+    },
+    {
+      x: 360,
+      y: 110,
+      w: 90,
+      h: 30,
+      label: "Regs",
+      rx: 2,
+      stroke: ORANGE,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 355,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\nd-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 445,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\ni-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 400,
+      y: 260,
+      w: 170,
+      h: 50,
+      label: "L2 cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 260,
+      y: 350,
+      w: 340,
+      h: 50,
+      label: "L3 cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 260,
+      y: 440,
+      w: 480,
+      h: 50,
+      label: "Main memory",
+      rx: 2,
+      stroke: ORANGE,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+  ]}
+  lines={[
+    {
+        x1: 75,
+        y1: 125,
+        x2: 75,
+        y2: 155,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 75,
+        y1: 205,
+        x2: 75,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 165,
+        y1: 205,
+        x2: 165,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 120,
+        y1: 285,
+        x2: 120,
+        y2: 325,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 355,
+        y1: 125,
+        x2: 355,
+        y2: 155,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 355,
+        y1: 205,
+        x2: 355,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 445,
+        y1: 205,
+        x2: 445,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 400,
+        y1: 285,
+        x2: 400,
+        y2: 325,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 260,
+        y1: 375,
+        x2: 260, 
+        y2: 415,
+        color: TEAL,
+        noArrow: true,
+    }
+  ]}
+  polylines={[
+    {
+      points: [
+        [10, 40],
+        [10, 390],
+        [510, 390],
+        [510, 40],
+        [10, 40],
+      ],
+      color: "oklch(0.5 0.3 125 /.7)",
+      strokeWidth: 2,
+      noArrow: true,
+    },
+  ]}
+  labels={[
+    {
+      x: 50,
+      y: 75,
+      text: "Core 0",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 330,
+      y: 75,
+      text: "Core 3",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 60,
+      y: 30,
+      text: "CPU Package",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+        x: 260,
+        y: 190,
+        text: "...",
+        fontSize: 20,
+
+    }
+
+]}
+/>
 
 - L1 和 L2 为每个核心私有
 - L3 为所有核心共享

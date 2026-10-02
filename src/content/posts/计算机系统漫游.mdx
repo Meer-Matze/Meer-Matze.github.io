@@ -1579,6 +1579,260 @@ Amdahl 定律描述了改善任何过程的一般原则。除了可以用在加�
 
 当单一操作系统内核控制多处理器时，就得到**多处理器系统**。其实从 20 世纪 80 年代开始，在大规模计算中就有这种系统，但直到近20年随着多核处理器和**超线程**（hyperthreading）的出现才变得常见。
 
+<DFD
+  client:load
+  width={520}
+  height={500}
+  ariaLabel="Core i7 cache hierarchy"
+  custom={[
+    {
+      x: 120,
+      y: 190,
+      w: 190,
+      h: 220,
+      rx: 3,
+      stroke: "oklch(0.4 0.3 30)",
+    },
+    {
+      x: 80,
+      y: 110,
+      w: 90,
+      h: 30,
+      label: "Regs",
+      rx: 2,
+      stroke: ORANGE,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 75,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\nd-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 165,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\ni-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 120,
+      y: 260,
+      w: 170,
+      h: 50,
+      label: "L2 cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 400,
+      y: 190,
+      w: 190,
+      h: 220,
+      rx: 3,
+      stroke: "oklch(0.4 0.3 30)",
+    },
+    {
+      x: 360,
+      y: 110,
+      w: 90,
+      h: 30,
+      label: "Regs",
+      rx: 2,
+      stroke: ORANGE,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 355,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\nd-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 445,
+      y: 180,
+      w: 80,
+      h: 50,
+      label: "L1\ni-cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 400,
+      y: 260,
+      w: 170,
+      h: 50,
+      label: "L2 cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 260,
+      y: 350,
+      w: 340,
+      h: 50,
+      label: "L3 cache",
+      rx: 2,
+      stroke: VIOLET,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 260,
+      y: 440,
+      w: 480,
+      h: 50,
+      label: "Main memory",
+      rx: 2,
+      stroke: ORANGE,
+      fontSize: 16,
+      fontFamily: FONT_SERIF,
+    },
+  ]}
+  lines={[
+    {
+        x1: 75,
+        y1: 125,
+        x2: 75,
+        y2: 155,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 75,
+        y1: 205,
+        x2: 75,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 165,
+        y1: 205,
+        x2: 165,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 120,
+        y1: 285,
+        x2: 120,
+        y2: 325,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 355,
+        y1: 125,
+        x2: 355,
+        y2: 155,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 355,
+        y1: 205,
+        x2: 355,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 445,
+        y1: 205,
+        x2: 445,
+        y2: 235,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 400,
+        y1: 285,
+        x2: 400,
+        y2: 325,
+        color: TEAL,
+        noArrow: true,
+    },
+    {
+        x1: 260,
+        y1: 375,
+        x2: 260, 
+        y2: 415,
+        color: TEAL,
+        noArrow: true,
+    }
+  ]}
+  polylines={[
+    {
+      points: [
+        [10, 40],
+        [10, 390],
+        [510, 390],
+        [510, 40],
+        [10, 40],
+      ],
+      color: "oklch(0.5 0.3 125 /.7)",
+      strokeWidth: 2,
+      noArrow: true,
+    },
+  ]}
+  labels={[
+    {
+      x: 50,
+      y: 75,
+      text: "Core 0",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 330,
+      y: 75,
+      text: "Core 3",
+      fontSize: 17,
+      fontFamily: FONT_SERIF,
+    },
+    {
+      x: 60,
+      y: 30,
+      text: "CPU Package",
+      fontSize: 18,
+      fontFamily: FONT_SERIF,
+    },
+    {
+        x: 260,
+        y: 190,
+        text: "...",
+        fontSize: 20,
+
+    }
+
+]}
+/>
+
 多核处理器是将多个 CPU（核）集成到一个集成电路芯片上：典型的 4 核处理器中，每个核都有自己的 L1、L2 高速缓存，这些核共享更高层次的高速缓存（L3）及到主存的接口。L1 高速缓存通常分为指令高速缓存和数据高速缓存两部分，L2 高速缓存通常是统一的。
 
 超线程，也称**同时多线程**（simultaneous multi-threading），是一项允许一个 CPU 执行多个控制流的技术：CPU 某些硬件（如程序计数器和寄存器文件）有多个备份，其他部分（如浮点运算单元）只有一份。
