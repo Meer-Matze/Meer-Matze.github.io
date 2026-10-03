@@ -38,10 +38,10 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
   src: {
     // 桌面背景图片（支持单张或多张随机）
     // desktop: "assets/images/DesktopWallpaper/d1.avif",
-    desktop: "assets/images/my-banner.png",
+    desktop: "assets/images/DesktopWallpaper/my-banner.png",
     // 移动背景图片（支持单张或多张随机）
     // mobile: "assets/images/MobileWallpaper/m1.avif",
-    mobile: "assets/images/my-banner-portable.png",
+    mobile: "assets/images/MobileWallpaper/my-banner-portable.png",
     // 背景视频播放地址
     // 支持单个视频路径（字符串）或多个视频循环（数组）
     // 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
@@ -64,20 +64,24 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
       // 主页横幅主标题字体大小
       titleSize: "3.8rem",
       // 主页横幅副标题
-      subtitle: [],
+      subtitle: [
+        "A place to share knowledge and experience",
+        "Sharing is caring",
+        "Code, Learn, Repeat",
+      ],
       // 主页横幅副标题字体大小
       subtitleSize: "1.5rem",
       typewriter: {
         // 是否启用打字机效果
         // 打字机开启 → 循环显示所有副标题
         // 打字机关闭 → 每次刷新随机显示一条副标题
-        enable: false,
+        enable: true,
         // 打字速度（毫秒）
-        speed: 100,
+        speed: 150,
         // 删除速度（毫秒）
-        deleteSpeed: 50,
+        deleteSpeed: 70,
         // 完全显示后的暂停时间（毫秒）
-        pauseTime: 2000,
+        pauseTime: 4000,
       },
       // 是否显示标题下方的链接图标
       linksEnable: false,
