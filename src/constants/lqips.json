@@ -1,8 +1,5 @@
 {
   "src:assets/images/my-favicon.png": "bfa4a0cfb7aba19dae",
-  "src:assets/images/my-banner.png": "6b9fb79cb4d56c96b5",
-  "src:assets/images/my-banner-portable.png": "92b1d3b6bede90a8c4",
-  "src:assets/images/my-avatar.webp": "78576f836772b49085",
   "src:content/posts/电路原理笔记/OpAmps.png": "f2f2f2f6f6f6eeeeee",
   "src:content/posts/电路原理笔记/7.3.1-example3.png": "eeebeaf0f2f0e5f1eb",
   "src:content/posts/电路原理笔记/7.3.1-example2.png": "d9e7deedf2f0f2f3f3",
@@ -98,5 +95,9 @@
   "src:content/posts/模电笔记/1.2.1-1.png": "e4eaf3e1e6efd7e0ec",
   "src:content/posts/模电笔记/1.2.0-2.png": "d9d894dde1c0e0e9f3",
   "src:content/posts/模电笔记/1.2.0-1.png": "e6e5ece3e2eaf0f0f4",
-  "src:content/posts/模电笔记/1.1.3-2.png": "d4e1e8e1ebeedfeef0"
+  "src:content/posts/模电笔记/1.1.3-2.png": "d4e1e8e1ebeedfeef0",
+  "src:content/posts/大学物理笔记（下）/10.4-exa-1.png": "fafafafbfbfbfbfbfa",
+  "src:assets/images/logo/my-avatar.webp": "78576f836772b49085",
+  "src:assets/images/MobileWallpaper/my-banner-portable.png": "92b1d3b6bede90a8c4",
+  "src:assets/images/DesktopWallpaper/my-banner.png": "6b9fb79cb4d56c96b5"
 }
