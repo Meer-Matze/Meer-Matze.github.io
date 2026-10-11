@@ -456,7 +456,7 @@ $$
 
 ### 典型例题
 
-> [!QUESTION] 例
+> [!QUESTION] 例1
 > 1 mol 理想气体在 400 K 和 300 K 的热库之间做卡诺循环，在 400 K 等温线上初体积为 1L，末体积为 5L，求：
 >
 > （1）热机效率；
@@ -490,6 +490,57 @@ $$
 
 高温热源温度应增加 $\Delta T = 600 - 400 = 200 \text{ K}$．
 
+> [!QUESTION] 例2
+> 一密闭容器内盛有 $\nu \mathrm{mol}$ 的氦气，可视为理想气体。该气体经历如图所示的可逆循环过程。求：（1）Ⅱ→Ⅲ 过程中气体系统的最高温度；（2）此循环的效率。
+> ![例2](10.3-exa-2.png)
+
+**解**：（1）对Ⅱ→Ⅲ，有
+
+$$
+p = -\frac{p_0}{V_0}V + 4p_0 \implies T=\frac{pV}{\nu R} = -\frac{p_0}{\nu R V_0}V^2 + \frac{4p_0}{\nu R}V
+$$
+
+于是，当 $V=2V_0$ 时，$T$ 取得最大值：$T_{\max} = \frac{4p_0V_0}{\nu R}$
+
+（2）Ⅱ→Ⅲ过程的绝热点有 $\mathrm{d}Q = 0$，即
+
+$$
+\mathrm{d} Q = \mathrm{d} E + \mathrm{d} W  = 0 \implies p\mathrm{d}V = -\frac{3}{2}\nu R\mathrm{d}T
+$$
+
+同时，由状态方程得，
+
+$$
+p\mathrm{d}V + V\mathrm{d}p = \nu R\mathrm{d}T \implies \frac{5}{3}p\mathrm{d}V + V\mathrm{d}p = 0
+$$
+
+又有过程方程 $\mathrm{d}p = -\frac{p_0}{V_0}\mathrm{d}V$，代入上式得绝热点
+
+$$
+V_Q = \frac{5}{2}V_0,\qquad p_Q = \frac{3}{2}p_0,\qquad T_Q = \frac{15}{4}\frac{p_0V_0}{\nu R}
+$$
+
+循环过程净对外做功：
+
+$$
+W = \frac{1}{2}(3p_0-p_0)(3V_0-V_0) = 2p_0V_0
+$$
+
+吸热分为两部分：Ⅰ→Ⅱ 和 Ⅱ→Q，于是
+
+$$
+\begin{align*}
+Q_{Ⅰ→Ⅱ} &=\frac{3}{2}\nu R(T_2-T_1)=3p_0V_0\\[1em]
+Q_{Ⅱ→Q} &=\Delta E + W_{Ⅱ→Q} = \frac{3}{2}\nu R(T_Q-T_2) + \frac{1}{2}(\frac{3}{2}p_0+3p_0)(\frac{5}{2}V_0-V_0) = \frac{9}{2}p_0V_0
+\end{align*}
+$$
+
+那么
+
+$$
+\eta = \frac{W}{Q} = \frac{2p_0V_0}{3p_0V_0 + \frac{9}{2}p_0V_0} = \frac{4}{15}
+$$
+
 ## 10.4 熵
 
 - **熵**：可逆过程中系统吸收的热量与温度的比值的积分，表示系统的无序程度或不确定性．
@@ -504,7 +555,12 @@ $$
   - 固液体熵变公式：比热容为 $C$，质量为 $m$
 
     $$
-    \Delta S = mC\int_{T_1}^{T_2} \ln\frac{T_2}{T_1}
+    \Delta S = mC \ln\frac{T_2}{T_1}
+    $$
+
+  - 微观解释：熵是系统可能微观状态数的度量，设系统可能的微观状态数为 $\Omega$，则熵为
+    $$
+    S = k\ln\Omega
     $$
 
 - 信息熵：如果一个事件有 $N$ 种可能的状态，且每种状态出现的概率为 $p_i$，则该事件的不确定性（信息熵）为
@@ -640,6 +696,37 @@ $$
 
 $$
 \Delta S = \Delta S_L + \Delta S_R = \frac{p_0 V_0}{T_0} \left( -\ln 2 + 3\ln\frac{3}{2} \right) = \frac{p_0 V_0}{T_0} \ln\frac{27}{16} > 0
+$$
+
+> [!QUESTION] 例3（真空绝热膨胀）
+> 一体积恒定的绝热容器中，被一绝热薄板分为 A、B 两部分，A 部分体积为 $V$，B 部分体积为 $4V$，A 部分盛有 4 mol 理想气体，B 部分为真空。现将薄板移开，求气体膨胀到整个容器后，气体的熵变及前后微观状态数之比。
+
+**解**：此过程为**自由膨胀**（焦耳膨胀）：绝热容器 $Q=0$，真空中膨胀无外力做功 $W=0$。
+
+由热力学第一定律 $\Delta E = Q - W = 0$，理想气体内能只与温度有关，故**温度不变**：$T_f = T_i = T$。
+
+**1. 熵变计算**
+
+真空绝热膨胀为不可逆过程，不能直接使用 $\Delta S = \int \frac{dQ}{T}$，但熵与过程无关，只与初末状态有关。可构造一个可逆等温膨胀过程来计算熵变。
+
+假设一个等温可逆膨胀过程，气体从体积 $V$ 膨胀到 $5V$，则熵变为：
+
+$$
+\Delta S = 4R\ln\frac{5V}{V} = 4R\ln 5 \approx 4 \times 8.31 \times 1.609 \approx 53.5 \text{ J/K}
+$$
+
+**2. 微观状态数之比**
+
+熵变 $\Delta S = S_f - S_i = k\ln\Omega_f - k\ln\Omega_i = k\ln\frac{\Omega_f}{\Omega_i}$。
+
+$$
+\frac{\Omega_f}{\Omega_i} = \exp\left(\frac{\Delta S}{k}\right) = \exp\left(\frac{4R\ln 5}{k}\right)
+$$
+
+利用 $R = N_A k$，得：
+
+$$
+\frac{\Omega_f}{\Omega_i} = \exp\left(4N_A \ln 5\right) = 5^{4N_A}
 $$
 
 # 第11章 振动学基础
