@@ -13,11 +13,11 @@ export const mermaidConfig: MermaidConfig = {
    * 亮色模式主题。
    * 可选：editor-light、gruvbox-light、ayu-light。
    */
-  lightTheme: "ayu-light",
+  lightTheme: "editor-light",
 
   /**
    * 暗色模式主题。
    * 可选：editor-dark、one-dark、gruvbox-dark、ayu-dark。
    */
-  darkTheme: "one-dark",
+  darkTheme: "editor-dark",
 };
