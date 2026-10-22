@@ -27,53 +27,51 @@ slug: academic-physics-notes-2
 
 ## 9.2 理想气体状态方程
 
-- **理想气体**：严格遵守玻意耳定律．
+- **理想气体**：严格遵守状态方程的气体．
 - **热力学第零定律**：若A与C热平衡，B与C热平衡，则A与B热平衡．定义了温度．
 - **状态方程**：
-  - $$
-    pV = \frac{m}{M}RT = \nu RT
-    $$
-    - $R=8.31 \;\mathrm{J/(mol\cdot K)}$ 为摩尔气体常数
-    - $M$ 为摩尔质量，$\nu$ 为物质的量
 
-  - $$
-    p = nkT
-    $$
-    - $n=\frac{N}{V}$ 为分子数密度
-    - $k=\frac{R}{N_A} = 1.38 \times 10^{-23} \mathrm{J/K}$ 为玻尔兹曼常数
+  $$
+  pV = \frac{m}{M}RT = \nu RT
+  $$
+  - $R=8.31 \;\mathrm{J/(mol\cdot K)}$ 为摩尔气体常数
+  - $M$ 为摩尔质量，$\nu$ 为物质的量
+
+  $$
+  p = nkT
+  $$
+  - $n=\frac{N}{V}$ 为分子数密度
+  - $k=\frac{R}{N_A} = 1.38 \times 10^{-23} \mathrm{J/K}$ 为玻尔兹曼常数
 
 ### 典型例题
 
 > [!QUESTION] 例1（打气筒）
 > 每打一次将压强 $p_0$、温度 $T_0$、体积 $V_0$ 的空气打入容积 $V$ 的容器．欲使容器内压强由 $p_0$ 变为 $p$，温度由 $T_0$ 变为 $T$，求打气次数．
 
-**解**：每次打入质量：
+**解**：容器初质量 $m_0 = \dfrac{p_0 V M}{R T_0}$，末质量 $m = \dfrac{pVM}{RT}$．每次打入质量：
 
 $$
- \Delta m = \frac{p_0 V_0 M}{R T_0}
+\Delta m = \frac{p_0 V_0 M}{R T_0}
 $$
 
-容器初质量 $m_0 = \dfrac{p_0 V M}{R T}$，末质量 $m = \frac{pVM}{RT}$．
 次数：
 
 $$
- n = \frac{m - m_0}{\Delta m} = \frac{(p - p_0)V T_0}{p_0 V_0 T}
+n = \frac{m - m_0}{\Delta m} = \frac{V}{V_0}\left(\frac{pT_0}{p_0 T}-1\right)
 $$
-
-解得 $n = 318$ 次．
 
 ## 9.3 理想气体微观模型与压强
 
 - **微观模型**：质点；除碰撞外无相互作用；完全弹性碰撞．
 - **统计假设**：
-  - 均匀分布 $\bar{v}_x = \bar{v}_y = \bar{v}_z = 0$
-  - 各方向运动均等
+  - 无宏观定向流动 $\bar{\bm v}_x = \bar{\bm v}_y = \bar{\bm v}_z = 0$
+  - 速度分布各向同性
 
     $$
     \overline{v_x^2} = \overline{v_y^2} = \overline{v_z^2} = \frac{1}{3}\overline{v^2}
     $$
 
-    $\displaystyle\overline{v_x^2} = \frac{1}{N}\sum_{i=1}^Nv_{i_x}^2$
+    $\displaystyle\overline{v_x^2} = \frac{1}{N}\sum_{i=1}^N\bm{v}_{i_x}^2$
 
 - **压强公式**：
 
@@ -169,9 +167,9 @@ $$
 - **重力场中的分布**：等温平衡状态下，若单个分子在高度为 $h$ 处的势能为 $\varepsilon_p=mgh$，则分子数密度 $n(h)$ 与压强 $p(h)$ 随高度变化的规律为
 
   $$
-  n(h)=n_0\mathrm{e}^{-\frac{Mgh}{RT}},
+  n(h)=n_0\exp\left(-\frac{Mgh}{RT}\right),
   \qquad
-  p(h)=p_0\mathrm{e}^{-\frac{Mgh}{RT}}
+  p(h)=p_0\exp\left(-\frac{Mgh}{RT}\right)
   $$
   - $\frac{m}{k}=\frac{M}{R}$
 
@@ -200,11 +198,9 @@ $$
 有 $\mathrm{d}w=f(v)\mathrm{d}v=F(\varepsilon)\mathrm{d}\varepsilon$．因此
 
 $$
-\begin{aligned}
 F(\varepsilon)
-&= f\left(\sqrt{\frac{2\varepsilon}{m}}\right)\frac{\mathrm{d}v}{\mathrm{d}\varepsilon} \\
-&= \frac{2}{\sqrt{\pi}}\frac{\sqrt{\varepsilon}}{(kT)^{3/2}}\exp\left(-\frac{\varepsilon}{kT}\right),\qquad \varepsilon\ge 0
-\end{aligned}
+= f\left(\sqrt{\frac{2\varepsilon}{m}}\right)\frac{\mathrm{d}v}{\mathrm{d}\varepsilon}
+= \frac{2}{\sqrt{\pi}}\frac{\sqrt{\varepsilon}}{(kT)^{3/2}}\exp\left(-\frac{\varepsilon}{kT}\right)
 $$
 
 （1）能量分布函数为
@@ -224,25 +220,24 @@ $$
 （3）平均能量为
 
 $$
-\begin{aligned}
 \bar{\varepsilon}
-&=\int_0^\infty \varepsilon F(\varepsilon)\mathrm{d}\varepsilon \\
-&=\frac{2kT}{\sqrt{\pi}}\int_0^\infty x^{3/2}\mathrm{e}^{-x}\mathrm{d}x
+=\int_0^\infty \varepsilon F(\varepsilon)\mathrm{d}\varepsilon
+=\frac{2kT}{\sqrt{\pi}}\int_0^\infty x^{3/2}\mathrm{e}^{-x}\mathrm{d}x
  =\frac{2kT}{\sqrt{\pi}}\Gamma\left(\frac52\right)
  =\frac32kT
-\end{aligned}
 $$
 
 ## 9.7 能量均分定理和理想气体内能
 
 - 自由度 $i$：分子能量中独立的速度和坐标的二次项数目．
-  | 分子\自由度 | 平动 | 转动 | $i$ |
-  | --- | :---: | :---: | :---: |
-  | 单原子分子 | 3 | 0 | 3 |
-  | 双原子分子 | 3 | 2 | 5 |
-  | 多原子分子 | 3 | 3 | 6 |
 
-- **能量均分定理**：每个自由度的平均能量为 $\frac12kT$，因此，分子的平均平动动能$\bar{\varepsilon}_k = \frac{i}{2}kT$
+  | 分子\自由度              | 平动自由度 | 转动自由度 | 总自由度 $i$ |
+  | ------------------------ | :--------: | :--------: | :----------: |
+  | 单原子分子               |     3      |     0      |      3       |
+  | 线性分子（如双原子分子） |     3      |     2      |      5       |
+  | 非线性多原子分子         |     3      |     3      |      6       |
+
+- **能量均分定理**：每个自由度的平均能量为 $\frac12kT$，因此，分子的平均能量为 $\bar{\varepsilon}_k = \frac{i}{2}kT$
 - **理想气体内能**：分子动能与分子内原子间势能之和
   $$
   E = \frac{i}{2}NkT = \frac{i}{2}\nu RT
@@ -305,7 +300,7 @@ $$
 ### 典型例题
 
 > [!QUESTION] 例1
-> 在一直径为 $D=1\text{cm}$ 的球形容器中充满氮气，设氮气分子有效直径 $d=10^{-10}\text{m}$，求（1）标准状态下氮气分子平均碰撞频率；（2）0°C时，氮气分子彼此不发生碰撞时的压强．
+> 在一直径为 $D=1\text{ cm}$ 的球形容器中充满氮气，设氮气分子有效直径 $d=10^{-10}\text{ m}$，求（1）标准状态下氮气分子平均碰撞频率；（2）0°C时，氮气分子彼此不发生碰撞时的压强．
 
 **解**：标准状态：$p_0 = 1.01\times 10^5 \mathrm{Pa}$，$T_0 = 273 \mathrm{K}$．
 
@@ -316,7 +311,7 @@ $$
 分子数密度 $n = \dfrac{p_0}{kT_0}$，平均速率 $\overline{v} = \sqrt{\dfrac{8kT_0}{\pi m}}$．代入得：
 
 $$
-\overline{Z} \approx 5.4\times 10^9\;\mathrm{s^{-1}}
+\overline{Z} \approx 5.4\times 10^8\;\mathrm{s^{-1}}
 $$
 
 （2） “彼此不发生碰撞”意味着平均自由程 $\overline{\lambda}$ 至少达到容器尺度（直径 $D$）．
@@ -330,7 +325,7 @@ $$
 解得压强上限：
 
 $$
-p \le \frac{kT_0}{\sqrt{2}\pi d^2 D}\approx 4.2\times 10^{-2} \;\mathrm{Pa}
+p \le \frac{kT_0}{\sqrt{2}\pi d^2 D}\approx 8.5 \;\mathrm{Pa}
 $$
 
 ---
