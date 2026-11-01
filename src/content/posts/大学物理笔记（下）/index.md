@@ -71,7 +71,7 @@ $$
     \overline{v_x^2} = \overline{v_y^2} = \overline{v_z^2} = \frac{1}{3}\overline{v^2}
     $$
 
-    $\displaystyle\overline{v_x^2} = \frac{1}{N}\sum_{i=1}^N\bm{v}_{i_x}^2$
+    $\displaystyle\overline{v_x^2} = \frac{1}{N}\sum_{i=1}^Nv_{i_x}^2$
 
 - **压强公式**：
 
@@ -137,7 +137,7 @@ $$
 > \end{cases}
 > $$
 >
-> 求：（1）$A$；（2）最概然速率；（3）平均速率和方均根速率；（4）分子速率在 $0\sim 0.3v_0$ 之间的分子的平均速率．
+> 求：（1）$A$；（2）最概然速率 $v_p$；（3）平均速率和方均根速率；（4）分子速率在 $0\sim v_p$ 之间的分子的平均速率．
 
 **解**：（1）由归一化，
 
@@ -150,16 +150,16 @@ $$
 （3）
 
 $$
-\overline{v} = \int_0^{v_0} v f(v)\mathrm{d}v = \frac{3}{10}v_0, \qquad\qquad \sqrt{\overline{v^2}} = \sqrt{\int_0^{v_0} v^2 f(v)\mathrm{d}v} = 0.55v_0
+\overline{v} = \int_0^{v_0} v f(v)\mathrm{d}v = \frac{1}{2}v_0, \qquad\qquad \sqrt{\overline{v^2}} = \sqrt{\int_0^{v_0} v^2 f(v)\mathrm{d}v} = \sqrt{\frac{3}{10}}v_0
 $$
 
-（4） 分子数 $N_{0\sim 0.3v_0} = N\displaystyle\int_0^{0.3v_0} f(v)\mathrm{d}v \approx 0.216N$，则
+（4） 分子数 $N_{0\sim v_p} = N\displaystyle\int_0^{v_p} f(v)\mathrm{d}v = \frac{N}{2}$，则
 
 $$
-\overline{v}_{0\sim 0.3v_0} = \frac{\displaystyle\int_0^{0.3v_0}v\mathrm{d}N}{N_{0\sim 0.3v_0}}= \frac{N\displaystyle\int_0^{0.3v_0} v f(v)\mathrm{d}v}{N_{0\sim 0.3v_0}} = 0.19375v_0
+\overline{v}_{0\sim v_p} = \frac{\displaystyle\int_0^{v_p}v\mathrm{d}N}{N_{0\sim v_p}}= \frac{N\displaystyle\int_0^{\frac{v_0}{2}} v f(v)\mathrm{d}v}{N_{0\sim v_p}} = \frac{5}{16}v_0
 $$
 
-## 9.6 玻尔兹曼分布
+## 9.5 玻尔兹曼分布
 
 - 势能分布函数 $f(\varepsilon_p)$：$f(\varepsilon_p)\mathrm{d}\varepsilon_p = \dfrac{\mathrm{d}N_{\varepsilon_p}}{N}$ 表示势能在 $\varepsilon_p$ 到 $\varepsilon_p+\mathrm{d}\varepsilon_p$ 的分子数占总分子数的比例（势能密度）
   - 归一化：$\displaystyle\int_0^\infty f(\varepsilon_p)\mathrm{d}\varepsilon_p = 1$
@@ -227,7 +227,7 @@ $$
  =\frac32kT
 $$
 
-## 9.7 能量均分定理和理想气体内能
+## 9.6 能量均分定理和理想气体内能
 
 - 自由度 $i$：分子能量中独立的速度和坐标的二次项数目．
 
@@ -237,7 +237,7 @@ $$
   | 线性分子（如双原子分子） |     3      |     2      |      5       |
   | 非线性多原子分子         |     3      |     3      |      6       |
 
-- **能量均分定理**：每个自由度的平均能量为 $\frac12kT$，因此，分子的平均能量为 $\bar{\varepsilon}_k = \frac{i}{2}kT$
+- **能量均分定理**：每个自由度的平均能量为 $\frac12kT$，因此，分子的平均能量为 $\bar{\varepsilon} = \frac{i}{2}kT$
 - **理想气体内能**：分子动能与分子内原子间势能之和
   $$
   E = \frac{i}{2}NkT = \frac{i}{2}\nu RT
@@ -249,9 +249,7 @@ $$
 > [!question] 例1
 > 绝热容器体积为 $2V$，内有一绝热隔板将容器等分为 A, B 两部分．设 A 部分有 1 mol单原子理想气体，B 部分有 2 mol双原子理想气体，两部分压强均为 $p$．现移除隔板，求混合后气体的压强和温度．
 
-**解：**
-“中间有隔板”暗示隔板将容器等分，故 $V_A = V_B = V$．
-初始状态由理想气体状态方程确定：
+**解**：$V_A = V_B = V$．初始状态由理想气体状态方程确定：
 
 - A 部分（单原子，$i_A=3$）：$pV = 1\cdot R T_A \implies T_A = \frac{pV}{R}$
 - B 部分（双原子，$i_B=5$）：$pV = 2\cdot R T_B \implies T_B = \frac{pV}{2R}$
@@ -286,7 +284,7 @@ $$
 p_f = \frac{(n_A+n_B)RT_f}{V_{total}} = \frac{3R}{2V}\cdot\frac{8pV}{13R} = \frac{12}{13}p
 $$
 
-## 9.8 平均自由程与碰撞频率
+## 9.7 平均自由程与碰撞频率
 
 - **平均碰撞频率** $\overline{Z}$：单位时间内，一个分子与其它分子碰撞的平均次数．
   $$
@@ -344,13 +342,13 @@ $$
 ## 10.2 热容量与典型过程
 
 - **摩尔热容**：
-  - **定容摩尔热容**：单位摩尔理想气体在定容条件下吸收热量 $\mathrm{d} Q_{V,m}$ 时，温度升高 $\mathrm{d}T$，则
+  - **定容摩尔热容**：理想气体在定容条件下吸收热量 $\mathrm{d} Q_{V}$ 时，温度升高 $\mathrm{d}T$，则
     $$
-    C_{V,\,m} =\frac{\mathrm{d}Q_{V,m}}{\nu\,\mathrm{d}T} = \frac{i}{2}R
+    C_{V,\,m} =\frac{\mathrm{d}Q_{V}}{\nu\,\mathrm{d}T} = \frac{i}{2}R
     $$
-  - **定压摩尔热容**：单位摩尔理想气体在定压条件下吸收热量 $\mathrm{d} Q_{p,m}$ 时，温度升高 $\mathrm{d}T$，则
+  - **定压摩尔热容**：理想气体在定压条件下吸收热量 $\mathrm{d} Q_{p}$ 时，温度升高 $\mathrm{d}T$，则
     $$
-    C_{p,m} =\frac{\mathrm{d}Q_{p,m}}{\nu\,\mathrm{d}T} =\frac{i+2}{2}R
+    C_{p,m} =\frac{\mathrm{d}Q_{p}}{\nu\,\mathrm{d}T} =\frac{i+2}{2}R
     $$
   - **迈耶公式**：$C_{p,m} = C_{V,m} + R$
   - **摩尔热容比**：$\gamma = \dfrac{C_{p,m}}{C_{V,m}} = \dfrac{i+2}{i}$
@@ -377,16 +375,16 @@ $$
       p\mathrm{d}V = -\nu C_{V,m}\mathrm{d} T\\
       pV = \nu RT
       \end{cases} \implies \frac{\mathrm{d}V}{V} + \frac{C_{V,m}}{R}\frac{\mathrm{d}T}{T} = 0 \implies \begin{cases}
-      V^{\gamma-1}T = const\\
-      pV^\gamma = const\\
-      p^{\gamma-1}T^{-\gamma} = const
+      V^{\gamma-1}T = \textit{const}\\
+      pV^\gamma = \textit{const}\\
+      p^{\gamma-1}T^{-\gamma} = \textit{const}
       \end{cases}
       $$
 
 - 理想气体的多方过程：当多方指数 $n=0,\,1,\,\gamma,\,\infty$ 时，分别对应等压、等温、绝热、等体过程．
 
   $$
-  pV^n = const, \quad n \in \mathbb{R}
+  pV^n = \textit{const}
   $$
   - **多方过程的热力学关系**：
     $$
@@ -403,7 +401,7 @@ $$
 
 **解**：设平衡位置为原点，小球向管内位移为 $x(t)$（$|x| \ll V/S$），气体体积变化 $\mathrm{d}V = -S\mathrm{d}x$．
 
-绝热过程满足泊松方程 $pV^\gamma = \text{const}$，取微分得：
+绝热过程满足泊松方程 $pV^\gamma = \text{\textit{const}}$，取微分得：
 
 $$
 V^\gamma \mathrm{d}p + \gamma p V^{\gamma-1} \mathrm{d}V = 0 \implies \mathrm{d}p = -\gamma \frac{p}{V} \mathrm{d}V = \gamma \frac{p}{V} S \mathrm{d}x
@@ -554,14 +552,13 @@ $$
     S = k\ln\Omega
     $$
 
-- 信息熵：如果一个事件有 $N$ 种可能的状态，且每种状态出现的概率为 $p_i$，则该事件的不确定性（信息熵）为
+- 若一个事件存在 $N$ 种可能状态，第 $i$ 种状态的概率为 $p_i$，则其 Shannon 信息熵为
 
   $$
-  S =-k\sum_i p_i \ln p_i
+  H=-\sum_i p_i\ln p_i.
   $$
 
-  其中 $p_i$ 是第 $i$ 个状态的概率，$k$ 是玻尔兹曼常数．
-  - 事件的不确定性越大，信息熵越大；事件的不确定性越小，信息熵越小．
+  其中 $p_i$ 是第 $i$ 个状态的概率．
 
 ### 典型例题
 
@@ -590,13 +587,13 @@ $$
 
 （3）1 → 4 → 3：
 
-由于1 → 4为绝热过程，熵变 $\Delta S_{1\to4} = 0$．
+由于1 → 4为可逆绝热过程，熵变 $\Delta S_{1\to4} = 0$．
 
 $$
 S_3-S_1 = S_4-S_1 + S_3-S_4 = 0+\int_{T_4}^{T_3}\frac{\nu C_{p,m}}{T}\mathrm{d}T = \nu C_{p,m}\ln\frac{T_3}{T_4} = \nu C_{p,m}\ln\frac{T_1}{T_4}
 $$
 
-绝热过程满足 $T V^{\gamma-1} = const$，则
+绝热过程满足 $T V^{\gamma-1} = \textit{const}$，则
 
 $$
 \frac{T_1}{T_4} = \left(\frac{V_4}{V_1}\right)^{\gamma-1}
@@ -621,36 +618,9 @@ $$
 
 设终态压强为 $p_f$，温度为 $T_f$，左、右侧体积分别为 $V_L, V_R$．
 
-**1. 确定终态温度 $T_f$**
+（1）整体绝热、无做功，内能不变，末温度 $T_f = T_0$
 
-空气视为双原子理想气体，摩尔热容 $C_{V,m}=\frac{5}{2}R$．
-初始物质的量：
-
-$$
-\nu_L = \frac{p_0 V_0}{RT_0}, \quad \nu_R = \frac{3p_0 V_0}{RT_0}, \quad \nu = \frac{4p_0 V_0}{RT_0}
-$$
-
-总内能守恒：
-
-$$
-E_i = \nu_L C_{V,m} T_0 + \nu_R C_{V,m} T_0 = \nu C_{V,m} T_0
-$$
-
-$$
-E_f = \nu_L C_{V,m} T_f + \nu_R C_{V,m} T_f = \nu C_{V,m} T_f
-$$
-
-由 $E_i = E_f$ 得：
-
-$$
-T_f = T_0
-$$
-
-终态温度不变．
-
-**2. 确定终态压强 $p_f$ 与体积 $V_L, V_R$**
-
-终态满足理想气体状态方程：
+（2）终态满足理想气体状态方程：
 
 $$
 p_f V_L = \nu_L R T_f = p_0 V_0, \quad p_f V_R = \nu_R R T_f = 3p_0 V_0
@@ -668,9 +638,7 @@ $$
 V_L = \frac{p_0 V_0}{p_f} = \frac{V_0}{2}, \quad V_R = \frac{3p_0 V_0}{p_f} = \frac{3V_0}{2}
 $$
 
-**3. 熵变计算**
-
-左侧熵变：
+（3）左侧熵变：
 
 $$
 \Delta S_L = \nu_L R \ln\frac{V_L}{V_0} = \frac{p_0 V_0}{RT_0} R \ln\frac{1}{2} = -\frac{p_0 V_0}{T_0} \ln 2
