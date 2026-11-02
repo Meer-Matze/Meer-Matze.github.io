@@ -1156,89 +1156,66 @@ $$
     \beta = \frac{h_2}{h_1} = \frac{n_1s'}{n_2s} \xlongequal{\text{空气中}} \frac{s'}{s}
     $$
 
-## 13.2 光s的干涉
+## 13.2 光的干涉
 
-- **相干条件**：频率相同、振动方向相同、相位差恒定．
+- **相干条件**：
+  1. 频率相同
+  2. 振动方向平行（存在相互平行的振动分量）
+  3. 相位差恒定
+
+- 干涉加强和减弱条件：$k = 0, 1, 2, \dots$
+  - 加强：相位差 $\Delta\varphi = 2k\pi$，光程差 $\Delta r = k\lambda$
+  - 减弱：相位差 $\Delta\varphi = (2k+1)\pi$，光程差 $\Delta r = (2k+1)\frac{\lambda}{2}$
 - **杨氏双缝干涉**：
+  ![杨氏双缝干涉](13.2-1.png)
   - 条纹位置：
 
     $$
-    x = \pm k\frac{D\lambda}{d} \text{ (明)}, \quad \pm(2k-1)\frac{D\lambda}{2d} \text{ (暗)}
+    x = \pm k\frac{D}{d}\lambda \text{ (明)}, \quad k\in \mathbb{N}\qquad \pm(2k-1)\frac{D}{2d}\lambda \text{ (暗)}, \quad k\in \mathbb{N}^+
     $$
 
   - 条纹间距：
 
     $$
-    \Delta x = \frac{D\lambda}{d}
+    \Delta x = \frac{D}{d}\lambda
     $$
 
-### 典型例题
-
-> [!QUESTION] 例
-> 13-5 双缝间距 $0.2\text{mm}$，屏距 $0.8\text{m}$．(1) 第1级到第4级明纹间距 $7.5\text{mm}$，求 $\lambda$．(2)若 $\lambda=600\text{nm}$，求相邻明纹间距．
-
-(1)解：$(4-1) \cdot \frac{D}{d} \lambda = 7.5 \text{mm}$，得 $\lambda = 625 \text{nm}$．
-(2)解：$\Delta X = \frac{D}{d} \lambda = 2.4 \text{mm}$．
-
-> [!QUESTION] 例
-> 13-6 白光(400-760nm)入射杨氏双缝，求不发生重叠的光谱级次．
-
-解：$X = k \frac{D}{d} \lambda$．
-第一级范围 $400 \sim 760$，第二级 $800 \sim 1520$，第三级 $1200 \sim 2280$ (单位 $D/d\text{ nm}$)．
-可见第二级起重叠，故仅第一级无重叠．
-
-- **薄膜干涉** (等倾/等厚)：
-  - 光程差：
-
+- **薄膜干涉**
+  - 平行平面薄膜干涉：
+    ![平行平面薄膜的干涉](13.2-2.png)
+    - 反射相干光程差：
+      $$
+      \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} + \frac{\lambda}{2}=\begin{cases}
+      k\lambda & \text{加强，亮纹} \\
+      (2k-1)\frac{\lambda}{2} & \text{减弱，暗纹}
+      \end{cases},\quad k\in \mathbb{N}^+
+      $$
+    - 透射相干光程差：
+      $$
+      \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} =\begin{cases}
+      k\lambda & \text{加强，亮纹} \\
+      (2k-1)\frac{\lambda}{2} & \text{减弱，暗纹}
+      \end{cases},\quad k\in \mathbb{N}^+
+      $$
+    - 增透膜和减反射膜：
+      - 增透膜：反射干涉减弱，透射干涉加强
+      - 减反射膜：反射干涉加强，透射干涉减弱
+  - 等倾干涉：
+    ![等倾干涉](13.2-3.jpg)
     $$
-    \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} + \frac{\delta\lambda}{2}
+    \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮}\\(2k-1)\frac{\lambda}{2} &\text{暗}
+    \end{cases},\quad k\in \mathbb{N}^+
     $$
-
-  - **劈尖干涉**：条纹间距 $L = \frac{\lambda}{2n\theta}$．
-  - **牛顿环**：明环 $r = \sqrt{(k-1/2)R\lambda}$，暗环 $r = \sqrt{kR\lambda}$．
-
-### 典型例题
-
-> [!QUESTION] 例
-> 13-7（肥皂膜） $\lambda=550\text{nm}$，$i=30^\circ$，$n_2=1.33$，膜最亮处的最小厚度？垂直观察时最亮波长？
-
-解：由：
-
-$$
- 2e\sqrt{n_2^2 - \sin^2 i} + \frac{\lambda}{2} = k\lambda
-$$
-
-取 $k=1$，得 $e_{min} = 1.12\times 10^{-7}\text{m}$．
-垂直入射：$2n_2e + \lambda/2 = k\lambda$，取 $k=1$ 得 $\lambda=595.8\text{nm}$ (可见光)．
-
-> [!QUESTION] 例
-> 13-8（增透膜） $\text{MgF}_2(n=1.38)$，使 $\lambda=550\text{nm}$ 反射最小，求最小厚度．
-
-解：
-
-$$
- 2ne = (2k+1)\frac{\lambda}{2}
-$$
-
-取 $k=0$，得 $e = \lambda/(4n) = 99.6\text{nm}$．
-
-> [!QUESTION] 例
-> 1（劈尖暗纹） $\lambda=680\text{nm}$，$L=12\text{cm}$，$D=0.048\text{mm}$，求暗纹数．
-
-解：
-
-$$
- 2ne + \frac{\lambda}{2} = (2k+1)\frac{\lambda}{2}
-$$
-
-$n=1$，令 $e=D$，得 $k=141.2$．加上 $e=0$ 处，共142条暗纹．
-
-> [!QUESTION] 例
-> 13-9（劈尖） $n=1.5$, $\theta=10^{-4}\text{rad}$, 明纹间距 $0.20\text{cm}$．求(1) $\lambda$ (2)长 $4.00\text{cm}$ 的明纹数．
-
-(1)解：$L = \lambda/(2n\theta)$，得 $\lambda = 600\text{nm}$．
-(2)解：$e_m = L'\theta = 4\times 10^{-6}\text{m}$．由 $2n e_m + \lambda/2 = k\lambda$ 得 $k_m=20.5$，故有20条明纹．
-
+    光程差取决于入射角 $i$，故干涉条纹为同心圆．
+    - 第 $k$ 级亮纹半径：$r_k = f\tan i_k$
+      膜厚度 $e$ 增大，$i_k$ 减小，亮纹向内移动，更密集。
+  - **等厚干涉**：
+    ![等厚干涉](13.2-4.png)
+    $$
+    \Delta r = 2ne + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮}\\(2k-1)\frac{\lambda}{2} &\text{暗}
+    \end{cases},\quad k\in \mathbb{N}^+
+    $$
+    光程差取决于膜厚 $e$，故干涉条纹为平行条纹．
 - **迈克耳孙干涉仪**：
 
 $$
@@ -1246,6 +1223,82 @@ $$
 $$
 
 ### 典型例题
+
+> [!QUESTION] 例1
+> 在杨氏双缝干涉实验中，$\lambda = 550\text{nm}, d = 0.2\text{mm}, D = 2\text{m}$，求
+>
+> （1）中央明纹两侧的两条第 10 级明纹中心的间距；
+>
+> （2）若用一厚度为 $e=6.6 \mu\text{m}$，折射率为 $n=1.58$ 的云母片覆盖一条缝，零级明纹移动到原来第几级明纹位置？
+>
+> （3）若将装置放入液体中，观察到原第三级明纹位置处恰是第四级明纹位置，求液体折射率．
+
+**解**：(1) $\Delta x = \dfrac{D}{d}\lambda$，两条第 10 级明纹间距为 $2\times 10\Delta x = 0.11\text{ m}$．
+
+(2) 设 $S_1$ 覆盖云母片后，光程为 $(n-1)e+r_1$，$S_2$ 光程为 $r_2$，则
+
+$$
+\begin{cases}
+  r_2 - r_1 = k\lambda \\
+  (n-1)e + r_1 - r_2 = 0
+\end{cases} \implies k = \frac{(n-1)e}{\lambda} \approx 7
+$$
+
+(3) $\lambda' = \dfrac{\lambda}{n}$，则
+
+$$
+\frac{3D}{d}\lambda = \frac{4D}{d}\lambda' \implies n = \frac{4}{3}
+$$
+
+> [!QUESTION] 例2
+> $\text{MgF}_2(n=1.38)$，使 $\lambda=550\text{nm}$ 反射最小，求最小厚度．
+
+**解**：垂直入射，$i=0$，反射干涉减弱条件：
+
+$$
+ 2ne = (2k+1)\frac{\lambda}{2}
+$$
+
+取 $k=0$，得 $e = \lambda/(4n) = 99.6\text{ nm}$．
+
+> [!QUESTION] 例3
+> 用波长 $\lambda=500\text{nm}$ 的单色光照射一肥皂膜，在与膜面成 $60^\circ$ 的方向上观察到反射光最亮。已知 $\text{n}_{\text{肥皂}}=1.33$，求肥皂膜最小厚度，若垂直观察，波长为多少使得反射的可见光最亮？
+
+**解**：光自空气入射至肥皂膜，前表面（空气→肥皂，光疏→光密）有半波损失，后表面（肥皂→空气，光疏→光密）无半波损失，净半波损失为 $\lambda/2$．
+
+"与膜面成 $60^\circ$" 即入射角 $i = 90^\circ - 60^\circ = 30^\circ$，$\sin i = 0.5$．
+
+**反射**相干光程差：
+
+$$
+\Delta = 2e\sqrt{n^2 - \sin^2 i} + \frac{\lambda}{2} = \left(k - \frac{1}{2}\right)\lambda
+$$
+
+取 $k=1$ 得最小厚度：
+
+$$
+e_{\min} = \frac{\lambda}{4\sqrt{n^2 - \sin^2 i}} \approx 101.4\text{ nm}
+$$
+
+**垂直**观察时 $i=0$，光程差 $\Delta = 2en + \lambda'/2$，加强条件：
+
+$$
+2en = \left(k - \frac{1}{2}\right)\lambda'
+$$
+
+取 $k=1$，代入 $e_{\min}$：
+
+$$
+\lambda' = \frac{2e_{\min}n}{1/2} \approx 539.6\text{ nm}
+$$
+
+当 $k > 1$ 时，波长小于可见光范围。
+
+> [!QUESTION] 例
+> 13-9（劈尖） $n=1.5$, $\theta=10^{-4}\text{rad}$, 明纹间距 $0.20\text{cm}$．求(1) $\lambda$ (2)长 $4.00\text{cm}$ 的明纹数．
+
+(1)解：$L = \lambda/(2n\theta)$，得 $\lambda = 600\text{nm}$．
+(2)解：$e_m = L'\theta = 4\times 10^{-6}\text{m}$．由 $2n e_m + \lambda/2 = k\lambda$ 得 $k_m=20.5$，故有20条明纹．
 
 > [!QUESTION] 例
 > （测空气折射率） 充气过程观察到107.2条条纹移动，$\lambda=546\text{nm}$，管长 $l=10.0\text{cm}$，求n．
