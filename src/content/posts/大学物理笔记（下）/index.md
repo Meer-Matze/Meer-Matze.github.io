@@ -1186,16 +1186,16 @@ $$
     - 反射相干光程差：
       $$
       \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} + \frac{\lambda}{2}=\begin{cases}
-      k\lambda & \text{加强，亮纹} \\
-      (2k-1)\frac{\lambda}{2} & \text{减弱，暗纹}
-      \end{cases},\quad k\in \mathbb{N}^+
+      k\lambda & \text{加强，亮纹},\; k=1,2,\dots \\
+      (2k+1)\frac{\lambda}{2} & \text{减弱，暗纹},\; k=0,1,2,\dots
+      \end{cases}
       $$
     - 透射相干光程差：
       $$
       \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} =\begin{cases}
-      k\lambda & \text{加强，亮纹} \\
-      (2k-1)\frac{\lambda}{2} & \text{减弱，暗纹}
-      \end{cases},\quad k\in \mathbb{N}^+
+      k\lambda & \text{加强，亮纹},\; k=1,2,\dots \\
+      (2k+1)\frac{\lambda}{2} & \text{减弱，暗纹},\; k=0,1,2,\dots
+      \end{cases}
       $$
     - 增透膜和减反射膜：
       - 增透膜：反射干涉减弱，透射干涉加强
@@ -1203,8 +1203,9 @@ $$
   - 等倾干涉：
     ![等倾干涉](13.2-3.jpg)
     $$
-    \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮}\\(2k-1)\frac{\lambda}{2} &\text{暗}
-    \end{cases},\quad k\in \mathbb{N}^+
+    \Delta r = 2e\sqrt{n_2^2 - n_1^2\sin^2 i} + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮},\; k=1,2,\dots \\
+    (2k+1)\frac{\lambda}{2} &\text{暗},\; k=0,1,2,\dots
+    \end{cases}
     $$
     光程差取决于入射角 $i$，故干涉条纹为同心圆．
     - 第 $k$ 级亮纹半径：$r_k = f\tan i_k$
@@ -1212,15 +1213,25 @@ $$
   - **等厚干涉**：
     ![等厚干涉](13.2-4.png)
     $$
-    \Delta r = 2ne + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮}\\(2k-1)\frac{\lambda}{2} &\text{暗}
-    \end{cases},\quad k\in \mathbb{N}^+
+    \Delta r = 2ne + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮},\; k=1,2,\dots \\
+    (2k+1)\frac{\lambda}{2} &\text{暗},\; k=0,1,2,\dots
+    \end{cases}
     $$
     光程差取决于膜厚 $e$，故干涉条纹为平行条纹．
-- **迈克耳孙干涉仪**：
-
-$$
- \Delta d = N \cdot \frac{\lambda}{2}
-$$
+    - **牛顿环**：
+      ![牛顿环原理图](13.2-5.png)
+      $$
+      \Delta r = 2ne + \frac{\lambda}{2} =\begin{cases} k\lambda, &\text{亮},\; k=1,2,\dots \\
+      (2k+1)\frac{\lambda}{2} &\text{暗},\; k=0,1,2,\dots
+      \end{cases}
+      $$
+      - 明暗环半径：
+        $$
+        \begin{align*}
+          r_k &= \sqrt{\frac{(2k-1)\lambda R}{2n}},&k&=1,2,\dots\\[1em]
+          r_k &= \sqrt{\frac{k\lambda R}{n}},&k&=0,1,2,\dots
+        \end{align*}
+        $$
 
 ### 典型例题
 
@@ -1294,33 +1305,25 @@ $$
 
 当 $k > 1$ 时，波长小于可见光范围。
 
-> [!QUESTION] 例
-> 13-9（劈尖） $n=1.5$, $\theta=10^{-4}\text{rad}$, 明纹间距 $0.20\text{cm}$．求(1) $\lambda$ (2)长 $4.00\text{cm}$ 的明纹数．
+> [!QUESTION] 例4
+> 在迈克耳孙干涉仪的两臂中，分别插入 $l=10\text{ cm}$ 的玻璃管，其中一个抽成真空，另一个充满压强为 $p=1.013\times 10^5\text{ Pa}$ 的空气。设光波长 $\lambda=546\text{ nm}$，实验时，向真空玻璃管中充入空气，直到压强为 $p$，观察到干涉条纹移动了 $N=107.2$ 条。求空气的折射率．
 
-(1)解：$L = \lambda/(2n\theta)$，得 $\lambda = 600\text{nm}$．
-(2)解：$e_m = L'\theta = 4\times 10^{-6}\text{m}$．由 $2n e_m + \lambda/2 = k\lambda$ 得 $k_m=20.5$，故有20条明纹．
-
-> [!QUESTION] 例
-> （测空气折射率） 充气过程观察到107.2条条纹移动，$\lambda=546\text{nm}$，管长 $l=10.0\text{cm}$，求n．
-
-解：光程差变化：
+**解**：
 
 $$
- \Delta r = 2(n-1)l = k\lambda
+\Delta r = 2l(n-1) = N\lambda \implies n = \frac{N\lambda}{2l} + 1 \approx 1.000292
 $$
-
-得 $n=1.00029$．
 
 ## 13.3 光的衍射
 
 - **惠更斯-菲涅耳原理**：波前上每点都是子波源．
 - **单缝夫琅禾费衍射**：
-  - $$
-    b\sin\varphi = \pm k\lambda \text{ (暗)}, \quad \pm (2k+1)\frac{\lambda}{2} \text{ (明)}
-    $$
 
-    中央明纹 $b\sin\varphi = 0$．
+  $$
+  b\sin\varphi = \pm k\lambda \text{ (暗)}, \quad \pm (2k+1)\frac{\lambda}{2} \text{ (明)}
+  $$
 
+  中央明纹 $b\sin\varphi = 0$．
   - 中央明纹角宽度 $2\lambda/b$，线宽度 $2f\lambda/b$．
 
 ### 典型例题
