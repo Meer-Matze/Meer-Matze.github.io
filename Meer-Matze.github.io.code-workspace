@@ -4,4 +4,189 @@
       "path": ".",
     },
   ],
+  "settings": {
+    // ============================================================
+    // 1. Language-specific Settings —— 语言级配置
+    // ============================================================
+
+    // Markdown 和 MDX 统一的字符检查
+    "[markdown][mdx]": {
+      // 中文环境下不高亮歧义字符
+      "editor.unicodeHighlight.ambiguousCharacters": false,
+
+      // 检测零宽字符等不可见字符
+      "editor.unicodeHighlight.invisibleCharacters": true,
+    },
+
+    // Markdown 专属行为
+    "[markdown]": {
+      // Markdown Diff 保留行首和行尾空白差异
+      "diffEditor.ignoreTrimWhitespace": false,
+
+      // 避免普通文本编辑时频繁触发自动补全
+      "editor.quickSuggestions": {
+        "comments": "off",
+        "strings": "off",
+        "other": "off",
+      },
+
+      // Markdown 使用 Prettier
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+
+    // Svelte 使用官方语言扩展提供的格式化器
+    "[svelte]": {
+      "editor.defaultFormatter": "svelte.svelte-vscode",
+    },
+
+    // ============================================================
+    // 2. Markdown Preview Enhanced —— 文档预览
+    // ============================================================
+
+    // 正文预览主题
+    "markdown-preview-enhanced.previewTheme": "vscode.css",
+
+    // 代码块主题
+    "markdown-preview-enhanced.codeBlockTheme": "vscode.css",
+
+    // PlantUML 公共服务器
+    "markdown-preview-enhanced.plantumlServer": "https://www.plantuml.com/plantuml/svg/",
+
+    // 预览时启用 Zen Mode
+    "markdown-preview-enhanced.enablePreviewZenMode": true,
+
+    // Reveal.js 演示文稿主题
+    "markdown-preview-enhanced.revealjsTheme": "vscode.css",
+
+    // ============================================================
+    // 3. Svelte —— 语言服务
+    // ============================================================
+
+    // 不再询问是否启用 TypeScript Svelte 插件
+    "svelte.ask-to-enable-ts-plugin": false,
+
+    // ============================================================
+    // 4. TabOutX —— 光标跳出配对符号
+    // ============================================================
+
+    "taboutx.pairsToTabOutFrom": [
+      // Markdown 粗体
+      {
+        "open": "**",
+        "close": "**",
+      },
+
+      // Markdown 下划线强调
+      {
+        "open": "__",
+        "close": "__",
+      },
+
+      // Markdown 删除线
+      {
+        "open": "~~",
+        "close": "~~",
+      },
+
+      // 方括号
+      {
+        "open": "[",
+        "close": "]",
+      },
+
+      // 花括号
+      {
+        "open": "{",
+        "close": "}",
+      },
+
+      // 圆括号
+      {
+        "open": "(",
+        "close": ")",
+      },
+
+      // 单引号
+      {
+        "open": "'",
+        "close": "'",
+      },
+
+      // 双引号
+      {
+        "open": "\"",
+        "close": "\"",
+      },
+
+      // 冒号
+      {
+        "open": ":",
+        "close": ":",
+      },
+
+      // 等号
+      {
+        "open": "=",
+        "close": "=",
+      },
+
+      // 尖括号
+      {
+        "open": ">",
+        "close": ">",
+      },
+      {
+        "open": "<",
+        "close": "<",
+      },
+
+      // 句点
+      {
+        "open": ".",
+        "close": ".",
+      },
+
+      // 反引号：Markdown 行内代码
+      {
+        "open": "`",
+        "close": "`",
+      },
+
+      // 分号
+      {
+        "open": ";",
+        "close": ";",
+      },
+
+      // HTML 注释
+      {
+        "open": "<!--",
+        "close": "-->",
+      },
+
+      // HTML div 标签
+      {
+        "open": "<div>",
+        "close": "</div>",
+      },
+
+      // LaTeX 行间公式
+      {
+        "open": "$$",
+        "close": "$$",
+      },
+
+      // LaTeX 行内公式
+      {
+        "open": "\\(",
+        "close": "\\)",
+      },
+
+      // LaTeX 行间公式（方括号形式）
+      {
+        "open": "\\[",
+        "close": "\\]",
+      },
+    ],
+  },
 }

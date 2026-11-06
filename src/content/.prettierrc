@@ -1,0 +1,135 @@
+# ============================================================
+# Prettier 配置（作用范围：src/content/ 下的 md / mdx / yaml）
+# 官方选项文档：https://prettier.io/docs/options
+# 说明：改任何一项后，建议拿一篇文章 Shift+Alt+F 格式化两次，
+#       两次结果一致、渲染无变化（pnpm dev 确认）再继续改下一项。
+# ============================================================
+
+# ---------- 排版基础 ----------
+# 目标行宽（不是硬上限，是"希望大概这么长"）。
+# 在 proseWrap: preserve 下，主要影响表格对齐和代码块，不动正文。
+# 默认 80；博客正文建议 100-120。
+printWidth: 120
+
+# 每层缩进的空格数。默认 2。
+# 影响 Markdown 列表嵌套、代码块内容缩进。
+tabWidth: 2
+
+# 缩进用 tab 还是空格。默认 false（空格）。
+# Prettier 的 "SmartTabs"：tab 只用于缩进，对齐仍用空格。
+useTabs: false
+
+# 换行符统一为 LF（\n），Linux/macOS/git 惯例。
+# 默认 lf；如果团队全是 Windows 且不用 git 可改 crlf。
+endOfLine: "lf"
+
+# ---------- Markdown 正文 ----------
+# 正文换行策略，您习惯的核心行为：
+#   preserve：手写换行原样保留（默认，最推荐博客使用）
+#   always：按 printWidth 重排正文换行
+#   never：每个段落拼成单行，靠阅读器软换行
+# 注意：GitHub 评论、部分静态站渲染器对换行敏感，改前想清楚。
+proseWrap: "preserve"
+
+# 是否格式化嵌入的代码（Markdown 代码块、MDX 里的 JS 片段等）。
+#   auto：识别得到就格式化（默认）
+#   off：嵌入代码原样保留
+# 如果希望示例代码完全不受影响，改成 "off"。
+embeddedLanguageFormatting: "auto"
+
+# ---------- 嵌入 HTML 的保护（本次的重点）----------
+# HTML 空白敏感度，决定换行会不会破坏渲染：
+#   css（默认）：按元素 display 属性判断，inline 元素换行后
+#               空格被折叠 → 渲染出现多余空格（您遇到的问题）
+#   strict：只要换行可能改变渲染就不重排，对 Markdown
+#           里写 <a>/<span>/<details> 的场景最安全
+#   ignore：完全无视空白语义，排版最紧凑但可能改变渲染
+# 建议博客场景锁死 strict。
+htmlWhitespaceSensitivity: "strict"
+
+# HTML/JSX 标签是否强制每行一个属性。
+# 默认 false（尽量同行）；标签属性很多时可改 true。
+singleAttributePerLine: false
+
+# 多行 HTML/JSX 标签的 > 位置：
+#   false：> 单独一行（默认）
+#   true： > 贴在最后一个属性后，如 onClick={...}>
+bracketSameLine: false
+
+# ---------- 代码风格（作用于代码块和 MDX 里的 JSX）----------
+# 语句行尾分号。默认 true。
+semi: true
+
+# ⚠️ 单引号偏好 —— 会同时作用于 frontmatter！
+# true 时会把 frontmatter 里的 "xxx" 全改成 'xxx'（您上次遇到的）。
+# 博客场景建议保持 false（双引号），与大多数主题/工具惯例一致。
+singleQuote: false
+
+# JSX 属性引号（独立于 singleQuote，只管 JSX/MDX 里的组件属性）。
+# 默认 false（双引号）。
+jsxSingleQuote: false
+
+# 对象 key 引号策略：
+#   as-needed（默认）：需要时才加引号
+#   consistent：一个对象里有一个 key 需要引号就全部加
+#   preserve：尊重源码写法
+quoteProps: "as-needed"
+
+# 多行结构末尾逗号（v3 起默认 all）：
+#   all：所有可能的位置都加，包括函数参数
+#   es5：ES5 合法位置加（对象、数组），函数参数不加
+#   none：不加
+trailingComma: "es5"
+
+# 花括号内空格：true 是 { a: 1 }，false 是 {a: 1}。默认 true。
+bracketSpacing: true
+
+# 对象换行策略（v3.5+）：
+#   preserve（默认）：源码里对象第一个属性前有换行就保持多行
+#   collapse：能塞一行就一行
+objectWrap: "preserve"
+
+# 单参数箭头函数是否保留括号：
+#   always（默认）：(x) => x
+#   avoid：x => x
+# 默认 always 的理由：后续加类型/默认值/参数时不用补括号。
+arrowParens: "always"
+
+# ---------- 特殊控制（一般不动）----------
+# 只格式化顶部带 @prettier 或 @format 注释的文件。
+# 适合逐步迁移老仓库，博客场景保持 false。
+requirePragma: false
+
+# 格式化后自动在文件顶部插入 @format 标记。与 requirePragma
+# 搭配使用，博客场景保持 false。
+insertPragma: false
+
+# 识别 @noprettier / @noformat 注释让单文件退出格式化（v3.6+）。
+# 有少量"不想被动"的文章时改成 true，然后在那几篇顶部加注释。
+checkIgnorePragma: false
+
+# ---------- 实验性选项（v3.1 / v3.5 新增，尝鲜用）----------
+# 三元表达式新排版：? 跟在条件后而非结果前。默认 false。
+experimentalTernaries: false
+
+# 二元运算符换行位置：end（默认）运算符留在上一行行尾；
+# start 移到下一行行首。
+experimentalOperatorPosition: "end"
+
+# ============================================================
+# 按文件类型差异化（files 相对于本配置文件所在目录匹配）
+# ============================================================
+overrides:
+  # MDX：Prettier 的 MDX 解析器尚不完善，走保守路线
+  - files: "**/*.mdx"
+    options:
+      printWidth: 120
+      proseWrap: "preserve"
+      htmlWhitespaceSensitivity: "strict"
+      embeddedLanguageFormatting: "auto"
+
+  # 博客正文目录：行宽进一步放宽，长段不换行
+  # （如果 posts/ 与本配置同级，这样写即可命中）
+  - files: "posts/**/*.md"
+    options:
+      printWidth: 160
