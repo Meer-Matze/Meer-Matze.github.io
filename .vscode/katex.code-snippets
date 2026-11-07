@@ -1,0 +1,70 @@
+{
+	// Place your Meer-Matze.github.io 工作区 snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	//
+	// You can also restrict snippets to specific files using include/exclude patterns:
+	// "Test snippet": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "test",
+	// 	"body": "test('$1', () => {\n\t$0\n});",
+	// 	"include": ["**/*.test.ts", "*.spec.ts"],
+	// 	"exclude": ["**/temp/*.ts"],
+	// 	"description": "Insert test block"
+	// }
+
+	"katex-inline": {
+		"scope": "markdown",
+		"prefix": "\\$",
+		"body": [
+			"$$1$$0"
+		],
+		"description": "Insert KaTeX inline"
+	},
+	"katex-block": {
+		"scope": "markdown",
+		"prefix": "\\$$",
+		"body": [
+			"$$",
+			"$1",
+			"$$",
+			"$0"
+		],
+		"description": "Insert KaTeX block"
+	},
+	"cases": {
+		"scope": "markdown",
+		"prefix": "\\cases",
+		"body": [
+			"\\begin{cases}",
+			"$1 & \\text{if } $2 \\\\",
+			"$3 & \\text{if } $4",
+			"\\end{cases}$0"
+		],
+		"description": "Insert cases environment"
+	},
+	"align": {
+		"scope": "markdown",
+		"prefix": "\\align",
+		"body": [
+			"\\begin{align}",
+			"$1 \\\\",
+			"$2",
+			"\\end{align}$0"
+		],
+		"description": "Insert align environment"
+	}
+}
