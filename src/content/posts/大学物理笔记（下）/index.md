@@ -1317,22 +1317,30 @@ $$
 ## 13.3 光的衍射
 
 - **惠更斯-菲涅耳原理**：波前上每点都是子波源．
-- **单缝夫琅禾费衍射**：
+- **单缝夫琅禾费衍射**：$\overline{OQ} = x = f\tan\theta \approx f\sin\theta$：
+  ![单缝衍射](13.3-1.png)
 
   $$
-  b\sin\varphi = \pm k\lambda \text{ (暗)}, \quad \pm (2k+1)\frac{\lambda}{2} \text{ (明)}
+  \begin{cases}
+    a\sin\theta = 0, &\text{中央明纹}\\
+    a\sin\theta = k\lambda, &\text{暗纹},\; k=1,2,\dots\\
+    a\sin\theta = (k+\frac{1}{2})\lambda, &\text{明纹},\; k=1,2,\dots
+  \end{cases}
+  $$
+  - 中央明纹角宽度 $2\lambda/a$，线宽度 $2f\lambda/a$．
+
+- **光栅衍射**：
+  - **光栅方程**：$a$ 为缝宽，$b$ 为缝间距，衍射角 $\theta$：
+
+  $$
+  d\sin\theta = \pm k\lambda,\text{明纹}, \quad k=1,2,\dots
   $$
 
-  中央明纹 $b\sin\varphi = 0$．
-  - 中央明纹角宽度 $2\lambda/b$，线宽度 $2f\lambda/b$．
-
-### 典型例题
-
-> [!QUESTION] 例
-> 13-10（单缝） $\lambda=550\text{nm}$，$b=0.5\text{mm}$，$f=50\text{cm}$．求(1)中央明纹宽度；(2)第一级明纹位置．
-
-(1)解：$l_0 = 2f\lambda/b = 1.1\text{mm}$．
-(2)解：$b\sin\phi = \frac{3}{2}\lambda$，$x \approx f\sin\phi = \frac{3f\lambda}{2b} = 0.825\text{mm}$．
+  $d=a+b$ 为光栅常数．
+  - **缺级**：若干涉加强 $d\sin \theta = k\lambda$，衍射暗纹 $a\sin \theta = k'\lambda$，则该级缺失
+    $$
+    k = \frac{d}{a}k',\quad k' = 1,2,\dots
+    $$
 
 - **圆孔衍射与瑞利判据**：
   - 艾里斑半角宽：
@@ -1349,7 +1357,52 @@ $$
 
     分辨本领 $R = 1/\delta\theta$．
 
+- **X射线衍射 (布拉格条件)**：
+
+$$
+2d\sin\theta = k\lambda
+$$
+
 ### 典型例题
+
+> [!QUESTION] 例1
+> 用波长 $\lambda=589.3\text{ nm}$ 的钠黄光垂直照射到宽度 $a=0.20\text{ mm}$ 的单缝上，在狭缝后放置一个焦距为 $f=0.4\text{ m}$ 的透镜，则在透镜焦平面上出现衍生条纹，求：（1）中央明纹宽度；（2）第一暗纹到第二级暗纹的距离．
+
+**解**：暗纹条件：
+
+$$
+a\sin\theta = \pm k\lambda, \quad k=1,2,3,\dots
+$$
+
+由于衍射角很小，有 $\sin\theta \approx \tan\theta = \dfrac{x}{f}$，故第 $k$ 级暗纹到中心的距离为：
+
+$$
+x_k = \frac{k f\lambda}{a}
+$$
+
+（1）中央明纹宽度为 ±1 级暗纹之间的距离：
+
+$$
+\Delta x_0 = 2x_1 = \frac{2f\lambda}{a}
+$$
+
+代入数据：
+
+$$
+\Delta x_0 = \frac{2 \times 0.4 \times 589.3\times10^{-9}}{0.20\times10^{-3}} = 2.36\times10^{-3}\ \text{m} \approx 2.36\ \text{mm}
+$$
+
+（2）第一暗纹到第二级暗纹的距离
+
+$$
+\Delta x = x_2 - x_1 = \frac{f\lambda}{a}
+$$
+
+代入数据：
+
+$$
+\Delta x = \frac{0.4 \times 589.3\times10^{-9}}{0.20\times10^{-3}} = 1.18\times10^{-3}\ \text{m} \approx 1.18\ \text{mm}
+$$
 
 > [!QUESTION] 例
 > （分辨两灯丝） $b=0.5\text{mm}$, $D=1\text{km}$, $\lambda=500\text{nm}$，求最短可分辨距离．
@@ -1361,18 +1414,6 @@ $$
 $$
 
 得 $s = \frac{D\lambda}{b} = 1\text{m}$．
-
-- **光栅衍射**：
-  - **光栅方程**：
-
-  $$
-  d\sin\varphi = \pm k\lambda
-  $$
-
-  $d=a+b$ 为光栅常数．
-  - **缺级**：若 $d/a = k/k'$，则第 $k$ 级主极大缺级．
-
-### 典型例题
 
 > [!QUESTION] 例
 > 13-11 每厘米6000条刻痕．求(1)第一级 $20^\circ$ 的波长；(2)此波长第二级的衍射角．
@@ -1386,12 +1427,6 @@ $$
 (1)解：$d(0.30-0.20) = \lambda$，得 $d = 6 \times 10^{-6} \text{m}$．
 (2)解：由 $\frac{d}{a} = \frac{4}{k'}$，取 $k'=1$ 得 $a = d/4 = 1.5 \times 10^{-6} \text{m}$．
 (3)解：$k < d/\lambda = 10$，可能级数为$-9 \sim 9$．因 $\pm 4, \pm 8$ 缺级，故呈现 $k = 0, \pm1, \pm2, \pm3, \pm5, \pm6, \pm7, \pm9$．
-
-- **X射线衍射 (布拉格条件)**：
-
-$$
- 2d\sin\theta = k\lambda
-$$
 
 ## 13.4 光的偏振
 
