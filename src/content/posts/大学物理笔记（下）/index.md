@@ -1343,25 +1343,33 @@ $$
     $$
 
 - **圆孔衍射与瑞利判据**：
+  ![夫琅禾费圆孔衍射](13.3-2.png)
   - 艾里斑半角宽：
 
     $$
-    \theta_0 = 1.22\frac{\lambda}{d}
+    \theta \approx \frac{d/2}{f} = 1.22\frac{\lambda}{D}
     $$
 
-  - 最小分辨角：
+    $d$: 艾里斑直径；$\lambda$: 波长
 
-    $$
-    \delta\theta = 1.22\frac{\lambda}{d}
-    $$
+  - 瑞利判据：两点光源的最小分辨角 $\theta_0$ 为一光源的艾里斑中心到另一光源的第一暗纹位置的角度．
+    - 最小分辨角：
 
-    分辨本领 $R = 1/\delta\theta$．
+      $$
+      \theta_0 = 1.22\frac{\lambda}{D}
+      $$
 
-- **X射线衍射 (布拉格条件)**：
+    - 分辨率：
 
-$$
-2d\sin\theta = k\lambda
-$$
+      $$
+      R = \frac{1}{\theta_0} = \frac{D}{1.22\lambda}
+      $$
+
+- **X 射线衍射 (布拉格条件)**：相邻两个晶面反射的两 X 射线干涉加强的条件
+  ![X 射线衍射](13.3-3.png)
+  $$
+  2d\sin\theta = k\lambda,\quad k = 0,1,2,\dots
+  $$
 
 ### 典型例题
 
@@ -1404,29 +1412,47 @@ $$
 \Delta x = \frac{0.4 \times 589.3\times10^{-9}}{0.20\times10^{-3}} = 1.18\times10^{-3}\ \text{m} \approx 1.18\ \text{mm}
 $$
 
-> [!QUESTION] 例
-> （分辨两灯丝） $b=0.5\text{mm}$, $D=1\text{km}$, $\lambda=500\text{nm}$，求最短可分辨距离．
+> [!QUESTION] 例2
+> 利用波长为 $\lambda = 0.59\,\mu\text{m}$ 的平行光照射光栅，已知光栅 $500\text{ 条/mm}$，狭缝宽度 $a = 1\times 10^{-3}\text{ mm}$。试求:
+>
+> （1）平行光垂直入射时，最多能观察到第几级光谱线？实际观察到几条光谱线？
+>
+> （2）平行光与光栅法线呈夹角 $\varphi = 30^\circ$ 时入射，如图所示，最多能观察到第几级谱线？
 
-解：最小分辨角：
+**解**：（1）光栅常数 $d = \dfrac{1}{500\text{ mm}^{-1}} = 2\times 10^{-6}\text{ m}$。由光栅方程：
 
 $$
- \theta \approx \frac{\lambda}{b} = \frac{s}{D}
+d\sin\theta = k\lambda \implies k_{\max} = \frac{d}{\lambda} = 3.4 \approx 3
 $$
 
-得 $s = \frac{D\lambda}{b} = 1\text{m}$．
+又由于缺级条件
 
-> [!QUESTION] 例
-> 13-11 每厘米6000条刻痕．求(1)第一级 $20^\circ$ 的波长；(2)此波长第二级的衍射角．
+$$
+k = \frac{d}{a}k' = 2k',\quad k'=1,2,3 \implies k = 2
+$$
 
-(1)解：$d = 1.667 \times 10^{-6} \text{m}$．$\lambda = d\sin 20^\circ = 570.1 \text{nm}$．
-(2)解：$\phi' = \arcsin(2\lambda/d) = 43^\circ 9'$．
+因此，实际观察到的主极大条纹为第 0 级、第 $\pm1$ 级和第 $\pm3$ 级，共5条。
 
-> [!QUESTION] 例
-> 13-12 $\lambda=600\text{nm}$，$\sin\phi=0.20$ 和 $0.30$ 处为相邻明纹，第四级缺级．求(1)d，(2)最小a，(3)呈现级数．
+（2）平行光斜射时：$ d(\sin\theta + \sin\varphi) = k\lambda$，则 $k_{\max} = \dfrac{d(\pm 1+\sin\varphi)}{\lambda} \approx 3.4\times(\frac12\pm1)$
 
-(1)解：$d(0.30-0.20) = \lambda$，得 $d = 6 \times 10^{-6} \text{m}$．
-(2)解：由 $\frac{d}{a} = \frac{4}{k'}$，取 $k'=1$ 得 $a = d/4 = 1.5 \times 10^{-6} \text{m}$．
-(3)解：$k < d/\lambda = 10$，可能级数为$-9 \sim 9$．因 $\pm 4, \pm 8$ 缺级，故呈现 $k = 0, \pm1, \pm2, \pm3, \pm5, \pm6, \pm7, \pm9$．
+![](image-1.png)
+
+所以当以 $\varphi=30^\circ$ 入射时，最大能观察到的次级为即可能到的光谱线 最高级次为 5。屏上能观察到的主极大条纹为 $k = 5，3，1，0,-1$ 共 5 条（此时，0级明条纹不在对称中心轴位置）。
+
+> [!QUESTION] 例3
+> 设人眼在正常照度下的瞳孔直径约为 $3\text{ mm}$，而在可见光中，人眼最敏感的波长为 $550\text{ nm}$， 问（1）人眼的最小分辨角有多大？（2）若物体放在距人眼 $25\text{ cm}$（明视距离）处，则两物点间距为多大时才能被分辨？
+
+**解**：（1）由瑞利判据：
+
+$$
+\theta_0 = 1.22\frac{\lambda}{D} = 1.22 \frac{550\times10^{-9}}{3\times10^{-3}} \approx 2.24\times10^{-4}\text{ rad}
+$$
+
+（2）两物点间距
+
+$$
+l = L\tan\theta_0 \approx L\theta_0 = 25\times10^{-2}\times2.24\times10^{-4} = 0.056\text{ mm}
+$$
 
 ## 13.4 光的偏振
 
