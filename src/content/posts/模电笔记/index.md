@@ -468,7 +468,7 @@ $$
 V_{CC}\\
 U_{BE}\\
 \beta
-\end{cases}\implies Q\\
+\end{cases}\implies Q
 $$
 
 交流等效求放大倍数、输入输出电阻
@@ -604,15 +604,19 @@ $$
 ![等效电路](3.3.0-4.png)
 
 $$
-u_i=i_br_{be}+(1+\beta)i_b\frac{R_W}{2},\qquad u_o=-\beta i_bR_c\\[1em]
-r_{be}=r_{bb'}+\beta\frac{U_T}{I_{EQ}}=100+50\cdot\frac{26\text{mV}}{0.517\text{mA}}=2.61\text{k}\Omega
+\begin{aligned}
+u_i&=i_br_{be}+(1+\beta)i_b\frac{R_W}{2},\qquad u_o=-\beta i_bR_c\\[1em]
+r_{be}&=r_{bb'}+\beta\frac{U_T}{I_{EQ}}=100+50\cdot\frac{26\text{mV}}{0.517\text{mA}}=2.61\text{k}\Omega
+\end{aligned}
 $$
 
 于是
 
 $$
-A_\mathrm{d} = \frac{u_o}{u_i} = -\frac{\beta R_c}{r_{be}+(1+\beta)\frac{R_W}{2}} = -96.90\\[1em]
-R_i = 2\frac{u_i}{i_b} = 2\left[r_{be}+(1+\beta)\frac{R_W}{2}\right] = 10.32\text{k}\Omega
+\begin{aligned}
+A_\mathrm{d} &= \frac{u_o}{u_i} = -\frac{\beta R_c}{r_{be}+(1+\beta)\frac{R_W}{2}} = -96.90\\[1em]
+R_i &= 2\frac{u_i}{i_b} = 2\left[r_{be}+(1+\beta)\frac{R_W}{2}\right] = 10.32\text{k}\Omega
+\end{aligned}
 $$
 
 ---
@@ -742,15 +746,19 @@ $$
 ![交流等效电路](5.4.0-4.png)
 
 $$
+\begin{gathered}
 u_{{\tiny I}} = i_{b1}r_{be1} + (1+\beta_1)i_{b1}R_{e1} \implies R_i = r_{be1} + (1+\beta_1)R_{e1} = 21.2\text{~k}\Omega\\[0.5em]
 R_o \approx R_{c2} = 10\text{~k}\Omega
+\end{gathered}
 $$
 
 接下来计算 $\dot{A}_{u1}, \dot{A}_{u2}$，首先，第一级的输出电压为 $R_{c1}$ 两端的电压，那么
 
 $$
-\dot{A}_{u1} = \frac{u_{o1}}{u_i} = -\frac{\beta[R_{c1}\parallel (r_{be2} + (1+\beta_2)R_{e2})]}{R_i} = -21.79\\[0.5em]
-\dot{A}_{u2} = \frac{u_o}{u_{o1}} = -\frac{\beta_2 (R_{c2} \parallel R_L)}{r_{be2} + (1+\beta_2)R_{e2}} = -1.23
+\begin{aligned}
+\dot{A}_{u1} &= \frac{u_{o1}}{u_i} = -\frac{\beta[R_{c1}\parallel (r_{be2} + (1+\beta_2)R_{e2})]}{R_i} = -21.79\\[0.5em]
+\dot{A}_{u2} &= \frac{u_o}{u_{o1}} = -\frac{\beta_2 (R_{c2} \parallel R_L)}{r_{be2} + (1+\beta_2)R_{e2}} = -1.23
+\end{aligned}
 $$
 
 于是

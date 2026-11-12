@@ -519,8 +519,8 @@ $$
 
 $$
 \begin{align*}
-Q_{Ⅰ→Ⅱ} &=\frac{3}{2}\nu R(T_2-T_1)=3p_0V_0\\[1em]
-Q_{Ⅱ→Q} &=\Delta E + W_{Ⅱ→Q} = \frac{3}{2}\nu R(T_Q-T_2) + \frac{1}{2}(\frac{3}{2}p_0+3p_0)(\frac{5}{2}V_0-V_0) = \frac{9}{2}p_0V_0
+Q_{\text{I}\to \text{II}} &=\frac{3}{2}\nu R(T_2-T_1)=3p_0V_0\\[1em]
+Q_{\text{II}\to Q} &=\Delta E + W_{\text{II}\to Q} = \frac{3}{2}\nu R(T_Q-T_2) + \frac{1}{2}(\frac{3}{2}p_0+3p_0)(\frac{5}{2}V_0-V_0) = \frac{9}{2}p_0V_0
 \end{align*}
 $$
 
@@ -758,9 +758,13 @@ $$
 即
 
 $$
-\frac{d^2 x}{d t^2} + \frac{\rho g S}{m} x = 0\\[1em]
-\omega = \sqrt{\frac{\rho g S}{m}} = \sqrt{\frac{g}{L}}\\[1em]
-T = 2\pi\sqrt{\frac{L}{g}}
+\begin{gathered}
+  \frac{d^2 x}{d t^2} + \frac{\rho g S}{m} x = 0\\[1em]
+  \omega = \sqrt{\frac{\rho g S}{m}} = \sqrt{\frac{g}{L}}\\[1em]
+  T = 2\pi\sqrt{\frac{L}{g}}
+\end{gathered}
+
+
 $$
 
 > [!QUESTION] 例3（U形管）
@@ -1435,9 +1439,9 @@ $$
 
 （2）平行光斜射时：$ d(\sin\theta + \sin\varphi) = k\lambda$，则 $k_{\max} = \dfrac{d(\pm 1+\sin\varphi)}{\lambda} \approx 3.4\times(\frac12\pm1)$
 
-![](image-1.png)
+![](13.3-exa-1.png)
 
-所以当以 $\varphi=30^\circ$ 入射时，最大能观察到的次级为即可能到的光谱线 最高级次为 5。屏上能观察到的主极大条纹为 $k = 5，3，1，0,-1$ 共 5 条（此时，0级明条纹不在对称中心轴位置）。
+所以当以 $\varphi=30^\circ$ 入射时，最大能观察到的次级为即可能到的光谱线 最高级次为 5。屏上能观察到的主极大条纹为 $k = 5,3,1,0,-1$ 共 5 条（此时，0级明条纹不在对称中心轴位置）。
 
 > [!QUESTION] 例3
 > 设人眼在正常照度下的瞳孔直径约为 $3\text{ mm}$，而在可见光中，人眼最敏感的波长为 $550\text{ nm}$， 问（1）人眼的最小分辨角有多大？（2）若物体放在距人眼 $25\text{ cm}$（明视距离）处，则两物点间距为多大时才能被分辨？

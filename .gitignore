@@ -48,3 +48,6 @@ package/
 .claude
 .mimocode
 .opencode
+
+# check scripts
+*.py
