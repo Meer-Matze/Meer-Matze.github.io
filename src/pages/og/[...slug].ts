@@ -2,7 +2,7 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import * as fs from "node:fs";
 import type { APIContext, GetStaticPaths } from "astro";
-import { googleFonts } from "takumi-js/helpers";
+import type { FontDetails } from "takumi-js";
 import { ImageResponse } from "takumi-js/response";
 import { profileConfig } from "@/config/profileConfig";
 import { siteConfig } from "@/config/siteConfig";
@@ -28,7 +28,43 @@ export const getStaticPaths: GetStaticPaths = async () => {
   });
 };
 
-const fontCache = new Map<string, Promise<string>>(); //new Map();
+// OG 图用的中文字体从 @fontsource 包本地读取，构建期不再请求 Google Fonts。
+// 该包把 CJK 按 unicode-range 切成百余个分片，Takumi 用 subsetOf + subsetRank 把它们
+// 组织成同一个逻辑家族（font-family: subsetOf 会展开到全部分片）。
+const OG_FONT_FAMILY = "Noto Sans SC";
+const OG_FONT_DIR = "node_modules/@fontsource-variable/noto-sans-sc";
+let ogFonts: FontDetails[] | undefined;
+
+const loadOgFonts = (): FontDetails[] => {
+	if (ogFonts) return ogFonts;
+
+	const unicodeRanges: Record<string, string> = JSON.parse(
+		fs.readFileSync(`${OG_FONT_DIR}/unicode.json`, "utf-8"),
+	);
+
+	const fonts: FontDetails[] = Object.entries(unicodeRanges).map(
+		([chunk, range]) => {
+			// 键格式不统一：数字分片是 "[4]"，具名子集是裸的 "latin"，而文件名一律不带方括号
+			const name = chunk.replace(/^\[|\]$/g, "");
+			// rank 取该分片覆盖的最小码位，与 Takumi loadGoogleFonts 内部的取值方式一致
+			const starts = range
+				.split(",")
+				.map((r) => Number.parseInt(r.trim().replace(/^U\+/i, ""), 16))
+				.filter((n) => Number.isFinite(n));
+			return {
+				name,
+				data: fs.readFileSync(
+					`${OG_FONT_DIR}/files/noto-sans-sc-${name}-wght-normal.woff2`,
+				),
+				subsetOf: OG_FONT_FAMILY,
+				subsetRank: starts.length > 0 ? Math.min(...starts) : 0,
+			};
+		},
+	);
+
+	ogFonts = fonts;
+	return fonts;
+};
 
 // Detect image format from magic bytes, returns mime type or null if unknown
 const detectImageFormat = (buffer: Buffer): string | null => {
@@ -259,178 +295,169 @@ export async function GET({
             },
           },
 
-          {
-            type: "div",
-            props: {
-              style: {
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                flexGrow: 1,
-                gap: "20px",
-              },
-              children: [
-                {
-                  type: "div",
-                  props: {
-                    style: {
-                      display: "flex",
-                      alignItems: "flex-start",
-                    },
-                    children: [
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            width: "10px",
-                            height: "68px",
-                            backgroundColor: primaryColor,
-                            borderRadius: "6px",
-                            marginTop: "14px",
-                            flexShrink: 0,
-                          },
-                        },
-                      },
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            fontSize: "72px",
-                            fontWeight: 700,
-                            color: textColor,
-                            marginLeft: "25px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            lineClamp: 3,
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: "vertical",
-                            "text-fit": "grow per-line-all",
-                            display: "flex",
-                            flexDirection: "column",
-                          },
-                          children: post.data.title,
-                        },
-                      },
-                    ],
-                  },
-                },
-                ...(description
-                  ? [
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            fontSize: "32px",
-                            color: subtleTextColor,
-                            paddingLeft: "35px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            lineClamp: 2,
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            "text-fit": "grow per-line-all",
-                            display: "flex",
-                            flexDirection: "column",
-                          },
-                          children: description,
-                        },
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          },
-          {
-            type: "div",
-            props: {
-              style: {
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-              },
-              children: [
-                {
-                  type: "div",
-                  props: {
-                    style: {
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "20px",
-                    },
-                    children: [
-                      {
-                        type: "img",
-                        props: {
-                          src: "og-avatar",
-                          width: 60,
-                          height: 60,
-                          style: {
-                            borderRadius: "50%",
-                            width: 60,
-                            height: 60,
-                            objectFit: "cover",
-                          },
-                        },
-                      },
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            fontSize: "28px",
-                            fontWeight: 600,
-                            color: textColor,
-                          },
-                          children: profileConfig.name,
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  type: "div",
-                  props: {
-                    style: { fontSize: "28px", color: subtleTextColor },
-                    children: pubDate,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      width: 1200,
-      height: 630,
-      format: "png",
-      images: {
-        cache: "auto",
-        sources: [
-          {
-            src: "og-avatar",
-            data: () => loadImageAsArrayBuffer(profileConfig.avatar ?? ""),
-          },
-          {
-            src: "og-icon",
-            data: () => loadImageAsArrayBuffer(iconPath),
-          },
-        ],
-      },
-      fonts: googleFonts({
-        families: [
-          {
-            name: "Noto Sans SC",
-            weight: "100..900",
-            style: "normal",
-          },
-        ],
-        cache: fontCache,
-      }),
-      headers: {
-        "Content-Type": "image/png",
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    },
-  );
+					{
+						type: "div",
+						props: {
+							style: {
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								flexGrow: 1,
+								gap: "20px",
+							},
+							children: [
+								{
+									type: "div",
+									props: {
+										style: {
+											display: "flex",
+											alignItems: "flex-start",
+										},
+										children: [
+											{
+												type: "div",
+												props: {
+													style: {
+														width: "10px",
+														height: "68px",
+														backgroundColor: primaryColor,
+														borderRadius: "6px",
+														marginTop: "14px",
+														flexShrink: 0,
+													},
+												},
+											},
+											{
+												type: "div",
+												props: {
+													style: {
+														fontSize: "72px",
+														fontWeight: 700,
+														color: textColor,
+														marginLeft: "25px",
+														overflow: "hidden",
+														textOverflow: "ellipsis",
+														lineClamp: 3,
+														WebkitLineClamp: 3,
+														WebkitBoxOrient: "vertical",
+														"text-fit": "grow per-line-all",
+														display: "flex",
+														flexDirection: "column",
+													},
+													children: post.data.title,
+												},
+											},
+										],
+									},
+								},
+								...(description
+									? [
+											{
+												type: "div",
+												props: {
+													style: {
+														fontSize: "32px",
+														color: subtleTextColor,
+														paddingLeft: "35px",
+														overflow: "hidden",
+														textOverflow: "ellipsis",
+														lineClamp: 2,
+														WebkitLineClamp: 2,
+														WebkitBoxOrient: "vertical",
+														"text-fit": "grow per-line-all",
+														display: "flex",
+														flexDirection: "column",
+													},
+													children: description,
+												},
+											},
+										]
+									: []),
+							],
+						},
+					},
+					{
+						type: "div",
+						props: {
+							style: {
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+								width: "100%",
+							},
+							children: [
+								{
+									type: "div",
+									props: {
+										style: {
+											display: "flex",
+											alignItems: "center",
+											gap: "20px",
+										},
+										children: [
+											{
+												type: "img",
+												props: {
+													src: "og-avatar",
+													width: 60,
+													height: 60,
+													style: {
+														borderRadius: "50%",
+														width: 60,
+														height: 60,
+														objectFit: "cover",
+													},
+												},
+											},
+											{
+												type: "div",
+												props: {
+													style: {
+														fontSize: "28px",
+														fontWeight: 600,
+														color: textColor,
+													},
+													children: profileConfig.name,
+												},
+											},
+										],
+									},
+								},
+								{
+									type: "div",
+									props: {
+										style: { fontSize: "28px", color: subtleTextColor },
+										children: pubDate,
+									},
+								},
+							],
+						},
+					},
+				],
+			},
+		},
+		{
+			width: 1200,
+			height: 630,
+			format: "png",
+			images: {
+				cache: "auto",
+				sources: [
+					{
+						src: "og-avatar",
+						data: () => loadImageAsArrayBuffer(profileConfig.avatar ?? ""),
+					},
+					{
+						src: "og-icon",
+						data: () => loadImageAsArrayBuffer(iconPath),
+					},
+				],
+			},
+			fonts: loadOgFonts(),
+			headers: {
+				"Content-Type": "image/png",
+				"Cache-Control": "public, max-age=31536000, immutable",
+			},
+		},
+	);
 }
