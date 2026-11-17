@@ -19,32 +19,27 @@ tabWidth: 2
 # Prettier 的 "SmartTabs"：tab 只用于缩进，对齐仍用空格。
 useTabs: false
 
-# 换行符统一为 LF（\n），Linux/macOS/git 惯例。
-# 默认 lf；如果团队全是 Windows 且不用 git 可改 crlf。
+# 换行符统一为 LF（\n）。
 endOfLine: "lf"
 
 # ---------- Markdown 正文 ----------
-# 正文换行策略，您习惯的核心行为：
-#   preserve：手写换行原样保留（默认，最推荐博客使用）
+#   preserve：手写换行原样保留
 #   always：按 printWidth 重排正文换行
 #   never：每个段落拼成单行，靠阅读器软换行
-# 注意：GitHub 评论、部分静态站渲染器对换行敏感，改前想清楚。
 proseWrap: "preserve"
 
 # 是否格式化嵌入的代码（Markdown 代码块、MDX 里的 JS 片段等）。
 #   auto：识别得到就格式化（默认）
 #   off：嵌入代码原样保留
-# 如果希望示例代码完全不受影响，改成 "off"。
 embeddedLanguageFormatting: "auto"
 
-# ---------- 嵌入 HTML 的保护（本次的重点）----------
+# ---------- 嵌入 HTML 的保护----------
 # HTML 空白敏感度，决定换行会不会破坏渲染：
 #   css（默认）：按元素 display 属性判断，inline 元素换行后
-#               空格被折叠 → 渲染出现多余空格（您遇到的问题）
+#               空格被折叠 → 渲染出现多余空格
 #   strict：只要换行可能改变渲染就不重排，对 Markdown
 #           里写 <a>/<span>/<details> 的场景最安全
 #   ignore：完全无视空白语义，排版最紧凑但可能改变渲染
-# 建议博客场景锁死 strict。
 htmlWhitespaceSensitivity: "strict"
 
 # HTML/JSX 标签是否强制每行一个属性。
@@ -54,14 +49,14 @@ singleAttributePerLine: false
 # 多行 HTML/JSX 标签的 > 位置：
 #   false：> 单独一行（默认）
 #   true： > 贴在最后一个属性后，如 onClick={...}>
-bracketSameLine: false
+bracketSameLine: true
 
 # ---------- 代码风格（作用于代码块和 MDX 里的 JSX）----------
 # 语句行尾分号。默认 true。
 semi: true
 
 # ⚠️ 单引号偏好 —— 会同时作用于 frontmatter！
-# true 时会把 frontmatter 里的 "xxx" 全改成 'xxx'（您上次遇到的）。
+# true 时会把 frontmatter 里的 "xxx" 全改成 'xxx'。
 # 博客场景建议保持 false（双引号），与大多数主题/工具惯例一致。
 singleQuote: false
 
@@ -121,7 +116,7 @@ experimentalOperatorPosition: "end"
 # ============================================================
 overrides:
   # MDX：Prettier 的 MDX 解析器尚不完善，走保守路线
-  - files: "**/*.mdx"
+  - files: "posts/*.mdx"
     options:
       printWidth: 120
       proseWrap: "preserve"
@@ -129,7 +124,6 @@ overrides:
       embeddedLanguageFormatting: "auto"
 
   # 博客正文目录：行宽进一步放宽，长段不换行
-  # （如果 posts/ 与本配置同级，这样写即可命中）
-  - files: "posts/**/*.md"
+  - files: "posts/*.md"
     options:
       printWidth: 160
