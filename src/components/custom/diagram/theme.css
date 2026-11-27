@@ -1,0 +1,26 @@
+/* ─────────────────────────────────────────────────────────────
+ * theme.css —— 明暗主题的唯一实现处（运行时无 JS）
+ *
+ * 约定：每个图元通过内联 style 提供 --{name}-l / --{name}-d 两个变量
+ *   （由 theme.ts 的 themeVars() 生成），这里只负责按主题选择其中之一。
+ * 暗色判定：<html class="dark">（与站点现有主题切换一致，需验证 Firefly 的 system 模式）
+ * ───────────────────────────────────────────────────────────── */
+
+.dfd {
+  margin: 1rem auto;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-l);
+}
+html.dark .dfd { background: var(--bg-d); }
+
+.dfd > svg { display: block; width: 100%; height: auto; }
+.dfd figcaption { padding: 0.4rem 0.75rem 0.6rem; font-size: 0.85rem; text-align: center; opacity: 0.8; }
+
+.dfd path { fill: none; }
+
+.dfd .s { stroke: var(--stroke-l); }
+.dfd .f { fill: var(--fill-l); }
+html.dark .dfd .s { stroke: var(--stroke-d); }
+html.dark .dfd .f { fill: var(--fill-d); }

@@ -1,0 +1,35 @@
+---
+// Diagram.astro —— 渲染层：只遍历 compile() 的结果，不含任何计算。
+// 零客户端 JS：不要加 client:* 指令。
+import './theme.css';
+import { compile } from './compile';
+import { themeVars } from './theme';
+import type { DiagramSpec } from './types';
+
+interface Props extends DiagramSpec {
+  caption?: string;
+}
+
+const { caption, ...spec } = Astro.props;
+const scene = compile(spec);
+---
+
+<figure class="dfd" style={`max-width:${scene.width}px;${themeVars({ bg: scene.bg })}`}>
+  <svg viewBox={`0 0 ${scene.width} ${scene.height}`} role="img" aria-label={scene.label}>
+    {scene.items.map((it) => {
+      switch (it.kind) {
+        case 'rect':
+          return <rect class="s f" x={it.x} y={it.y} width={it.w} height={it.h} rx={it.rx} stroke-width={it.strokeWidth} style={themeVars({ stroke: it.stroke, fill: it.fill })} />;
+        case 'path':
+          return <path class="s" d={it.d} stroke-width={it.strokeWidth} stroke-dasharray={it.dash} stroke-linecap={it.round ? 'round' : undefined} stroke-linejoin={it.round ? 'round' : undefined} style={themeVars({ stroke: it.stroke })} />;
+        case 'polygon':
+          return <polygon class="f" points={it.points} style={themeVars({ fill: it.fill })} />;
+        case 'circle':
+          return <circle class="f" cx={it.cx} cy={it.cy} r={it.r} style={themeVars({ fill: it.fill })} />;
+        case 'text':
+          return <text class="f" text-anchor={it.anchor} font-size={it.fontSize} font-family={it.font} style={themeVars({ fill: it.fill })}>{it.lines.map((l) => <tspan x={it.x} y={l.y}>{l.text}</tspan>)}</text>;
+      }
+    })}
+  </svg>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

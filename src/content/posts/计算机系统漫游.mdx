@@ -13,23 +13,123 @@ lang: "zh-CN"
 slug: csapp1
 ---
 
-import DFD, {
-  WB,
-  PINK,
-  AMBER,
-  ORANGE,
-  LIME,
-  GREEN,
-  CYAN,
-  TEAL,
-  INDIGO,
-  BLUE,
-  VIOLET,
-  PURPLE,
-  ROSE,
-  FONT_MATH,
-  FONT_SERIF,
-} from "@/components/custom/DataFlowDiagram.svelte";
+import Diagram from '@/components/custom/diagram/Diagram.astro';
+
+export const TINT = 'oklch(0.30 0.8 225 / .25)'
+export const BRACE = 'oklch(0.52 0.55 266)'
+
+export const hierarchyBraces = [
+  [75, 'CPU寄存器保存来自\n高速缓存存储器的字'],
+  [155, 'L1高速缓存保存取自\nL2高速缓存的高速缓存行'],
+  [235, 'L2高速缓存保存取自\nL3高速缓存的高速缓存行'],
+  [315, 'L3高速缓存保存取自\n磁盘的高速缓存行'],
+  [395, '主存保存取自\n本地磁盘的磁盘块'],
+  [475, '本地磁盘保存取自\n远程网络服务器上磁盘的文件'],
+];
+export const hierarchyTiers = [
+  [93.7, '寄存器'],
+  [153.7, 'L1高速缓存\n（SRAM）'],
+  [233.7, 'L2高速缓存\n（SRAM）'],
+  [313.7, 'L3高速缓存\n（SRAM）'],
+  [393.7, '主存\n（DRAM）'],
+  [473.7, '本地二级存储\n（本地磁盘）'],
+  [553.7, '远程二级存储\n（分布式文件系统、Web 服务器）'],
+];
+
+export const hierarchyEdges = [
+  { points: [[30, 275], [30, 35]], color: 'oklch(0.78 0.34 188)', strokeWidth: 5 },
+  { points: [[30, 345], [30, 585]], color: 'oklch(0.78 0.34 188)', strokeWidth: 5 },
+  { points: [
+    [420, 30], [119, 590], [721, 590], [420, 30],
+    [377, 110], [463, 110],
+    [506, 190], [334, 190],
+    [291, 270], [549, 270],
+    [592, 350], [248, 350],
+    [205, 430], [635, 430],
+    [678, 510], [162, 510],
+  ], color: 'oklch(0.78 0.34 88)', arrow: 'none', strokeWidth: 4 },
+];
+
+export const hierarchyTexts = [
+  { x: 75, y: 164.05, text: '更小\n\n更快\n\n（每字节）\n\n更贵的\n\n存储设备', fontSize: 17 },
+  { x: 75, y: 444.05, text: '更大\n\n更慢\n\n（每字节）\n\n更便宜的\n\n存储设备', fontSize: 17 },
+  ...['L0:', 'L1:', 'L2:', 'L3:', 'L4:', 'L5:', 'L6:'].map((t, i) => ({ x: 375 - 43 * i, y: 68.7 + 80 * i, text: t })),
+  ...hierarchyTiers.map(([y, t]) => ({ x: 420, y, text: t })),
+];
+
+export const rowTops = [87, 127, 197, 237, 337, 377];
+export const lineStrip = (y) => ({
+  x: 195, y, dir: 'h', cross: 26, gap: 15, rx: 2, stroke: CACHE,
+  cells: [{ size: 50, label: 'valid' }, { size: 60, label: 'tag' }, { size: 170, divide: 4, parts: ['0', '1', '···', 'B-1'] }],
+});
+
+export const coreBoxes = (x0, s) => [
+  { x: x0, y: 190, w: 190, h: 220, rx: 3, stroke: 'oklch(0.4 0.3 30)' },
+  { id: 'regs' + s, x: x0 - 40, y: 110, w: 90, h: 30, label: 'Regs', rx: 2, stroke: 'orange' },
+  { id: 'l1d' + s, x: x0 - 45, y: 180, w: 80, h: 50, label: 'L1\nd-cache', rx: 2, stroke: 'violet' },
+  { id: 'l1i' + s, x: x0 + 45, y: 180, w: 80, h: 50, label: 'L1\ni-cache', rx: 2, stroke: 'violet' },
+  { id: 'l2' + s, x: x0, y: 260, w: 170, h: 50, label: 'L2 cache', rx: 2, stroke: 'violet' },
+];
+export const coreLines = (s, x0) => [
+  { points: [`regs${s}.bottom@-5`, `l1d${s}.top`], color: 'teal', arrow: 'none' },
+  { points: [`l1d${s}.bottom`, `l2${s}.top@-45`], color: 'teal', arrow: 'none' },
+  { points: [`l1i${s}.bottom`, `l2${s}.top@45`], color: 'teal', arrow: 'none' },
+  { points: [`l2${s}.bottom`, `l3.top@${x0 - 260}`], color: 'teal', arrow: 'none' },
+];
+
+export const HW_TINT = 'oklch(0.75 0.56 220 /.25)';
+export const hwBoxes = (hl = []) => [
+  { x: 200, y: 175, w: 300, h: 250, rx: 2, stroke: 'amber' },
+  { id: 'pc', x: 105, y: 130, w: 75, h: 30, rx: 2, label: 'P  C', stroke: 'lime', fontSize: 18 },
+  { id: 'regfile', x: 195, y: 130, w: 74, h: 80, rx: 1, stroke: 'orange' },
+  { id: 'alu', x: 310, y: 130, w: 60, h: 110, rx: 2, label: 'ALU', stroke: 'green', fontSize: 17 },
+  { id: 'busif', x: 160, y: 250, w: 180, h: 60, rx: 2, label: '总线接口', stroke: 'cyan', fontSize: 16 },
+  { id: 'iob', x: 450, y: 250, w: 100, h: 60, rx: 2, label: 'I/O桥', stroke: 'oklch(0.60 0.20 180)', fontSize: 16 },
+  { id: 'mem', x: 685, y: 250, w: 90, h: 90, rx: 2, label: '主存储器', stroke: 'orange', fontSize: 16 },
+  { id: 'usb', x: 160, y: 440, w: 120, h: 60, rx: 2, label: 'USB\n控制器', stroke: 'indigo', fontSize: 16 },
+  { id: 'gfx', x: 330, y: 440, w: 140, h: 60, rx: 2, label: '图形适配器', stroke: 'indigo', fontSize: 16 },
+  { id: 'diskctl', x: 555, y: 440, w: 140, h: 60, rx: 2, label: '磁盘控制器', stroke: 'indigo', fontSize: 16 },
+  { x: 634.5, y: 320, dir: 'h', cross: 40, gap: 12, rx: 1, stroke: 'oklch(0.60 0.25 265)', cells: [{ size: 13 }, { size: 13 }, { size: 13 }] },
+  { id: 'disk', x: 555, y: 535, w: 70, h: 70, rx: 20, label: '磁盘', stroke: 'orange', fontSize: 16 },
+].map((b) => (hl.includes(b.id) ? { ...b, fill: HW_TINT } : b));
+export const hwBuses = [
+  { points: ['regfile.right@-15', 'alu.left@-15'], color: 'teal', strokeWidth: 5 },
+  { points: ['alu.left@15', 'regfile.right@15'], color: 'teal', strokeWidth: 5 },
+  { points: [[195, 180], 'busif.top@35'], color: 'teal', strokeWidth: 5 },
+  { points: [[195, 200], 'regfile.bottom'], color: 'teal', strokeWidth: 5 },
+  { points: [[340, 250], 'iob.left'], color: 'teal', strokeWidth: 11 },
+  { points: [[345, 250], 'busif.right'], color: 'teal', strokeWidth: 11 },
+  { points: [[550, 250], 'mem.left'], color: 'teal', strokeWidth: 11 },
+  { points: [[555, 250], 'iob.right'], color: 'teal', strokeWidth: 11 },
+  { points: [[450, 340], [50, 340]], color: 'teal', strokeWidth: 8 },
+  { points: [[445, 340], [634, 340]], color: 'teal', arrow: 'none', strokeWidth: 8 },
+  { points: [[648, 340], [659, 340]], color: 'teal', arrow: 'none', strokeWidth: 8 },
+  { points: [[673, 340], [684, 340]], color: 'teal', arrow: 'none', strokeWidth: 8 },
+  { points: [[698, 340], [750, 340]], color: 'teal', strokeWidth: 8 },
+  { points: [[450, 340], 'iob.bottom'], color: 'teal', strokeWidth: 9 },
+  { points: [[160, 340], 'usb.top'], color: 'teal', strokeWidth: 7 },
+  { points: [[330, 340], 'gfx.top'], color: 'teal', strokeWidth: 7 },
+  { points: [[555, 340], 'diskctl.top'], color: 'teal', strokeWidth: 7 },
+  { points: [[555, 480], 'disk.top'], color: 'teal', strokeWidth: 3 },
+  { points: [[555, 485], 'diskctl.bottom'], color: 'teal', strokeWidth: 3 },
+  { points: [[120, 500], 'usb.bottom@-40'], color: 'orange', strokeWidth: 3 },
+  { points: [[200, 500], 'usb.bottom@40'], color: 'orange', strokeWidth: 3 },
+  { points: [[400, 190], [335, 243]], color: 'orange', strokeWidth: 3 },
+  { points: [[570, 190], [570, 243]], color: 'orange', strokeWidth: 3 },
+  { points: [[158, 106], [232, 106], [232, 122], [158, 122], [158, 138], [232, 138], [232, 154], [158, 154]], color: 'orange', arrow: 'none', strokeWidth: 1.5 },
+];
+export const hwTexts = [
+  { x: 60, y: 38.7, text: 'CPU', fontSize: 18 },
+  { x: 195, y: 74.4, text: '寄存器文件' },
+  { x: 120, y: 508.7, text: '鼠标' },
+  { x: 200, y: 508.7, text: '键盘' },
+  { x: 330, y: 508.7, text: '显示器' },
+  { x: 400, y: 174.4, text: '系统总线' },
+  { x: 570, y: 174.4, text: '内存总线' },
+  { x: 660, y: 538.7, text: '存储在磁盘上的\nhello可执行文件' },
+  { x: 680, y: 394.4, text: '扩展槽，留待\n网络适配器一\n类的设备使用' },
+];
+
 
 **计算机系统**由硬件和系统软件组成，它们共同运行应用程序。
 
@@ -157,110 +257,10 @@ I/O（input/output）设备是系统与外部世界的联系通道，常见的�
 
 尽管封装不同，两者的功能都是在 I/O 总线和 I/O 设备之间传递信息。
 
-<DFD
-  client:load
-  width={800}
-  height={580}
-  ariaLabel="一个典型系统的硬件组成"
-  custom={[
-    //CPU
-    {x: 200,y: 175,w: 300,h: 250,rx: 2,stroke: AMBER,},
-    // PC
-    {x: 105,y: 130,w: 75,h: 30,rx: 2,label: "P  C",stroke: LIME,fontSize: 18,fontFamily: FONT_SERIF,},
-    // 寄存器文件
-    {x: 195,y: 130,w: 74,h: 80,rx: 1,stroke: ORANGE,},
-    // ALU
-    {x: 310,y: 130,w: 60,h: 110,rx: 2,label: "ALU",stroke: GREEN,fontSize: 17,fontFamily: FONT_SERIF,},
-    // 总线接口
-    {x: 160,y: 250,w: 180,h: 60,rx: 2,label: "总线接口",stroke: CYAN,fontSize: 16,fontFamily: FONT_SERIF,},
-    // I/O桥
-    {x: 450,y: 250,w: 100,h: 60,rx: 2,label: "I/O桥",stroke: 'oklch(0.60 0.20 180)',fontSize: 16,fontFamily: FONT_SERIF,},
-    // 主存
-    { x: 685, y: 250, w: 90, h: 90, rx: 2, label: "主存储器", stroke: ORANGE, fontSize: 16, fontFamily: FONT_SERIF,},
-    // USB
-    { x: 160, y: 440, w: 120, h: 60, rx: 2, label: "USB\n控制器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 图形适配器
-    { x: 330, y: 440, w: 140, h: 60, rx: 2, label: "图形适配器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 磁盘控制器
-    { x: 555, y: 440, w: 140, h: 60, rx: 2, label: "磁盘控制器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 扩展槽
-    { x: 641, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 666, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 691, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    // 磁盘
-    { x: 555, y: 535, w: 70, h: 70, rx: 20, label: "磁盘", stroke: ORANGE, fontSize: 16, fontFamily: FONT_SERIF, },
-]}
-
-lines={[
-// 寄存器<->ALU
-{ x1: 232, y1: 115, x2: 280, y2: 115, color: TEAL, strokeWidth: 5, },
-{ x1: 280, y1: 145, x2: 232, y2: 145, color: TEAL, strokeWidth: 5, },
-// 寄存器<->总线接口
-{ x1: 195, y1: 180, x2: 195, y2: 220, color: TEAL, strokeWidth: 5, },
-{ x1: 195, y1: 200, x2: 195, y2: 170, color: TEAL, strokeWidth: 5, },
-// 总线接口<->I/O桥
-{ x1: 340, y1: 250, x2: 400, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 345, y1: 250, x2: 250, y2: 250, color: TEAL, strokeWidth: 11, },
-// I/O桥<->主存
-{ x1: 550, y1: 250, x2: 640, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 555, y1: 250, x2: 500, y2: 250, color: TEAL, strokeWidth: 11, },
-// IO总线
-{ x1: 450, y1: 340, x2: 50, y2: 340, color: TEAL, strokeWidth: 8, },
-{ x1: 445, y1: 340, x2: 634, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 648, y1: 340, x2: 659, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 673, y1: 340, x2: 684, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 698, y1: 340, x2: 750, y2: 340, color: TEAL, strokeWidth: 8, },
-// I/O桥<--I/O总线
-{ x1: 450, y1: 340, x2: 450, y2: 280, color: TEAL, strokeWidth: 9, },
-// I/O桥<->USB
-{ x1: 160, y1: 340, x2: 160, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->图形适配器
-{ x1: 330, y1: 340, x2: 330, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->磁盘控制器
-{ x1: 555, y1: 340, x2: 555, y2: 410, color: TEAL, strokeWidth: 7, },
-// 磁盘控制器<->磁盘
-{ x1: 555, y1: 480, x2: 555, y2: 500, color: TEAL, strokeWidth: 3, },
-{ x1: 555, y1: 485, x2: 555, y2: 470, color: TEAL, strokeWidth: 3, },
-// 一些小箭头
-// 鼠标
-{ x1: 120, y1: 500, x2: 120, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 键盘
-{ x1: 200, y1: 500, x2: 200, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 显示器
-{ x1: 330, y1: 470, x2: 330, y2: 500, color: ORANGE, strokeWidth: 3, },
-// 系统总线（文字标注）
-{ x1: 400, y1: 190, x2: 335, y2: 243, color: ORANGE, strokeWidth: 3, },
-// 内存总线（文字标注）
-{ x1: 570, y1: 190, x2: 570, y2: 243, color: ORANGE, strokeWidth: 3, },
-]}
-polylines={[
-// 寄存器网格
-{
-points: [
-[ 158, 106 ],
-[ 232, 106 ],
-[ 232, 122 ],
-[ 158, 122 ],
-[ 158, 138 ],
-[ 232, 138 ],
-[ 232, 154 ],
-[ 158, 154 ],
-],
-color: ORANGE,
-noArrow: true,
-strokeWidth: 1.5,
-},
-]}
-labels={[
-{ x: 60, y: 45, text: "CPU", fontSize: 18, fontFamily: FONT_SERIF, },
-{ x: 195, y: 80, text: "寄存器文件", fontSize: 16, fontFamily: FONT_SERIF, }, { x: 120, y: 515, text: "鼠标", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 200, y: 515, text: "键盘", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 330, y: 515, text: "显示器", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 400, y: 180, text: "系统总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 570, y: 180, text: "内存总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 660, y: 545, text: "存储在磁盘上的\nhello可执行文件", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 680, y: 400, text: "扩展槽，留待\n网络适配器一\n类的设备使用", fontSize: 16, fontFamily: FONT_SERIF, }
-]}
+<Diagram width={800} height={580} caption="一个典型系统的硬件组成" defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={hwBoxes()}
+  edges={[...hwBuses, { points: ['gfx.bottom', [330, 500]], color: 'orange', strokeWidth: 3 }]}
+  texts={hwTexts}
 />
 
 #### 3. 主存
@@ -302,429 +302,46 @@ CPU 在指令的要求下可能会执行这些操作：
 1. 初始时，shell 程序执行它的指令，等待我们输人一个命令
 2. 用户键入 `./hello` 并回车，shell 将字符读入寄存器再存入内存
 
-<DFD
-  client:load
-  width={800}
-  height={580}
-  ariaLabel="读取hello命令"
-  custom={[
-    //CPU
-    {x: 200,y: 175,w: 300,h: 250,rx: 2,stroke: AMBER,},
-    // PC
-    {x: 105,y: 130,w: 75,h: 30,rx: 2,label: "P  C",stroke: LIME,fontSize: 18,fontFamily: FONT_SERIF,},
-    // 寄存器文件
-    {x: 195,y: 130,w: 74,h: 80,rx: 1,stroke: ORANGE, fill: 'oklch(0.75 0.56 220 /.25)',},
-    // ALU
-    {x: 310,y: 130,w: 60,h: 110,rx: 2,label: "ALU",stroke: GREEN,fontSize: 17,fontFamily: FONT_SERIF,},
-    // 总线接口
-    {x: 160,y: 250,w: 180,h: 60,rx: 2,label: "总线接口",stroke: CYAN, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16,fontFamily: FONT_SERIF,},
-    // I/O桥
-    {x: 450,y: 250,w: 100,h: 60,rx: 2,label: "I/O桥",stroke: 'oklch(0.60 0.20 180)', fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16,fontFamily: FONT_SERIF,},
-    // 主存
-    { x: 685, y: 250, w: 90, h: 90, rx: 2, label: "主存储器", stroke: ORANGE, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16, fontFamily: FONT_SERIF,},
-    // USB
-    { x: 160, y: 440, w: 120, h: 60, rx: 2, label: "USB\n控制器", stroke: INDIGO, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16, fontFamily: FONT_SERIF,},
-    // 图形适配器
-    { x: 330, y: 440, w: 140, h: 60, rx: 2, label: "图形适配器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 磁盘控制器
-    { x: 555, y: 440, w: 140, h: 60, rx: 2, label: "磁盘控制器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 扩展槽
-    { x: 641, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 666, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 691, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    // 磁盘
-    { x: 555, y: 535, w: 70, h: 70, rx: 20, label: "磁盘", stroke: ORANGE, fontSize: 16, fontFamily: FONT_SERIF, },
-]}
-
-lines={[
-// 寄存器<->ALU
-{ x1: 232, y1: 115, x2: 280, y2: 115, color: TEAL, strokeWidth: 5, },
-{ x1: 280, y1: 145, x2: 232, y2: 145, color: TEAL, strokeWidth: 5, },
-// 寄存器<->总线接口
-{ x1: 195, y1: 180, x2: 195, y2: 220, color: TEAL, strokeWidth: 5, },
-{ x1: 195, y1: 200, x2: 195, y2: 170, color: TEAL, strokeWidth: 5, },
-// 总线接口<->I/O桥
-{ x1: 340, y1: 250, x2: 400, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 345, y1: 250, x2: 250, y2: 250, color: TEAL, strokeWidth: 11, },
-// I/O桥<->主存
-{ x1: 550, y1: 250, x2: 640, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 555, y1: 250, x2: 500, y2: 250, color: TEAL, strokeWidth: 11, },
-// IO总线
-{ x1: 450, y1: 340, x2: 50, y2: 340, color: TEAL, strokeWidth: 8, },
-{ x1: 445, y1: 340, x2: 634, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 648, y1: 340, x2: 659, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 673, y1: 340, x2: 684, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 698, y1: 340, x2: 750, y2: 340, color: TEAL, strokeWidth: 8, },
-// I/O桥<--I/O总线
-{ x1: 450, y1: 340, x2: 450, y2: 280, color: TEAL, strokeWidth: 9, },
-// I/O桥<->USB
-{ x1: 160, y1: 340, x2: 160, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->图形适配器
-{ x1: 330, y1: 340, x2: 330, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->磁盘控制器
-{ x1: 555, y1: 340, x2: 555, y2: 410, color: TEAL, strokeWidth: 7, },
-// 磁盘控制器<->磁盘
-{ x1: 555, y1: 480, x2: 555, y2: 500, color: TEAL, strokeWidth: 3, },
-{ x1: 555, y1: 485, x2: 555, y2: 470, color: TEAL, strokeWidth: 3, },
-// 一些小箭头
-// 鼠标
-{ x1: 120, y1: 500, x2: 120, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 键盘
-{ x1: 200, y1: 500, x2: 200, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 显示器
-{ x1: 330, y1: 470, x2: 330, y2: 500, color: ORANGE, strokeWidth: 3, },
-// 系统总线（文字标注）
-{ x1: 400, y1: 190, x2: 335, y2: 243, color: ORANGE, strokeWidth: 3, },
-// 内存总线（文字标注）
-{ x1: 570, y1: 190, x2: 570, y2: 243, color: ORANGE, strokeWidth: 3, },
-// usb-> i/o桥
-]}
-polylines={[
-// 寄存器网格
-{
-points: [
-[ 158, 106 ],
-[ 232, 106 ],
-[ 232, 122 ],
-[ 158, 122 ],
-[ 158, 138 ],
-[ 232, 138 ],
-[ 232, 154 ],
-[ 158, 154 ],
-],
-color: ORANGE,
-noArrow: true,
-strokeWidth: 1.5,
-},
-// usb --- 总线接口
-{
-points: [
-[ 160, 410 ],
-[ 160, 340 ],
-[ 450, 340 ],
-[ 450, 270 ],
-[ 165, 270 ],
-[ 165, 263 ]
-],
-color: PINK,
-noArrow: true,
-strokeWidth: 4,
-},
-// 总线接口 --> 寄存器
-{
-points: [
-[ 165, 235 ],
-[ 165, 170 ],
-],
-color: PINK,
-strokeWidth: 4,
-},
-// 寄存器 ---> 主存
-{
-points: [
-[ 225, 170 ],
-[ 225, 230 ],
-[ 640, 230 ],
-],
-color: PINK,
-noArrow: true,
-strokeWidth: 4,
-}
-]}
-labels={[
-{ x: 60, y: 45, text: "CPU", fontSize: 18, fontFamily: FONT_SERIF, },
-{ x: 195, y: 80, text: "寄存器文件", fontSize: 16, fontFamily: FONT_SERIF, }, { x: 120, y: 515, text: "鼠标", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 200, y: 515, text: "键盘", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 330, y: 515, text: "显示器", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 400, y: 180, text: "系统总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 570, y: 180, text: "内存总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 660, y: 545, text: "存储在磁盘上的\nhello可执行文件", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 680, y: 400, text: "扩展槽，留待\n网络适配器一\n类的设备使用", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 200, y: 535, text: "输入\"hello\"", fontSize: 16, color: 'oklch(0.6 0.4 185)', fontFamily: FONT_SERIF, }
-]}
+<Diagram width={800} height={580} caption="从键盘上读取 hello 命令" defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={hwBoxes(['regfile', 'busif', 'iob', 'mem', 'usb'])}
+  edges={[
+    ...hwBuses,
+    { points: ['gfx.bottom', [330, 500]], color: 'orange', strokeWidth: 3 },
+    { points: ['usb.top', [160, 340], [450, 340], [450, 270], [165, 270], [165, 263]], color: 'pink', arrow: 'none', strokeWidth: 4 },
+    { points: [[165, 235], 'regfile.bottom@-30'], color: 'pink', strokeWidth: 4 },
+    { points: ['regfile.bottom@30', [225, 230], 'mem.left@-20'], color: 'pink', arrow: 'none', strokeWidth: 4 },
+  ]}
+  texts={[...hwTexts, { x: 200, y: 528.7, text: '输入"hello"', color: 'oklch(0.6 0.4 185)' }]}
 />
 
 3. shell 执行一系列指令加载可执行的 `hello` 文件，把 `hello` 目标文件中的代码和数据从磁盘复制到主存
    - 数据就包括了最终会被输出的字符串 `"hello, world\n"`
    - 利用**直接存储器存取**（DMA，第六章讨论），数据可以不通过处理器直接从磁盘到达主存。
 
-<DFD
-  client:load
-  width={800}
-  height={580}
-  ariaLabel="从磁盘加载可执行文件到主存"
-  custom={[
-    //CPU
-    {x: 200,y: 175,w: 300,h: 250,rx: 2,stroke: AMBER,},
-    // PC
-    {x: 105,y: 130,w: 75,h: 30,rx: 2,label: "P  C",stroke: LIME,fontSize: 18,fontFamily: FONT_SERIF,},
-    // 寄存器文件
-    {x: 195,y: 130,w: 74,h: 80,rx: 1,stroke: ORANGE,},
-    // ALU
-    {x: 310,y: 130,w: 60,h: 110,rx: 2,label: "ALU",stroke: GREEN,fontSize: 17,fontFamily: FONT_SERIF,},
-    // 总线接口
-    {x: 160,y: 250,w: 180,h: 60,rx: 2,label: "总线接口",stroke: CYAN,fontSize: 16,fontFamily: FONT_SERIF,},
-    // I/O桥
-    {x: 450,y: 250,w: 100,h: 60,rx: 2,label: "I/O桥",stroke: 'oklch(0.60 0.20 180)', fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16,fontFamily: FONT_SERIF,},
-    // 主存
-    { x: 685, y: 250, w: 90, h: 90, rx: 2, label: "主存储器", stroke: ORANGE, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16, fontFamily: FONT_SERIF,},
-    // USB
-    { x: 160, y: 440, w: 120, h: 60, rx: 2, label: "USB\n控制器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 图形适配器
-    { x: 330, y: 440, w: 140, h: 60, rx: 2, label: "图形适配器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 磁盘控制器
-    { x: 555, y: 440, w: 140, h: 60, rx: 2, label: "磁盘控制器", stroke: INDIGO, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16, fontFamily: FONT_SERIF,},
-    // 扩展槽
-    { x: 641, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 666, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 691, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    // 磁盘
-    { x: 555, y: 535, w: 70, h: 70, rx: 20, label: "磁盘", stroke: ORANGE,  fill: 'oklch(0.75 0.56 220 /.25)',fontSize: 16, fontFamily: FONT_SERIF, },
-]}
-
-lines={[
-// 寄存器<->ALU
-{ x1: 232, y1: 115, x2: 280, y2: 115, color: TEAL, strokeWidth: 5, },
-{ x1: 280, y1: 145, x2: 232, y2: 145, color: TEAL, strokeWidth: 5, },
-// 寄存器<->总线接口
-{ x1: 195, y1: 180, x2: 195, y2: 220, color: TEAL, strokeWidth: 5, },
-{ x1: 195, y1: 200, x2: 195, y2: 170, color: TEAL, strokeWidth: 5, },
-// 总线接口<->I/O桥
-{ x1: 340, y1: 250, x2: 400, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 345, y1: 250, x2: 250, y2: 250, color: TEAL, strokeWidth: 11, },
-// I/O桥<->主存
-{ x1: 550, y1: 250, x2: 640, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 555, y1: 250, x2: 500, y2: 250, color: TEAL, strokeWidth: 11, },
-// IO总线
-{ x1: 450, y1: 340, x2: 50, y2: 340, color: TEAL, strokeWidth: 8, },
-{ x1: 445, y1: 340, x2: 634, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 648, y1: 340, x2: 659, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 673, y1: 340, x2: 684, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 698, y1: 340, x2: 750, y2: 340, color: TEAL, strokeWidth: 8, },
-// I/O桥<--I/O总线
-{ x1: 450, y1: 340, x2: 450, y2: 280, color: TEAL, strokeWidth: 9, },
-// I/O桥<->USB
-{ x1: 160, y1: 340, x2: 160, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->图形适配器
-{ x1: 330, y1: 340, x2: 330, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->磁盘控制器
-{ x1: 555, y1: 340, x2: 555, y2: 410, color: TEAL, strokeWidth: 7, },
-// 磁盘控制器<->磁盘
-{ x1: 555, y1: 480, x2: 555, y2: 500, color: TEAL, strokeWidth: 3, },
-{ x1: 555, y1: 485, x2: 555, y2: 470, color: TEAL, strokeWidth: 3, },
-// 一些小箭头
-// 鼠标
-{ x1: 120, y1: 500, x2: 120, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 键盘
-{ x1: 200, y1: 500, x2: 200, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 显示器
-{ x1: 330, y1: 470, x2: 330, y2: 500, color: ORANGE, strokeWidth: 3, },
-// 系统总线（文字标注）
-{ x1: 400, y1: 190, x2: 335, y2: 243, color: ORANGE, strokeWidth: 3, },
-// 内存总线（文字标注）
-{ x1: 570, y1: 190, x2: 570, y2: 243, color: ORANGE, strokeWidth: 3, },
-]}
-polylines={[
-// 寄存器网格
-{
-points: [
-[ 158, 106 ],
-[ 232, 106 ],
-[ 232, 122 ],
-[ 158, 122 ],
-[ 158, 138 ],
-[ 232, 138 ],
-[ 232, 154 ],
-[ 158, 154 ],
-],
-color: ORANGE,
-noArrow: true,
-strokeWidth: 1.5,
-},
-// 磁盘控制器 --- I/O桥
-{
-points: [
-[ 555, 410 ],
-[ 555, 340 ],
-[ 450, 340 ],
-[ 450, 265 ],
-],
-color: PINK,
-noArrow: true,
-strokeWidth: 4,
-},
-// I/O桥 ---> 主存
-{
-points: [
-[ 480, 250 ],
-[ 640, 250 ],
-],
-color: PINK,
-strokeWidth: 4,
-}
-]}
-labels={[
-{ x: 60, y: 45, text: "CPU", fontSize: 18, fontFamily: FONT_SERIF, },
-{ x: 195, y: 80, text: "寄存器文件", fontSize: 16, fontFamily: FONT_SERIF, }, { x: 120, y: 515, text: "鼠标", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 200, y: 515, text: "键盘", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 330, y: 515, text: "显示器", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 400, y: 180, text: "系统总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 570, y: 180, text: "内存总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 660, y: 545, text: "存储在磁盘上的\nhello可执行文件", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 680, y: 400, text: "扩展槽，留待\n网络适配器一\n类的设备使用", fontSize: 16, fontFamily: FONT_SERIF, }
-]}
+<Diagram width={800} height={580} caption="从磁盘加载可执行文件到主存" defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={hwBoxes(['iob', 'mem', 'diskctl', 'disk'])}
+  edges={[
+    ...hwBuses,
+    { points: ['gfx.bottom', [330, 500]], color: 'orange', strokeWidth: 3 },
+    { points: ['diskctl.top', [555, 340], [450, 340], [450, 265]], color: 'pink', arrow: 'none', strokeWidth: 4 },
+    { points: [[480, 250], 'mem.left'], color: 'pink', strokeWidth: 4 },
+  ]}
+  texts={hwTexts}
 />
 
 4. 一旦目标文件 `hello` 的代码和数据被加载到主存，处理器就开始执行 `hello` 程序 `main` 函数中的机器语言指令
    - 这些指令把 `"hello, world\n"` 字符串中的字节从主存复制到寄存器文件，再从寄存器文件复制到显示设备，最终显示在屏幕上。
 
-<DFD
-  client:load
-  width={800}
-  height={580}
-  ariaLabel="将输出字符串从存储器写到显示器"
-  custom={[
-    //CPU
-    {x: 200,y: 175,w: 300,h: 250,rx: 2,stroke: AMBER,},
-    // PC
-    {x: 105,y: 130,w: 75,h: 30,rx: 2,label: "P  C",stroke: LIME,fontSize: 18,fontFamily: FONT_SERIF,},
-    // 寄存器文件
-    {x: 195,y: 130,w: 74,h: 80,rx: 1,stroke: ORANGE, fill: 'oklch(0.75 0.56 220 /.25)',},
-    // ALU
-    {x: 310,y: 130,w: 60,h: 110,rx: 2,label: "ALU",stroke: GREEN,fontSize: 17,fontFamily: FONT_SERIF,},
-    // 总线接口
-    {x: 160,y: 250,w: 180,h: 60,rx: 2,label: "总线接口",stroke: CYAN, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16,fontFamily: FONT_SERIF,},
-    // I/O桥
-    {x: 450,y: 250,w: 100,h: 60,rx: 2,label: "I/O桥",stroke: 'oklch(0.60 0.20 180)', fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16,fontFamily: FONT_SERIF,},
-    // 主存
-    { x: 685, y: 250, w: 90, h: 90, rx: 2, label: "主存储器", stroke: ORANGE, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16, fontFamily: FONT_SERIF,},
-    // USB
-    { x: 160, y: 440, w: 120, h: 60, rx: 2, label: "USB\n控制器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 图形适配器
-    { x: 330, y: 440, w: 140, h: 60, rx: 2, label: "图形适配器", stroke: INDIGO, fill: 'oklch(0.75 0.56 220 /.25)', fontSize: 16, fontFamily: FONT_SERIF,},
-    // 磁盘控制器
-    { x: 555, y: 440, w: 140, h: 60, rx: 2, label: "磁盘控制器", stroke: INDIGO, fontSize: 16, fontFamily: FONT_SERIF,},
-    // 扩展槽
-    { x: 641, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 666, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    { x: 691, y: 340, w: 13, h: 40, rx: 1, stroke: 'oklch(0.60 0.25 265)',},
-    // 磁盘
-    { x: 555, y: 535, w: 70, h: 70, rx: 20, label: "磁盘", stroke: ORANGE, fontSize: 16, fontFamily: FONT_SERIF, },
-]}
-
-lines={[
-// 寄存器<->ALU
-{ x1: 232, y1: 115, x2: 280, y2: 115, color: TEAL, strokeWidth: 5, },
-{ x1: 280, y1: 145, x2: 232, y2: 145, color: TEAL, strokeWidth: 5, },
-// 寄存器<->总线接口
-{ x1: 195, y1: 180, x2: 195, y2: 220, color: TEAL, strokeWidth: 5, },
-{ x1: 195, y1: 200, x2: 195, y2: 170, color: TEAL, strokeWidth: 5, },
-// 总线接口<->I/O桥
-{ x1: 340, y1: 250, x2: 400, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 345, y1: 250, x2: 250, y2: 250, color: TEAL, strokeWidth: 11, },
-// I/O桥<->主存
-{ x1: 550, y1: 250, x2: 640, y2: 250, color: TEAL, strokeWidth: 11, },
-{ x1: 555, y1: 250, x2: 500, y2: 250, color: TEAL, strokeWidth: 11, },
-// IO总线
-{ x1: 450, y1: 340, x2: 50, y2: 340, color: TEAL, strokeWidth: 8, },
-{ x1: 445, y1: 340, x2: 634, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 648, y1: 340, x2: 659, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 673, y1: 340, x2: 684, y2: 340, color: TEAL, noArrow: true, strokeWidth: 8, },
-{ x1: 698, y1: 340, x2: 750, y2: 340, color: TEAL, strokeWidth: 8, },
-// I/O桥<--I/O总线
-{ x1: 450, y1: 340, x2: 450, y2: 280, color: TEAL, strokeWidth: 9, },
-// I/O桥<->USB
-{ x1: 160, y1: 340, x2: 160, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->图形适配器
-{ x1: 330, y1: 340, x2: 330, y2: 410, color: TEAL, strokeWidth: 7, },
-// I/O桥<->磁盘控制器
-{ x1: 555, y1: 340, x2: 555, y2: 410, color: TEAL, strokeWidth: 7, },
-// 磁盘控制器<->磁盘
-{ x1: 555, y1: 480, x2: 555, y2: 500, color: TEAL, strokeWidth: 3, },
-{ x1: 555, y1: 485, x2: 555, y2: 470, color: TEAL, strokeWidth: 3, },
-// 一些小箭头
-// 鼠标
-{ x1: 120, y1: 500, x2: 120, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 键盘
-{ x1: 200, y1: 500, x2: 200, y2: 470, color: ORANGE, strokeWidth: 3, },
-// 系统总线（文字标注）
-{ x1: 400, y1: 190, x2: 335, y2: 243, color: ORANGE, strokeWidth: 3, },
-// 内存总线（文字标注）
-{ x1: 570, y1: 190, x2: 570, y2: 243, color: ORANGE, strokeWidth: 3, },
-]}
-polylines={[
-// 寄存器网格
-{
-points: [
-[ 158, 106 ],
-[ 232, 106 ],
-[ 232, 122 ],
-[ 158, 122 ],
-[ 158, 138 ],
-[ 232, 138 ],
-[ 232, 154 ],
-[ 158, 154 ],
-],
-color: ORANGE,
-noArrow: true,
-strokeWidth: 1.5,
-},
-// 主存 ---> 寄存器
-{
-points: [
-[ 640, 250 ],
-[ 640, 230 ],
-[ 225, 230 ],
-[ 225, 170 ],
-],
-color: PINK,
-strokeWidth: 4,
-},
-// 寄存器 --- 总线接口
-{
-points: [
-[ 165, 170 ],
-[ 165, 237 ],
-],
-color: PINK,
-noArrow: true,
-strokeWidth: 4,
-},
-// 总线接口 --- 图形适配器
-{
-points: [
-[ 165, 261 ],
-[ 165, 270 ],
-[ 450, 270 ],
-[ 450, 340 ],
-[ 330, 340 ],
-[ 330, 425 ],
-],
-color: PINK,
-noArrow: true,
-strokeWidth: 4,
-},
-// 图形适配器 ---> 显示器
-{
-points: [
-[ 330, 455 ],
-[ 330, 500 ],
-],
-color: PINK,
-strokeWidth: 4,
-}
-]}
-labels={[
-{ x: 60, y: 45, text: "CPU", fontSize: 18, fontFamily: FONT_SERIF, },
-{ x: 195, y: 80, text: "寄存器文件", fontSize: 16, fontFamily: FONT_SERIF, }, { x: 120, y: 515, text: "鼠标", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 200, y: 515, text: "键盘", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 330, y: 515, text: "显示器", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 400, y: 180, text: "系统总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 570, y: 180, text: "内存总线", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 660, y: 545, text: "存储在磁盘上的\nhello可执行文件", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 680, y: 400, text: "扩展槽，留待\n网络适配器一\n类的设备使用", fontSize: 16, fontFamily: FONT_SERIF, },
-{ x: 330, y: 535, text: "hello, world\\n", fontSize: 16, color: 'oklch(0.8 0.2 85)', }
-]}
+<Diagram width={800} height={580} caption="将输出字符串从存储器写到显示器" defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={hwBoxes(['regfile', 'busif', 'iob', 'mem', 'gfx'])}
+  edges={[
+    ...hwBuses,
+    { points: ['mem.left', [640, 230], [225, 230], 'regfile.bottom@30'], color: 'pink', strokeWidth: 4 },
+    { points: ['regfile.bottom@-30', [165, 237]], color: 'pink', arrow: 'none', strokeWidth: 4 },
+    { points: [[165, 261], [165, 270], [450, 270], [450, 340], [330, 340], [330, 425]], color: 'pink', arrow: 'none', strokeWidth: 4 },
+    { points: [[330, 455], [330, 500]], color: 'pink', strokeWidth: 4 },
+  ]}
+  texts={[...hwTexts, { x: 330, y: 528.7, text: 'hello, world\n', color: 'oklch(0.8 0.2 85)' }]}
 />
 
 ## 1.4 高速缓存至关重要
@@ -758,182 +375,11 @@ L1 和 L2 高速缓存用**静态随机访问存储器**（SRAM）技术实现�
 
 从上至下，访问速度越来越慢、容量越来越大、每字节造价越来越便宜。寄存器文件位于层次结构顶部（第 0 级 L0），三层高速缓存 L1 到 L3 占据第 1 到第 3 层，主存在第 4 层，依此类推。
 
-<DFD
-  client:load
-  width={1000}
-  height={600}
-  ariaLabel="存储器层次结构"
-  lines={[
-    {
-      x1: 30,
-      y1: 275,
-      x2: 30,
-      y2: 35,
-      color: "oklch(0.78 0.34 188)",
-      strokeWidth: 5,
-    },
-    {
-      x1: 30,
-      y1: 345,
-      x2: 30,
-      y2: 585,
-      color: "oklch(0.78 0.34 188)",
-      strokeWidth: 5,
-    },
-  ]}
-  polylines={[
-    {
-      points: [
-        [420, 30],
-        [119, 590],
-        [721, 590],
-        [420, 30],
-        [377, 110],
-        [463, 110],
-        [506, 190],
-        [334, 190],
-        [291, 270],
-        [549, 270],
-        [592, 350],
-        [248, 350],
-        [205, 430],
-        [635, 430],
-        [678, 510],
-        [162, 510],
-      ],
-      color: "oklch(0.78 0.34 88)",
-      noArrow: true,
-      strokeWidth: 4,
-    },
-  ]}
-  braces={[
-    {
-      x1: 510,
-      y1: 75,
-      x2: 510,
-      y2: 145,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "CPU寄存器保存来自\n高速缓存存储器的字",
-    },
-    {
-      x1: 553,
-      y1: 155,
-      x2: 553,
-      y2: 225,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "L1高速缓存保存取自\nL2高速缓存的高速缓存行",
-    },
-    {
-      x1: 596,
-      y1: 235,
-      x2: 596,
-      y2: 305,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "L2高速缓存保存取自\nL3高速缓存的高速缓存行",
-    },
-    {
-      x1: 639,
-      y1: 315,
-      x2: 639,
-      y2: 385,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "L3高速缓存保存取自\n磁盘的高速缓存行",
-    },
-    {
-      x1: 682,
-      y1: 395,
-      x2: 682,
-      y2: 465,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "主存保存取自\n本地磁盘的磁盘块",
-    },
-    {
-      x1: 725,
-      y1: 475,
-      x2: 725,
-      y2: 545,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "本地磁盘保存取自\n远程网络服务器上磁盘的文件",
-    },
-  ]}
-  labels={[
-    {
-      x: 75,
-      y: 170,
-      text: "更小\n\n更快\n\n（每字节）\n\n更贵的\n\n存储设备",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 75,
-      y: 450,
-      text: "更大\n\n更慢\n\n（每字节）\n\n更便宜的\n\n存储设备",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    { x: 375, y: 75, text: "L0:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 332, y: 155, text: "L1:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 289, y: 235, text: "L2:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 246, y: 315, text: "L3:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 203, y: 395, text: "L4:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 160, y: 475, text: "L5:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 117, y: 555, text: "L6:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 420, y: 100, text: "寄存器", fontSize: 18, fontFamily: FONT_SERIF },
-    {
-      x: 420,
-      y: 160,
-      text: "L1高速缓存\n（SRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 240,
-      text: "L2高速缓存\n（SRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 320,
-      text: "L3高速缓存\n（SRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 400,
-      text: "主存\n（DRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 480,
-      text: "本地二级存储\n（本地磁盘）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 560,
-      text: "远程二级存储\n（分布式文件系统、Web 服务器）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-  ]}
+<Diagram width={1000} height={600} caption="一个存储器层次结构的示例"
+  defaults={{ font: 'serif', fontSize: 18, braceColor: BRACE }}
+  edges={hierarchyEdges}
+  braces={hierarchyBraces.map(([y, label], i) => ({ from: [510 + 43 * i, y], to: [510 + 43 * i, y + 70], label }))}
+  texts={hierarchyTexts}
 />
 
 存储器层次结构的主要思想是：上一层存储器作为低一层存储器的高速缓存。因此
@@ -960,110 +406,16 @@ shell 加载和运行 hello 程序，以及 hello 程序输出消息时，都没
 
 操作系统通过**进程**、**虚拟内存**、**文件**这三个基本抽象概念实现这两个功能。如图所示，文件是对 I/O 设备的抽象，虚拟内存是对主存和磁盘 I/O 设备的抽象，进程是对处理器、主存和 I/O 设备的抽象。
 
-<DFD
-  client:load
-  width={800}
-  height={350}
-  ariaLabel="操作系统抽象"
-  custom={[
-    {
-      x: 175,
-      y: 300,
-      w: 225,
-      h: 60,
-      rx: 2,
-      label: "处理器",
-      stroke: AMBER,
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 400,
-      y: 300,
-      w: 225,
-      h: 60,
-      rx: 2,
-      label: "主存",
-      stroke: AMBER,
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 625,
-      y: 300,
-      w: 225,
-      h: 60,
-      rx: 2,
-      label: "I/O 设备",
-      stroke: AMBER,
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
+<Diagram width={800} height={350} caption="操作系统提供的抽象表示" defaults={{ font: 'serif', fontSize: 18, lineColor: BRACE }}
+  boxes={[['处理器', 175], ['主存', 400], ['I/O 设备', 625]]
+    .map(([l, x]) => ({ x, y: 300, w: 225, h: 60, rx: 2, label: l, stroke: 'amber' }))}
+  edges={[
+    { points: [[62.5, 60], [62.5, 265]], arrow: 'none', dash: 11.2 },
+    { points: [[287.5, 160], [287.5, 265]], arrow: 'none', dash: 11.2 },
+    { points: [[737.5, 60], [737.5, 238]], arrow: 'none', dash: 11.2 },
   ]}
-  lines={[
-    {
-      x1: 62.5,
-      y1: 60,
-      x2: 62.5,
-      y2: 265,
-      color: "oklch(0.52 0.55 266)",
-      noArrow: true,
-      dash: 0.7,
-    },
-    {
-      x1: 287.5,
-      y1: 160,
-      x2: 287.5,
-      y2: 265,
-      color: "oklch(0.52 0.55 266)",
-      noArrow: true,
-      dash: 0.7,
-    },
-    {
-      x1: 737.5,
-      y1: 60,
-      x2: 737.5,
-      y2: 238,
-      color: "oklch(0.52 0.55 266)",
-      noArrow: true,
-      dash: 0.7,
-    },
-  ]}
-  braces={[
-    {
-      x1: 512.5,
-      y1: 255,
-      x2: 737.5,
-      y2: 255,
-      side: "top",
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "文件",
-    },
-    {
-      x1: 287.5,
-      y1: 155,
-      x2: 737.5,
-      y2: 155,
-      side: "top",
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "虚拟内存",
-    },
-    {
-      x1: 62.5,
-      y1: 55,
-      x2: 737.5,
-      y2: 55,
-      side: "top",
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "进程",
-    },
-  ]}
+  braces={[['进程', 62.5, 55], ['虚拟内存', 287.5, 155], ['文件', 512.5, 255]]
+    .map(([label, x1, y]) => ({ from: [x1, y], to: [737.5, y], side: 'top', label }))}
 />
 
 > [!note] Unix、POSIX 和标准 Unix 规范
@@ -1096,207 +448,22 @@ hello 这样的程序运行时，操作系统提供一种假象，好像系统�
 
 当应用程序需要操作系统的某些操作（如读写文件）时，执行一条特殊的系统调用指令，将控制权传给内核，内核执行请求的操作后返回应用程序。
 
-<DFD
-  client:load
-  width={800}
-  height={300}
-  ariaLabel="进程上下文切换"
-  lines={[
-    // 横线
-    {
-      x1: 230,
-      y1: 60,
-      x2: 620,
-      y2: 60,
-      color: "oklch(0.67 0.25 236 /.53)",
-      noArrow: true,
-      strokeWidth: 1.5,
-    },
-    {
-      x1: 230,
-      y1: 100,
-      x2: 620,
-      y2: 100,
-      color: "oklch(0.67 0.25 236 /.53)",
-      noArrow: true,
-      strokeWidth: 1.5,
-    },
-    {
-      x1: 230,
-      y1: 140,
-      x2: 620,
-      y2: 140,
-      color: "oklch(0.67 0.25 236 /.53)",
-      noArrow: true,
-      strokeWidth: 1.5,
-    },
-    {
-      x1: 230,
-      y1: 180,
-      x2: 620,
-      y2: 180,
-      color: "oklch(0.67 0.25 236 /.53)",
-      noArrow: true,
-      strokeWidth: 1.5,
-    },
-    {
-      x1: 230,
-      y1: 220,
-      x2: 620,
-      y2: 220,
-      color: "oklch(0.67 0.25 236 /.53)",
-      noArrow: true,
-      strokeWidth: 1.5,
-    },
-    {
-      x1: 230,
-      y1: 260,
-      x2: 620,
-      y2: 260,
-      color: "oklch(0.67 0.25 236 /.53)",
-      noArrow: true,
-      strokeWidth: 1.5,
-    },
-    // 分割线
-    {
-      x1: 400,
-      y1: 20,
-      x2: 400,
-      y2: 285,
-      color: "oklch(0.58 0.45 252 /.93)",
-      noArrow: true,
-      strokeWidth: 2,
-      dash: 0.72,
-    },
-    // 时间
-    {
-      x1: 50,
-      y1: 60,
-      x2: 50,
-      y2: 260,
-      color: "oklch(0.68 0.45 200)",
-      strokeWidth: 3,
-    },
-    // read
-    {
-      x1: 200,
-      y1: 100,
-      x2: 228,
-      y2: 100,
-      color: "oklch(0.64 0.45 270)",
-      strokeWidth: 2.5,
-      dash: 0.5,
-    },
-    // 磁盘中断
-    {
-      x1: 200,
-      y1: 180,
-      x2: 228,
-      y2: 180,
-      color: "oklch(0.64 0.45 270)",
-      strokeWidth: 2.5,
-      dash: 0.5,
-    },
-    // 返回
-    {
-      x1: 200,
-      y1: 220,
-      x2: 228,
-      y2: 220,
-      color: "oklch(0.64 0.45 270)",
-      strokeWidth: 2.5,
-      dash: 0.5,
-    },
-    // 进程
-    {
-      x1: 330,
-      y1: 60,
-      x2: 330,
-      y2: 100,
-      color: PINK,
-      strokeWidth: 3,
-    },
-    {
-      x1: 330,
-      y1: 100,
-      x2: 460,
-      y2: 140,
-      color: PINK,
-      strokeWidth: 3,
-    },
-    {
-      x1: 460,
-      y1: 140,
-      x2: 460,
-      y2: 180,
-      color: PINK,
-      strokeWidth: 3,
-    },
-    {
-      x1: 460,
-      y1: 180,
-      x2: 330,
-      y2: 220,
-      color: PINK,
-      strokeWidth: 3,
-    },
-    {
-      x1: 330,
-      y1: 220,
-      x2: 330,
-      y2: 260,
-      color: PINK,
-      strokeWidth: 3,
-    },
+<Diagram width={800} height={300} caption="进程的上下文切换" defaults={{ font: 'serif', fontSize: 18, braceColor: BRACE }}
+  edges={[
+    ...[60, 100, 140, 180, 220, 260].map((y) => ({ points: [[230, y], [620, y]], color: 'oklch(0.67 0.25 236 /.53)', arrow: 'none', strokeWidth: 1.5 })),
+    { points: [[400, 20], [400, 285]], color: 'oklch(0.58 0.45 252 /.93)', arrow: 'none', strokeWidth: 2, dash: 11.52 },
+    { points: [[50, 60], [50, 260]], color: 'oklch(0.68 0.45 200)', strokeWidth: 3 },
+    ...[100, 180, 220].map((y) => ({ points: [[200, y], [228, y]], color: 'oklch(0.64 0.45 270)', strokeWidth: 2.5, dash: 8 })),
+    { points: [[330, 60], [330, 100], [460, 140], [460, 180], [330, 220], [330, 260]], color: 'pink', strokeWidth: 3, arrow: 'each' },
   ]}
-  braces={[
-    {
-      x1: 630,
-      y1: 100,
-      x2: 630,
-      y2: 140,
-      side: "right",
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "上下文切换",
-    },
-    {
-      x1: 630,
-      y1: 180,
-      x2: 630,
-      y2: 220,
-      side: "right",
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "上下文切换",
-    },
-  ]}
-  labels={[
-    { x: 50, y: 45, text: "时间", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 330, y: 40, text: "进程A", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 460, y: 40, text: "进程B", fontSize: 18, fontFamily: FONT_SERIF },
-    {
-      x: 180,
-      y: 105,
-      text: "read",
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    { x: 165, y: 185, text: "磁盘中断", fontSize: 16, fontFamily: FONT_SERIF },
-    {
-      x: 160,
-      y: 225,
-      text: "从read返回",
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    { x: 560, y: 85, text: "用户代码", fontSize: 16, fontFamily: FONT_SERIF },
-    { x: 560, y: 125, text: "内核代码", fontSize: 16, fontFamily: FONT_SERIF },
-    { x: 560, y: 165, text: "用户代码", fontSize: 16, fontFamily: FONT_SERIF },
-    { x: 560, y: 205, text: "内核代码", fontSize: 16, fontFamily: FONT_SERIF },
-    { x: 560, y: 245, text: "用户代码", fontSize: 16, fontFamily: FONT_SERIF },
+  braces={[[100, 140], [180, 220]].map(([y1, y2]) => ({ from: [630, y1], to: [630, y2], side: 'right', label: '上下文切换' }))}
+  texts={[
+    { x: 50, y: 38.7, text: '时间' },
+    ...[['进程A', 330], ['进程B', 460]].map(([t, x]) => ({ x, y: 33.7, text: t })),
+    { x: 180, y: 99.4, text: 'read', fontSize: 16 },
+    { x: 165, y: 179.4, text: '磁盘中断', fontSize: 16 },
+    { x: 160, y: 218.4, text: '从read返回', fontSize: 16 },
+    ...['用户代码', '内核代码', '用户代码', '内核代码', '用户代码'].map((t, i) => ({ x: 560, y: 79.4 + 40 * i, text: t, fontSize: 16 })),
   ]}
 />
 
@@ -1316,135 +483,31 @@ hello 这样的程序运行时，操作系统提供一种假象，好像系统�
 
 **虚拟内存**是一个抽象概念，为每个进程提供假象——好像每个进程都独占使用主存。每个进程看到的内存是一致的，称为**虚拟地址空间**。在 Linux 中，地址空间最上面的区域保留给操作系统的代码和数据（对所有进程都一样），底部区域存放用户进程定义的代码和数据（地址从下往上增大）。
 
-<DFD
-  client:load
-  width={800}
-  height={540}
-  custom={[
-    {
-      x: 400,
-      y: 40,
-      label: "内核虚拟内存",
-      w: 380,
-      h: 40,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 90,
-      label: "用户栈\n（运行时创建）",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 155,
-      w: 380,
-      h: 70,
-      rx: 0,
-      stroke: VIOLET,
-      fill: "oklch(0.30 0.8 225 / .25)",
-    },
-    {
-      x: 400,
-      y: 220,
-      label: "共享库的内存映射区域",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 290,
-      w: 380,
-      h: 80,
-      rx: 0,
-      stroke: VIOLET,
-      fill: "oklch(0.30 0.8 225 / .25)",
-    },
-    {
-      x: 400,
-      y: 360,
-      label: "运行时堆<br>（malloc分配的）",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 412.5,
-      label: "读/写数据",
-      w: 380,
-      h: 45,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 457.5,
-      label: "只读的代码和数据",
-      w: 380,
-      h: 45,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 500,
-      w: 380,
-      h: 40,
-      rx: 0,
-      stroke: VIOLET,
-      fill: "oklch(0.30 0.8 225 / .25)",
-    },
+<Diagram width={800} height={540} caption="进程的虚拟地址空间" defaults={{ font: 'serif', fontSize: 18 }}
+  boxes={[{ x: 210, y: 20, cross: 380, stroke: 'violet', cells: [
+    { size: 40, label: '内核虚拟内存' },
+    { size: 60, id: 'stack', label: '用户栈\n（运行时创建）' },
+    { size: 70, fill: TINT },
+    { size: 60, label: '共享库的内存映射区域' },
+    { size: 80, fill: TINT },
+    { size: 60, id: 'heap', label: '运行时堆<br>（malloc分配的）' },
+    { size: 45, label: '读/写数据' },
+    { size: 45, id: 'text', label: '只读的代码和数据' },
+    { size: 40, fill: TINT },
+  ] }]}
+  edges={[
+    { points: [[180, 480], 'text.bottom@-190'], color: 'rose' },
+    { points: [[400, 120], [400, 145]], color: 'violet' },
+    { points: [[400, 190], [400, 165]], color: 'violet' },
+    { points: [[400, 330], [400, 295]], color: 'violet' },
+    { points: [[610, 57], [610, 23]], color: 'orange', strokeWidth: 2.5 },
   ]}
-  lines={[
-    { x1: 180, y1: 480, x2: 210, y2: 480, color: ROSE }, // 程序开始
-    { x1: 400, y1: 120, x2: 400, y2: 145, color: VIOLET },
-    { x1: 400, y1: 190, x2: 400, y2: 165, color: VIOLET },
-    { x1: 400, y1: 330, x2: 400, y2: 295, color: VIOLET },
-    { x1: 610, y1: 57, x2: 610, y2: 23, color: ORANGE, strokeWidth: 2.5 },
-  ]}
-  braces={[
-    {
-      x1: 600,
-      y1: 392,
-      x2: 600,
-      y2: 477,
-      color: ORANGE,
-      label: "从 hello 可执行\n文件加载进来的",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-    },
-  ]}
-  labels={[
-    { x: 120, y: 485, text: "程序开始", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 195, y: 525, text: "0", fontSize: 18 },
-    {
-      x: 680,
-      y: 220,
-      text: "printf 函数",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 690,
-      y: 48,
-      text: "用户代码\n不可见的内存",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
+  braces={[{ from: [600, 392], to: [600, 477], color: 'orange', label: '从 hello 可执行\n文件加载进来的' }]}
+  texts={[
+    { x: 120, y: 478.7, text: '程序开始' },
+    { x: 195, y: 518.7, text: '0' },
+    { x: 680, y: 213.7, text: 'printf 函数' },
+    { x: 690, y: 41.7, text: '用户代码\n不可见的内存' },
   ]}
 />
 
@@ -1579,258 +642,24 @@ Amdahl 定律描述了改善任何过程的一般原则。除了可以用在加�
 
 当单一操作系统内核控制多处理器时，就得到**多处理器系统**。其实从 20 世纪 80 年代开始，在大规模计算中就有这种系统，但直到近20年随着多核处理器和**超线程**（hyperthreading）的出现才变得常见。
 
-<DFD
-  client:load
-  width={520}
-  height={500}
-  ariaLabel="Core i7 cache hierarchy"
-  custom={[
-    {
-      x: 120,
-      y: 190,
-      w: 190,
-      h: 220,
-      rx: 3,
-      stroke: "oklch(0.4 0.3 30)",
-    },
-    {
-      x: 80,
-      y: 110,
-      w: 90,
-      h: 30,
-      label: "Regs",
-      rx: 2,
-      stroke: ORANGE,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 75,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\nd-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 165,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\ni-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 120,
-      y: 260,
-      w: 170,
-      h: 50,
-      label: "L2 cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 400,
-      y: 190,
-      w: 190,
-      h: 220,
-      rx: 3,
-      stroke: "oklch(0.4 0.3 30)",
-    },
-    {
-      x: 360,
-      y: 110,
-      w: 90,
-      h: 30,
-      label: "Regs",
-      rx: 2,
-      stroke: ORANGE,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 355,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\nd-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 445,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\ni-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 400,
-      y: 260,
-      w: 170,
-      h: 50,
-      label: "L2 cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 260,
-      y: 350,
-      w: 340,
-      h: 50,
-      label: "L3 cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 260,
-      y: 440,
-      w: 480,
-      h: 50,
-      label: "Main memory",
-      rx: 2,
-      stroke: ORANGE,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
+<Diagram width={520} height={500} caption="多核处理器的组织结构。4 个处理器核集成在一个芯片上" defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={[
+    ...coreBoxes(120, 0),
+    ...coreBoxes(400, 3),
+    { id: 'l3', x: 260, y: 350, w: 340, h: 50, label: 'L3 cache', rx: 2, stroke: 'violet' },
+    { id: 'mem', x: 260, y: 440, w: 480, h: 50, label: 'Main memory', rx: 2, stroke: 'orange' },
   ]}
-  lines={[
-    {
-        x1: 75,
-        y1: 125,
-        x2: 75,
-        y2: 155,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 75,
-        y1: 205,
-        x2: 75,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 165,
-        y1: 205,
-        x2: 165,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 120,
-        y1: 285,
-        x2: 120,
-        y2: 325,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 355,
-        y1: 125,
-        x2: 355,
-        y2: 155,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 355,
-        y1: 205,
-        x2: 355,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 445,
-        y1: 205,
-        x2: 445,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 400,
-        y1: 285,
-        x2: 400,
-        y2: 325,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 260,
-        y1: 375,
-        x2: 260, 
-        y2: 415,
-        color: TEAL,
-        noArrow: true,
-    }
+  edges={[
+    ...coreLines(0, 120),
+    ...coreLines(3, 400),
+    { points: ['l3.bottom', 'mem.top'], color: 'teal', arrow: 'none' },
+    { points: [[10, 40], [10, 390], [510, 390], [510, 40], [10, 40]], color: 'oklch(0.5 0.3 125 /.7)', strokeWidth: 2, arrow: 'none' },
   ]}
-  polylines={[
-    {
-      points: [
-        [10, 40],
-        [10, 390],
-        [510, 390],
-        [510, 40],
-        [10, 40],
-      ],
-      color: "oklch(0.5 0.3 125 /.7)",
-      strokeWidth: 2,
-      noArrow: true,
-    },
+  texts={[
+    { x: 60, y: 23.7, text: 'CPU Package', fontSize: 18 },
+    ...[['Core 0', 50], ['Core 3', 330]].map(([t, x]) => ({ x, y: 69.05, text: t, fontSize: 17 })),
+    { x: 260, y: 183, text: '...', fontSize: 20 },
   ]}
-  labels={[
-    {
-      x: 50,
-      y: 75,
-      text: "Core 0",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 330,
-      y: 75,
-      text: "Core 3",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 60,
-      y: 30,
-      text: "CPU Package",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-        x: 260,
-        y: 190,
-        text: "...",
-        fontSize: 20,
-
-    }
-
-]}
 />
 
 多核处理器是将多个 CPU（核）集成到一个集成电路芯片上：典型的 4 核处理器中，每个核都有自己的 L1、L2 高速缓存，这些核共享更高层次的高速缓存（L3）及到主存的接口。L1 高速缓存通常分为指令高速缓存和数据高速缓存两部分，L2 高速缓存通常是统一的。

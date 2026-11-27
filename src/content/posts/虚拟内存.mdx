@@ -12,22 +12,8 @@ lang: "zh-CN"
 slug: csapp9
 ---
 
-import DFD, {
-  WB,
-  PINK,
-  AMBER,
-  ORANGE,
-  LIME,
-  GREEN,
-  CYAN,
-  TEAL,
-  INDIGO,
-  BLUE,
-  VIOLET,
-  PURPLE,
-  ROSE,
-  FONT_MATH,
-} from "@/components/custom/DataFlowDiagram.svelte";
+import Diagram from '@/components/custom/diagram/Diagram.astro';
+export const TINT = 'oklch(0.30 0.8 225 / .25)'
 
 一个系统中的进程会和其他进程共享 CPU 和主存资源，这带来两个关键问题：
 
@@ -259,136 +245,36 @@ $$
 
 CPU 中的**页表基址寄存器**（Page Table Base Register，PTBR）指向当前页表。$n$ 位虚拟地址包含一个 $p$ 位的**虚拟页面偏移**（VPO）和一个 $(n-p)$ 位的**虚拟页号**（VPN）。MMU 用 VPN 选择对应的 PTE，将 PTE 中的**物理页号**（PPN）和虚拟地址的 VPO 串联起来，得到相应的物理地址。因为物理和虚拟页面大小相同，**物理页面偏移**（PPO）和 VPO 相同。
 
-<DFD
-  client:load
-  width={760}
-  height={560}
-  custom={[
-    {
-      x: 80,
-      y: 60,
-      label: "PTBR",
-      w: 120,
-      h: 76,
-      rx: 8,
-      fill: {
-        light: "oklch(0.92 0.05 var(--hue))",
-        dark: "oklch(0.18 0.06 var(--hue))",
-      },
-      fontSize: 18,
-      stroke: {
-        light: "oklch(0.55 0.18 var(--hue))",
-        dark: "oklch(0.65 0.15 var(--hue))",
-      },
-      strokeWidth: 2,
-    },
-    {
-      x: 380,
-      y: 60,
-      label: "VPN",
-      w: 250,
-      h: 40,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 605,
-      y: 60,
-      label: "VPO",
-      w: 200,
-      h: 40,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 380,
-      y: 500,
-      label: "PPN",
-      w: 250,
-      h: 40,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 605,
-      y: 500,
-      label: "PPO",
-      w: 200,
-      h: 40,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-        x: 380,
-        y: 240,
-        label: "",
-        w: 360,
-        h: 160,
-        rx: 1,
-        stroke: AMBER,
-    }
+<Diagram width={760} height={560} caption="使用页表的地址翻译" defaults={{ fontSize: 18 }}
+  boxes={[
+    { id: 'pt', x: 80, y: 60, w: 120, h: 76, rx: 8, label: 'PTBR', strokeWidth: 2,
+      fill: { light: 'oklch(0.92 0.05 var(--hue))', dark: 'oklch(0.18 0.06 var(--hue))' },
+      stroke: { light: 'oklch(0.55 0.18 var(--hue))', dark: 'oklch(0.65 0.15 var(--hue))' } },
+    { x: 255, y: 40, dir: 'h', cross: 40, stroke: 'indigo', strokeWidth: 1.5,
+      cells: [{ size: 250, label: 'VPN', id: 'vpn' }, { size: 200, label: 'VPO', id: 'vpo' }] },
+    { x: 255, y: 480, dir: 'h', cross: 40, stroke: 'indigo', strokeWidth: 1.5,
+      cells: [{ size: 250, label: 'PPN', id: 'ppn' }, { size: 200, label: 'PPO', id: 'ppo' }] },
+    { x: 200, y: 160, dir: 'v', cross: 360, rx: 1, stroke: 'amber',
+      cells: [{ size: 40, id: 'r0' }, { size: 40, id: 'r1' }, { size: 40, id: 'r2' }, { size: 40, id: 'r3' }] },
   ]}
-    polylines={[
-        // PTBR -> PTE
-        { points: [
-            [80, 98],
-            [80, 160],
-            [200, 160],
-        ],
-        color: PINK,
-        },
-        // VPN -> PTE
-        { points: [
-            [255, 60],
-            [165, 60],
-            [165, 220],
-            [200, 220],
-        ],
-            color: TEAL,
-        }
-    ]}
-  lines={[
-    // PTE
-    { x1: 280, y1: 320, x2: 280, y2: 160, color: AMBER, noArrow: true, },
-    { x1: 200, y1: 240, x2: 560, y2: 240, color: AMBER, noArrow: true, },
-    { x1: 200, y1: 280, x2: 560, y2: 280, color: AMBER, noArrow: true, },
-    { x1: 200, y1: 200, x2: 560, y2: 200, color: AMBER, noArrow: true, },
-    // PPN -> PPN
-    { x1: 420, y1: 220, x2: 420, y2: 480, color: LIME, },
-    // VPO -> PPO
-    { x1: 620, y1: 80, x2: 620, y2: 480, color: LIME, },
+  edges={[
+    { points: ['pt.bottom', [80, 160], [200, 160]], color: 'pink' },
+    { points: ['vpn.left', [165, 60], [165, 220], 'r1.left'], color: 'teal' },
+    { points: [[280, 320], [280, 160]], color: 'amber', arrow: 'none' },
+    { points: [[420, 220], 'ppn.top@40'], color: 'lime' },
+    { points: ['vpo.bottom@15', 'ppo.top@15'], color: 'lime' },
   ]}
-    
-    circles={[
-        { cx: 420, cy: 220, r: 4, color: LIME}
-    ]}
-
-    labels={[
-    { x: 240, y: 155, text: "Valid Bit", fontSize: 18,},
-    { x: 420, y: 155, text: "PPN", fontSize: 18, },
-    { x: 580, y: 240, text: "VP", fontSize: 22, },
-    { x: 240, y: 105, text: "as index in VP", fontSize: 18, },
-    //VPN与VPO的位数
-    { x: 260, y: 35, text: "n-1", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    { x: 490, y: 35, text: "p", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    { x: 525, y: 35, text: "p-1", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    { x: 705, y: 35, text: "0", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    // PPN与PPO的位数
-    { x: 260, y: 475, text: "m-1", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    { x: 490, y: 475, text: "p", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    { x: 525, y: 475, text: "p-1", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-    { x: 705, y: 475, text: "0", fontSize: 18, fontFamily: FONT_MATH, fontStyle: "italic", },
-
-]}
-
+  dots={[{ x: 420, y: 220, r: 4, color: 'lime' }]}
+  texts={[
+    { x: 240, y: 148.7, text: 'Valid Bit' },
+    { x: 420, y: 148.7, text: 'PPN' },
+    { x: 240, y: 98.7, text: 'as index in VP' },
+    { x: 580, y: 232.3, text: 'VP', fontSize: 22 },
+    ...[[260, 'n-1'], [490, 'p'], [525, 'p-1'], [705, '0']].flatMap(([x, t]) => [
+      { x, y: 28.7, text: t, font: 'math' },
+      { x, y: 468.7, text: t, font: 'math' },
+    ]),
+  ]}
 />
 
 ```mermaid
@@ -443,207 +329,32 @@ TLB 是一个小的、虚拟寻址的缓存，每行保存一个由单个 PTE �
 
 对于 $k$ 级页表层次结构，虚拟地址被划分成 $k$ 个 VPN 和 1 个 VPO：每个 VPN $i$（$1 \le i \le k$）是到第 $i$ 级页表的索引，第 $j$ 级页表中的每个 PTE（$1 \le j \le k-1$）指向第 $j+1$ 级某个页表的基址，第 $k$ 级页表中的每个 PTE 包含物理页面的 PPN 或磁盘块地址。构造物理地址前，MMU 必须访问 $k$ 个 PTE——看上去昂贵，但 TLB 通过缓存不同层次上的 PTE 使得带多级页表的地址翻译并不比单级页表慢很多。
 
-<DFD
-  client:load
-  width={780}
-  height={460}
-  custom={[
-    // VP
-    {
-      x: 100,
-      y: 60,
-      label: "VPN 1",
-      w: 160,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 260,
-      y: 60,
-      label: "VPN 2",
-      w: 160,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 420,
-      y: 60,
-      label: "...",
-      w: 160,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 580,
-      y: 60,
-      label: "VPN k",
-      w: 160,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 700,
-      y: 60,
-      label: "VPO",
-      w: 120,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    // PP
-    {
-      x: 420,
-      y: 400,
-      label: "PPN",
-      w: 440,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    {
-      x: 700,
-      y: 400,
-      label: "PPO",
-      w: 120,
-      h: 50,
-      rx: 0,
-      fontSize: 18,
-      stroke: INDIGO,
-      strokeWidth: 1.5,
-    },
-    // PT
-    { x: 120, y: 240, w: 80, h: 150, rx: 1, stroke: AMBER },
-    { x: 280, y: 240, w: 80, h: 150, rx: 1, stroke: AMBER },
-    { x: 580, y: 240, w: 80, h: 150, rx: 1, stroke: AMBER },
-    // PTE
-    {
-      x: 120,
-      y: 260,
-      w: 80,
-      h: 30,
-      rx: 0,
-      stroke: AMBER,
-      fill: "oklch(0.66 0.8 200 / .25)",
-    },
-    {
-      x: 280,
-      y: 200,
-      w: 80,
-      h: 30,
-      rx: 0,
-      stroke: AMBER,
-      fill: "oklch(0.66 0.8 200 / .25)",
-    },
-    {
-      x: 580,
-      y: 280,
-      label: "PPN",
-      fontSize: 16,
-      w: 80,
-      h: 30,
-      rx: 0,
-      stroke: AMBER,
-      fill: "oklch(0.66 0.8 200 / .25)",
-    },
+<Diagram width={780} height={460} caption="使用 k 级页表的地址翻译" defaults={{ fontSize: 18 }}
+  boxes={[
+    { x: 20, y: 35, dir: 'h', cross: 50, stroke: 'indigo', strokeWidth: 1.5,
+      cells: [{ size: 160, label: 'VPN 1' }, { size: 160, label: 'VPN 2' }, { size: 160, label: '...' }, { size: 160, label: 'VPN k' }] },
+    { x: 700, y: 60, w: 120, h: 50, rx: 0, label: 'VPO', id: 'vpo', stroke: 'indigo', strokeWidth: 1.5 },
+    { x: 200, y: 375, dir: 'h', cross: 50, stroke: 'indigo', strokeWidth: 1.5,
+      cells: [{ size: 440, label: 'PPN', id: 'ppn' }, { size: 120, label: 'PPO', id: 'ppo' }] },
+    { x: 80, y: 165, dir: 'v', cross: 80, rx: 1, stroke: 'amber',
+      cells: [{ size: 80 }, { size: 30, id: 'pt1', fill: 'oklch(0.66 0.8 200 / .25)' }, { size: 40 }] },
+    { x: 240, y: 165, dir: 'v', cross: 80, rx: 1, stroke: 'amber',
+      cells: [{ size: 20 }, { size: 30, id: 'pt2', fill: 'oklch(0.66 0.8 200 / .25)' }, { size: 100 }] },
+    { x: 540, y: 165, dir: 'v', cross: 80, rx: 1, stroke: 'amber',
+      cells: [{ size: 100 }, { size: 30, id: 'pt3', label: 'PPN', fontSize: 16, fill: 'oklch(0.66 0.8 200 / .25)' }, { size: 20 }] },
   ]}
-  polylines={[
-    // VPN 1 -> PTE 1
-    {
-      points: [
-        [40, 85],
-        [40, 260],
-        [80, 260],
-      ],
-      color: VIOLET,
-    },
-    // VPN 2 -> PTE 2
-    {
-      points: [
-        [200, 85],
-        [200, 200],
-        [240, 200],
-      ],
-      color: VIOLET,
-    },
-    // VPN k -> PTE k
-    {
-      points: [
-        [520, 85],
-        [520, 280],
-        [540, 280],
-      ],
-      color: VIOLET,
-    },
-    // PTE 1 -> PT 2
-    {
-      points: [
-        [160, 260],
-        [175, 260],
-        [175, 165],
-        [240, 165],
-      ],
-      color: ROSE,
-    },
-    // PTE 2 -> ...
-    {
-      points: [
-        [320, 200],
-        [335, 200],
-        [335, 165],
-        [400, 165],
-      ],
-      color: ROSE,
-    },
-    // ... -> PT k
-    {
-      points: [
-        [480, 165],
-        [540, 165],
-      ],
-      color: ROSE,
-    },
-    // PTE k -> PPN
-    {
-      points: [
-        [620, 280],
-        [650, 280],
-        [650, 350],
-        [420, 350],
-        [420, 375],
-      ],
-      color: LIME,
-    },
+  edges={[
+    { points: [[40, 85], [40, 260], 'pt1.left'], color: 'violet' },
+    { points: [[200, 85], [200, 200], 'pt2.left'], color: 'violet' },
+    { points: [[520, 85], [520, 280], [540, 280]], color: 'violet' },
+    { points: [[160, 260], [175, 260], [175, 165], [240, 165]], color: 'rose' },
+    { points: [[320, 200], [335, 200], [335, 165], [400, 165]], color: 'rose' },
+    { points: [[480, 165], [540, 165]], color: 'rose' },
+    { points: ['pt3.right', [650, 280], [650, 350], [420, 350], 'ppn.top'], color: 'lime' },
+    { points: ['vpo.bottom', 'ppo.top'], color: 'lime' },
   ]}
-  lines={[
-    // VPO -> PPO
-    { x1: 700, y1: 85, x2: 700, y2: 375, color: LIME },
-  ]}
-  circles={[
-    { cx: 420, cy: 165, r: 2, color: ROSE },
-    { cx: 440, cy: 165, r: 2, color: ROSE },
-    { cx: 460, cy: 165, r: 2, color: ROSE },
-  ]}
-  labels={[
-    { x: 120, y: 160, text: "1st PT", fontSize: 18 },
-    { x: 280, y: 160, text: "2nd PT", fontSize: 18 },
-    { x: 580, y: 160, text: "k-th PT", fontSize: 18 },
-  ]}
+  dots={[{ x: 420, y: 165, r: 2, color: 'rose', grid: { cols: 3, rows: 1, dx: 20, dy: 0 } }]}
+  texts={[['1st PT', 120], ['2nd PT', 280], ['k-th PT', 580]].map(([t, x]) => ({ x, y: 153.7, text: t }))}
 />
 
 ## 9.7 案例研究：Intel Core i7 / Linux 内存系统
@@ -671,182 +382,40 @@ MMU 翻译每个虚拟地址时还会更新两个内核缺页处理程序会用�
 
 Linux 为每个进程维护一个单独的虚拟地址空间，包括代码、数据、堆、共享库以及栈段，内核虚拟内存位于用户栈之上。内核虚拟内存包含内核中的代码和数据结构，部分区域被映射到所有进程共享的物理页面（如内核代码和全局数据结构）。Linux 还把一组连续的虚拟页面（大小等于系统 DRAM 总量）映射到相应的一组连续物理页面，为内核提供便利的方式来访问物理内存中任何特定位置——例如访问页表，或对映射到特定物理内存位置的设备执行内存映射 I/O。
 
-<DFD
-  client:load
-  width={800}
-  height={680}
-  custom={[
-    {
-      x: 400,
-      y: 60,
-      label: "与进程相关的数据结构<br>（例如，页表、task和mm结构，内核栈）",
-      w: 380,
-      h: 100,
-      rx: 1,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 140,
-      label: "物理内存",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 200,
-      label: "内核代码和数据",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 245,
-      label: "用户栈",
-      w: 380,
-      h: 30,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 295,
-      w: 380,
-      h: 70,
-      rx: 0,
-      stroke: VIOLET,
-      fill: "oklch(0.30 0.8 225 / .25)",
-    },
-    {
-      x: 400,
-      y: 360,
-      label: "共享库的内存映射区域",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 430,
-      w: 380,
-      h: 80,
-      rx: 0,
-      stroke: VIOLET,
-      fill: "oklch(0.30 0.8 225 / .25)",
-    },
-    {
-      x: 400,
-      y: 500,
-      label: "运行时堆<br>（malloc分配的）",
-      w: 380,
-      h: 60,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 545,
-      label: "未初始化的数据段（.bss）",
-      w: 380,
-      h: 30,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 575,
-      label: "初始化的数据段（.data）",
-      w: 380,
-      h: 30,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 605,
-      label: "代码段（.text）",
-      w: 380,
-      h: 30,
-      rx: 0,
-      fontSize: 18,
-      stroke: VIOLET,
-    },
-    {
-      x: 400,
-      y: 640,
-      w: 380,
-      h: 40,
-      rx: 0,
-      stroke: VIOLET,
-      fill: "oklch(0.30 0.8 225 / .25)",
-    },
-  ]}
-  lines={[
-    { x1: 180, y1: 260, x2: 210, y2: 260, color: ROSE }, //rsp
-    { x1: 180, y1: 470, x2: 210, y2: 470, color: ROSE }, //brk
-    { x1: 180, y1: 620, x2: 210, y2: 620, color: ROSE }, //0x40000000
-    { x1: 400, y1: 260, x2: 400, y2: 285, color: VIOLET },
-    { x1: 400, y1: 330, x2: 400, y2: 305, color: VIOLET },
-    { x1: 400, y1: 470, x2: 400, y2: 435, color: VIOLET },
+<Diagram width={800} height={680} caption="一个 Linux 进程的虚拟内存" defaults={{ font: 'serif', fontSize: 18, braceColor: 'orange' }}
+  boxes={[{ x: 210, y: 10, dir: 'v', cross: 380, stroke: 'violet', cells: [
+    { size: 100, rx: 1, label: '与进程相关的数据结构<br>（例如，页表、task和mm结构，内核栈）' },
+    { size: 60, label: '物理内存' },
+    { size: 60, label: '内核代码和数据' },
+    { size: 30, id: 'stack', label: '用户栈' },
+    { size: 70, fill: TINT },
+    { size: 60, label: '共享库的内存映射区域' },
+    { size: 80, fill: TINT },
+    { size: 60, id: 'heap', label: '运行时堆<br>（malloc分配的）' },
+    { size: 30, label: '未初始化的数据段（.bss）' },
+    { size: 30, label: '初始化的数据段（.data）' },
+    { size: 30, id: 'text', label: '代码段（.text）' },
+    { size: 40, fill: TINT },
+  ] }]}
+  edges={[
+    { points: [[180, 260], 'stack.bottom@-190'], color: 'rose' },
+    { points: [[180, 470], 'heap.top@-190'], color: 'rose' },
+    { points: [[180, 620], 'text.top@-190'], color: 'rose' },
+    { points: [[400, 260], [400, 285]], color: 'violet' },
+    { points: [[400, 330], [400, 305]], color: 'violet' },
+    { points: [[400, 470], [400, 435]], color: 'violet' },
   ]}
   braces={[
-    {
-      x1: 200,
-      y1: 12,
-      x2: 200,
-      y2: 108,
-      side: "left",
-      color: ORANGE,
-      label: "对每个进程<br>都不相同",
-      fontSize: 18,
-    },
-    {
-      x1: 200,
-      y1: 112,
-      x2: 200,
-      y2: 228,
-      side: "left",
-      color: ORANGE,
-      label: "对每个进程<br>都一样",
-      fontSize: 18,
-    },
-    {
-      x1: 600,
-      y1: 12,
-      x2: 600,
-      y2: 228,
-      color: ORANGE,
-      label: "内核虚拟内存",
-      fontSize: 18,
-    },
-    {
-      x1: 600,
-      y1: 232,
-      x2: 600,
-      y2: 658,
-      color: ORANGE,
-      label: "进程虚拟内存",
-      fontSize: 18,
-    },
+    { from: [200, 12], to: [200, 108], side: 'left', label: '对每个进程<br>都不相同' },
+    { from: [200, 112], to: [200, 228], side: 'left', label: '对每个进程<br>都一样' },
+    { from: [600, 12], to: [600, 228], label: '内核虚拟内存' },
+    { from: [600, 232], to: [600, 658], label: '进程虚拟内存' },
   ]}
-  labels={[
-    { x: 155, y: 265, text: "%rsp", fontSize: 18 },
-    { x: 160, y: 475, text: "brk", fontSize: 18 },
-    { x: 120, y: 625, text: "0x40000000", fontSize: 18 },
-    { x: 195, y: 665, text: "0", fontSize: 18 },
+  texts={[
+    { x: 155, y: 258.7, text: '%rsp' },
+    { x: 160, y: 468.7, text: 'brk' },
+    { x: 120, y: 618.7, text: '0x40000000' },
+    { x: 195, y: 658.7, text: '0' },
   ]}
 />
 
@@ -944,88 +513,28 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
 
 `mmap` 要求内核创建一个新的虚拟内存区域，最好从地址 `start` 开始，并将文件描述符 `fd` 指定的对象中一个连续片映射到这个区域；片大小为 `length` 字节，从文件偏移 `offset` 字节处开始。`start` 仅是一个暗示，通常传 `NULL`。
 
-<DFD
-  client:load
-  width={680}
-  height={400}
-  custom={[
-    { x: 250, y: 200, rx: 1, w: 60, h: 280, stroke: VIOLET }, //fd
-    { x: 450, y: 180, rx: 1, w: 60, h: 320, stroke: VIOLET }, //VM
-    {
-      x: 250,
-      y: 200,
-      rx: 0,
-      w: 60,
-      h: 120,
-      stroke: VIOLET,
-      fill: "oklch(0.50 0.9 200 / .50)",
-    }, //length->file
-    {
-      x: 450,
-      y: 150,
-      rx: 0,
-      w: 60,
-      h: 120,
-      stroke: VIOLET,
-      fill: "oklch(0.50 0.9 200 / .50)",
-    }, //length->VM
+<Diagram width={680} height={400} caption="mmap 参数的可视化解释" defaults={{ font: 'serif', fontSize: 18, braceColor: 'orange' }}
+  boxes={[
+    { x: 220, y: 60, dir: 'v', cross: 60, rx: 1, stroke: 'violet',
+      cells: [{ size: 80 }, { size: 120, fill: 'oklch(0.50 0.9 200 / .50)' }, { size: 80 }] },
+    { x: 420, y: 20, dir: 'v', cross: 60, rx: 1, stroke: 'violet',
+      cells: [{ size: 70 }, { size: 120, fill: 'oklch(0.50 0.9 200 / .50)' }, { size: 130 }] },
   ]}
-  lines={[
-    {
-      //line_up
-      x1: 280,
-      y1: 140,
-      x2: 420,
-      y2: 90,
-      color: BLUE,
-      noArrow: true,
-      dash: 0.6,
-    },
-    {
-      //line_down
-      x1: 280,
-      y1: 260,
-      x2: 420,
-      y2: 210,
-      color: BLUE,
-      noArrow: true,
-      dash: 0.6,
-    },
-    { x1: 180, y1: 260, x2: 220, y2: 260, color: ROSE }, //offset
-    { x1: 520, y1: 210, x2: 480, y2: 210, color: ROSE }, //start
+  edges={[
+    { points: [[280, 140], [420, 90]], color: 'blue', arrow: 'none', dash: 9.6 },
+    { points: [[280, 260], [420, 210]], color: 'blue', arrow: 'none', dash: 9.6 },
+    { points: [[180, 260], [220, 260]], color: 'rose' },
+    { points: [[520, 210], [480, 210]], color: 'rose' },
   ]}
   braces={[
-    {
-      x1: 215,
-      y1: 150,
-      x2: 215,
-      y2: 250,
-      side: "left",
-      color: ORANGE,
-      label: "length（字节）",
-      fontSize: 18,
-    },
-    {
-      x1: 485,
-      y1: 100,
-      x2: 485,
-      y2: 200,
-      side: "right",
-      color: ORANGE,
-      label: "length（字节）",
-      fontSize: 18,
-    },
+    { from: [215, 150], to: [215, 250], side: 'left', label: 'length（字节）' },
+    { from: [485, 100], to: [485, 200], side: 'right', label: 'length（字节）' },
   ]}
-  labels={[
-    { x: 250, y: 370, text: "文件描述符fd<br>指定的磁盘文件", fontSize: 18 },
-    { x: 450, y: 360, text: "进程虚拟内存", fontSize: 18 },
-    { x: 142, y: 265, text: "offset", fontSize: 18 },
-    {
-      x: 549,
-      y: 237,
-      text: "start<br>或由内核<br>选定地址",
-      fontSize: 18,
-    },
+  texts={[
+    { x: 250, y: 363.7, text: '文件描述符fd<br>指定的磁盘文件' },
+    { x: 450, y: 353.7, text: '进程虚拟内存' },
+    { x: 142, y: 258.7, text: 'offset' },
+    { x: 549, y: 230.7, text: 'start<br>或由内核<br>选定地址' },
   ]}
 />
 

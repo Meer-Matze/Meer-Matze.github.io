@@ -1,257 +1,221 @@
-# 🧩 custom/ — 自定义组件
+# Diagram API 文档
 
-存放为特定需求编写的自定义组件，不归属于框架的标准分类。每个组件自带独立的用法文档。
+静态 SVG 示意图组件（`Diagram.astro`），零客户端 JS。明暗主题由 CSS 完成（`html.dark`）。
 
----
-
-### 📐 DataFlowDiagram — 数据流图绘图组件
-
-Svelte 5 组件，用于在 MDX 中绘制数据流图（寄存器、运算节点、连线、大括号等），自动跟随站点深色模式。
-
-#### 1. 引入
+## 1. 基本用法
 
 ```mdx
-import DFD, {
-  WB
-  PINK,
-  AMBER,
-  ORANGE,
-  LIME,
-  GREEN,
-  CYAN,
-  TEAL,
-  INDIGO,
-  BLUE,
-  VIOLET,
-  PURPLE,
-  ROSE,
-} from "@/components/custom/DataFlowDiagram.svelte";
-```
+import Diagram from "../components/diagram/Diagram.astro";
 
-- 组件本体为默认导出。
-- 命名导出为可选的尺寸/配色常量（见 §5）。
-
-#### 2. Props
-
-| Prop        | 类型             | 默认值             | 说明                                             |
-| ----------- | ---------------- | ------------------ | ------------------------------------------------ |
-| `width`     | `number`         | `520`              | SVG viewBox 宽度                                 |
-| `height`    | `number`         | `480`              | SVG viewBox 高度                                 |
-| `bg`        | `Color`          | 自动（主题背景色） | 覆盖背景色                                       |
-| `ariaLabel` | `string`         | `'数据流图'`       | `role="img"` 的无障碍描述                        |
-| `registers` | `BoxData[]`      | `[]`               | 寄存器风格矩形（圆角小，边框细）                 |
-| `ops`       | `BoxData[]`      | `[]`               | 运算节点风格矩形（圆角大，边框粗）               |
-| `custom`    | `BoxData[]`      | `[]`               | 完全自定义矩形，默认中性灰配色，不带任何预设语义 |
-| `lines`     | `LineData[]`     | `[]`               | 直线，默认带箭头                                 |
-| `polylines` | `PolylineData[]` | `[]`               | 折线                                             |
-| `paths`     | `PathData[]`     | `[]`               | 任意 SVG path                                    |
-| `braces`    | `BraceData[]`    | `[]`               | 大括号标注                                       |
-| `circles`   | `CircleData[]`   | `[]`               | 圆点（无边框）                                   |
-| `labels`    | `LabelData[]`    | `[]`               | 纯文字（无背景/边框）                            |
-
-所有坐标以 `boxes`/`ops` 的中心点 `(x, y)`、`lines` 等的端点为准，单位与 `width`/`height` 一致。
-
-#### 3. `Color` 类型
-
-支持两种写法，可在同一图里混用：
-
-```ts
-type Color = string | { light: string; dark: string };
-```
-
-- 字符串：直接作为 CSS 颜色值使用，不随深色模式变化。
-- `{ light, dark }`：组件按当前主题自动选取（见 §6）。所有元素类型（`boxes`/`ops`/`lines`/`polylines`/`paths`/`circles`/`braces`/`labels`）均支持此写法。
-
-#### 4. 各元素字段
-
-##### 4.1 `registers` / `ops` / `custom`
-
-```ts
-{
-  x: number; y: number;           // 中心坐标（必填）
-  label: string;                  // 文字（必填）
-  w?: number; h?: number; rx?: number;
-  fill?: Color; stroke?: Color; textColor?: Color;
-  fontSize?: number; fontFamily?: string;
-  strokeWidth?: number;
-}
-```
-
-三者字段完全一致，区别只在于未指定字段时的默认值来源：
-
-| 分组        | 默认尺寸                         | 默认配色                                               | 默认边框宽度 | 适用场景                                                             |
-| ----------- | -------------------------------- | ------------------------------------------------------ | ------------ | -------------------------------------------------------------------- |
-| `registers` | `w: 80, h: 36, rx: 4`            | 浅底细边框，色相跟随 `--hue`                           | `2`          | 寄存器一类的小型固定值节点                                           |
-| `ops`       | `w: 88, h: 36, rx: 10`（大圆角） | 深一档底色 + 粗边框，色相在 `registers` 基础上偏移 45° | `2.5`        | ALU/运算类节点                                                       |
-| `custom`    | `w: 88, h: 40, rx: 8`            | 中性灰（不跟随 `--hue`，无语义倾向）                   | `2`          | 不属于上面两类、需要自己指定外观的节点；`fill`/`stroke` 建议显式传入 |
-
-三者都可以在单个元素上覆盖任意字段（包括新增的 `strokeWidth`），默认值只是兜底。
-
-##### 4.2 `lines`
-
-```ts
-{ x1: number; y1: number; x2: number; y2: number; color: Color; noArrow?: boolean; dash?: number; strokeWidth?: number }
-```
-
-`dash` 取值 `0~1`，和 `polylines` / `paths` 一致：`0` 表示实线，越接近 `1` 虚线间隔越大（内部 clamp 到 `0.95`）。
-
-##### 4.3 `polylines` / `paths`
-
-```ts
-// polylines
-{ points: [number, number][]; color: Color; noArrow?: boolean; dash?: number; strokeWidth?: number }
-// paths
-{ d: string; color: Color; noArrow?: boolean; dash?: number }
-```
-
-`dash` 取值 `0~1`，表示虚线中"空白段"占比（`0` = 实线，越接近 `1` 空白越多，内部会 clamp 到 `0.95`）。
-
-##### 4.4 `braces`
-
-```ts
-{
-  x1: number; y1: number; x2: number; y2: number;
-  side?: 'top' | 'bottom' | 'left' | 'right' | 'auto'; // 默认 auto：按跨度方向自动判断
-  color?: Color; strokeWidth?: number; dash?: number;
-  text?: string;                    // 默认不传，不渲染任何文字
-  textColor?: Color; fontSize?: number; fontFamily?: string;
-}
-```
-
-`text` 锚定在大括号中间突起的顶点（apex）外侧、留出固定间距处：水平大括号（`top`/`bottom`）文字水平居中，垂直大括号（`left`/`right`）文字垂直居中并朝远离大括号的方向对齐。不传 `text` 时不会渲染任何 `<text>` 元素。`text` 也支持换行，可以直接写真实换行或 `<br>`。
-
-```mdx
-braces={[
-{
-x1: 100,
-y1: 80,
-x2: 100,
-y2: 220,
-side: 'right',
-label: '第一行\n第二行',
-},
-]}
-```
-
-##### 4.5 `circles`
-
-```ts
-{ cx: number; cy: number; r?: number /* 默认 5 */; color: Color }
-```
-
-##### 4.6 `labels`
-
-```ts
-{ x: number; y: number; text: string; color?: Color; fontSize?: number; fontFamily?: string; fontStyle?: string }
-```
-
-`text` 支持换行。可以直接写真实换行，也可以写 `<br>`；组件会按行拆开渲染。`y` 仍然是文字基线附近的参考坐标。
-
-```mdx
-labels={[
-{ x: 200, y: 40, text: "第一行\n第二行" },
-{ x: 200, y: 90, text: "高缓存命中率<br>低访存开销" },
-]}
-```
-
-#### 5. 导出常量
-
-1. 颜色
-
-- `WB`/`PINK`/`AMBER`/`ORANGE`/`LIME`/`GREEN`/`CYAN`/`TEAL`/`INDIGO`/`BLUE`/`VIOLET`/`PURPLE`/`ROSE`
-
-WB 在浅色模式下是黑色，深色模式下是白色。其他颜色均为固定颜色。
-
-2. 字体 默认为`FONT_MONO`
-
-- `FONT_SANS`/`FONT_SERIF`/`FONT_MATH`/`FONT_MONO`
-
-#### 6. 深色模式
-
-- 组件挂载时同步读取 `document.documentElement` 是否带 `dark` class 作为初始值（避免 SSR/首帧闪烁）。
-- 之后通过 `MutationObserver` 监听 `<html class>` 变化，并监听 `prefers-color-scheme`（仅当 `localStorage.theme` 未设置或为 `'system'` 时生效）。
-- 所有 `{light, dark}` 颜色随主题切换自动重新渲染，无需手动传参。
-
-#### 7. 示例
-
-```mdx
-<DFD
-  client:load
-  width={400}
+<Diagram
+  width={520}
   height={200}
-  registers={[{ x: 60, y: 100, label: "%rax" }]}
-  ops={[{ x: 200, y: 100, label: "ALU", fill: ORANGE }]}
-  custom={[
-    {
-      x: 340,
-      y: 100,
-      label: "cache",
-      w: 100,
-      h: 50,
-      rx: 12,
-      fill: TEAL,
-      stroke: TEAL,
-      strokeWidth: 1.5,
-    },
+  label="加法器数据流"
+  caption="图 1"
+  defaults={{ font: "serif", fontSize: 16 }}
+  boxes={[
+    { id: "a", kind: "reg", x: 80, y: 60, label: "rA" },
+    { id: "add", kind: "op", x: 260, y: 60, label: "+" },
   ]}
-  lines={[{ x1: 100, y1: 100, x2: 156, y2: 100, color: BLUE }]}
-  labels={[{ x: 200, y: 40, text: "示意：寄存器 → ALU → 缓存" }]}
+  edges={[{ points: ["a.right", "add.left"], color: "blue" }]}
+  braces={[{ from: [40, 110], to: [300, 110], label: "一个周期" }]}
 />
 ```
 
-#### 9. 扩展：把 `custom` 特化成可复用的预设风格
+不要加 `client:*` 指令。props 里可以直接写 JS 表达式（`.map`、展开、`export const` 复用）。
 
-`registers`/`ops` 本质上就是「`custom` + 一组固定默认值」。在组件内部改动之前，可以先在调用侧用同样的模式沉淀新风格，验证效果后再决定要不要把它提进组件。
+## 2. 顶层 props
 
-##### 9.1 数据层：定义默认值 + 合并函数
+| 字段                                            | 类型      | 默认       | 说明                                                 |
+| ----------------------------------------------- | --------- | ---------- | ---------------------------------------------------- |
+| `width`, `height`                               | number    | 必填       | viewBox 尺寸；渲染时 `max-width = width`，随容器缩小 |
+| `label`                                         | string    | `'示意图'` | 无障碍标签（`aria-label`）                           |
+| `caption`                                       | string    | 无         | 图注（`<figcaption>`）                               |
+| `bg`                                            | Paint     | 跟随主题   | 背景色                                               |
+| `defaults`                                      | 见第 7 节 | —          | 整图默认字体/字号/颜色                               |
+| `presets`                                       | 见第 6 节 | —          | 本图自定义盒子预设                                   |
+| `boxes` `edges` `paths` `braces` `dots` `texts` | 数组      | `[]`       | 图元，见第 3–5 节                                    |
 
-```js
-// presets/cacheBox.js
-import { TEAL } from "../components/DataFlowDiagram.svelte";
+绘制顺序：`boxes`（数组顺序，后者覆盖前者）→ `edges` → `paths` → `braces` → `dots` → `texts`。
+容器类盒子写在前面。
 
-// 风格定义：字段名与 registers/ops 完全一致（w/h/rx/fill/stroke/textColor/strokeWidth...）
-export const CACHE_BOX = {
-  w: 100,
-  h: 50,
-  rx: 12,
-  fill: TEAL,
-  stroke: TEAL,
-  strokeWidth: 1.5,
-};
+## 3. 盒子 `boxes`
 
-// 合并函数：单个节点的显式字段优先，缺省字段回退到风格默认值
-// （与组件内部 normalizeBox 的合并顺序保持一致）
-export function withPreset(items, preset) {
-  return items.map((item) => ({ ...preset, ...item }));
-}
-```
+数组项是单个盒子，或带 `cells` 的 strip。
 
-##### 9.2 调用层：喂给 `custom`
+### 3.1 单个盒子
+
+坐标 `(x, y)` 是**中心**。
+
+| 字段                               | 默认            | 说明                                         |
+| ---------------------------------- | --------------- | -------------------------------------------- |
+| `x`, `y`                           | 必填            | 中心坐标                                     |
+| `id`                               | 无              | 登记后可被锚点引用，须匹配 `[A-Za-z_][\w-]*` |
+| `w`, `h`                           | 预设值          | 尺寸                                         |
+| `label`                            | 无              | 文字，`\n` 或 `<br>` 换行，空行保留          |
+| `kind`                             | `'box'`         | 预设名，见第 6 节                            |
+| `rx` `fill` `stroke` `strokeWidth` | 预设值          | 圆角、填充、描边、描边宽                     |
+| `textColor` `fontSize` `font`      | 来自 `defaults` | 文字样式                                     |
+
+### 3.2 strip（连续单元格）
+
+内存布局、表格、缓存行。`(x, y)` 是**左上角**。
+
+| 字段         | 默认  | 说明                                                                                            |
+| ------------ | ----- | ----------------------------------------------------------------------------------------------- |
+| `x`, `y`     | 必填  | 左上角                                                                                          |
+| `dir`        | `'v'` | 排列方向：`'v'` 自上而下，`'h'` 自左而右                                                        |
+| `cross`      | 必填  | 垂直于排列方向的尺寸（`'v'` 为宽，`'h'` 为高）                                                  |
+| `gap`        | `0`   | 单元格间隔                                                                                      |
+| `cells`      | 必填  | 单元格数组                                                                                      |
+| 盒子样式字段 | —     | `kind` `rx` `fill` `stroke` `strokeWidth` `textColor` `fontSize` `font`，作为所有单元格的默认值 |
+
+单元格字段：
+
+| 字段         | 说明                                    |
+| ------------ | --------------------------------------- |
+| `size`       | 必填，沿排列方向的长度                  |
+| `id`         | 同上，可被锚点引用                      |
+| `label`      | 单元格文字                              |
+| `divide`     | 等分为 n 格，用细线分隔                 |
+| `parts`      | 等分后每格的文字数组（长度 ≤ `divide`） |
+| 盒子样式字段 | 覆盖 strip 的同名设置                   |
+
+strip 单元格默认直角（`rx: 0`）。
+
+## 4. 连线 `edges` / `paths` / `braces`
+
+### 4.1 `edges`（折线，可带箭头）
+
+| 字段          | 默认                 | 说明                                                                 |
+| ------------- | -------------------- | -------------------------------------------------------------------- |
+| `points`      | 必填                 | ≥ 2 个点；每个点是 `[x, y]` 或锚点字符串，可混用                     |
+| `color`       | `defaults.lineColor` | 颜色                                                                 |
+| `strokeWidth` | `2`                  | 线宽；箭头尺寸随线宽缩放（长 3×，半宽 1.25×）                        |
+| `dash`        | 实线                 | 数字 = 线段与间隔等长（px）；`[a, b]` = 线段 a、间隔 b               |
+| `arrow`       | `'end'`              | `'end'` `'start'` `'both'` `'none'` `'each'`（每个线段末端都有箭头） |
+
+箭头尖端落在给定端点上，线在箭头底边处结束。
+
+### 4.2 `paths`（原样 SVG path，无自动箭头）
+
+| 字段                         | 默认       | 说明          |
+| ---------------------------- | ---------- | ------------- |
+| `d`                          | 必填       | SVG path 数据 |
+| `color` `strokeWidth` `dash` | 同 `edges` |               |
+
+### 4.3 `braces`（大括号）
+
+| 字段                          | 默认                  | 说明                                                                             |
+| ----------------------------- | --------------------- | -------------------------------------------------------------------------------- |
+| `from`, `to`                  | 必填                  | 两端，坐标或锚点                                                                 |
+| `side`                        | `'auto'`              | `'top'` `'bottom'` `'left'` `'right'` `'auto'`；auto：水平括号朝下，竖直括号朝右 |
+| `color`                       | `defaults.braceColor` | 颜色                                                                             |
+| `strokeWidth`                 | `2.5`                 | 线宽                                                                             |
+| `dash`                        | 实线                  | 同 `edges`                                                                       |
+| `label`                       | 无                    | 文字，换行规则同盒子                                                             |
+| `textColor` `fontSize` `font` | 来自 `defaults`       | 文字样式                                                                         |
+
+## 5. 圆点与文字
+
+### 5.1 `dots`
+
+| 字段     | 默认                 | 说明                                                                          |
+| -------- | -------------------- | ----------------------------------------------------------------------------- |
+| `x`, `y` | 必填                 | 圆心（有 `grid` 时为第一个点）                                                |
+| `r`      | `5`                  | 半径                                                                          |
+| `color`  | `defaults.lineColor` | 颜色                                                                          |
+| `grid`   | 无                   | `{ cols, rows, dx, dy }`，展开为点阵：第 (i, j) 个点在 `(x + i·dx, y + j·dy)` |
+
+省略号：`{ x: 420, y: 515, r: 3, grid: { cols: 1, rows: 3, dx: 0, dy: 15 } }`。
+
+### 5.2 `texts`
+
+| 字段              | 默认                 | 说明                                               |
+| ----------------- | -------------------- | -------------------------------------------------- |
+| `x`, `y`          | 必填                 | **文字块的视觉中心**（水平居中；多行整体垂直居中） |
+| `text`            | 必填                 | 文字，`\n` 或 `<br>` 换行，空行保留                |
+| `color`           | `defaults.textColor` | 颜色                                               |
+| `fontSize` `font` | 来自 `defaults`      |                                                    |
+
+文字规则（盒子、大括号、`texts` 通用）：行高 = `round(fontSize × 1.2)`；整块以给定点为中心，再整体下移 `0.35 × fontSize` 做视觉居中（`tokens.TEXT_CENTER_EM`）。水平大括号的文字不做这个下移。
+
+## 6. 预设与 kind
+
+| 内置 kind     | 默认尺寸                 | 说明                         |
+| ------------- | ------------------------ | ---------------------------- |
+| `box`（默认） | 88×40，`rx` 8            | 中性灰描边，背景色填充       |
+| `reg`         | 80×36，`rx` 4            | 蓝色系（色相 250），寄存器   |
+| `op`          | 88×36，`rx` 10，线宽 2.5 | 紫色系（色相 295），运算节点 |
+
+自定义（只在本图有效）：
 
 ```mdx
-import DFD from "../components/DataFlowDiagram.svelte";
-import { CACHE_BOX, withPreset } from "../presets/cacheBox.js";
-
-<DFD
-  custom={withPreset(
-    [
-      { x: 340, y: 100, label: "L1 cache" },
-      { x: 340, y: 160, label: "L2 cache" },
-    ],
-    CACHE_BOX,
-  )}
-/>
+<Diagram presets={{ mem: { stroke: 'violet', fontSize: 18 } }}
+  boxes={[{ x: 100, y: 50, kind: 'mem', label: '栈' }]} ... />
 ```
 
-调用方只需要写 `x/y/label`，风格细节（尺寸、配色、边框宽度）统一由 `CACHE_BOX` 决定，效果与内置的 `registers`/`ops` 一致。
+层叠顺序（低 → 高）：`BOX_BASE` ← strip 基底（直角）← 预设 ← 元素自身样式。
+预设字段同盒子样式，另可含 `w`、`h`。新增全站内置预设：在 `tokens.ts` 的 `BOX_PRESETS` 加一项即可。
 
-##### 9.3 如果这个风格用得足够多：提进组件
+## 7. 整图默认值 `defaults`
 
-等某个预设风格（比如上面的 cache）在多篇笔记里反复出现，值得把它提升为组件内置的第三个"一等公民" prop，做法是照抄 `ops` 的模式：
+| 字段         | 默认           | 作用对象               |
+| ------------ | -------------- | ---------------------- |
+| `font`       | `'mono'`       | 所有文字               |
+| `fontSize`   | `13`           | 所有文字               |
+| `textColor`  | 主题文字色     | 所有文字               |
+| `lineColor`  | 主题文字色     | `edges` `paths` `dots` |
+| `braceColor` | 同 `lineColor` | `braces`               |
 
-1. 仿照 `REGISTER_BOX`/`OP_BOX` 的写法，在组件内直接定义一个内联的 `CACHE_BOX = { w, h, rx, fill: {light,dark}, stroke: {light,dark}, strokeWidth }` 默认值对象——尺寸和配色都写在这一处，不需要额外导出常量（参考 §5 的做法：只服务于单一风格的值直接内联）。
+## 8. 颜色、字体、锚点
 
-2. 新增 `cache = []` prop，`let cacheBoxes = $derived(cache.map((b) => normalizeBox(b, CACHE_BOX)))`。
-3. 模板里加一段 `{#each cacheBoxes as c}{@render nodeBox(c)}{/each}`。
+### 8.1 Paint（颜色）
 
-因为 `normalizeBox`/`nodeBox` 已经是通用的，新增一个预设风格只需要重复这三步，不需要改渲染逻辑本身。
+三种写法，所有颜色字段通用：
+
+| 写法          | 例                                                                   |
+| ------------- | -------------------------------------------------------------------- |
+| 命名色        | `'blue'`                                                             |
+| 任意 CSS 颜色 | `'oklch(0.52 0.55 266)'`、`'#cce5ff'`、`'oklch(0.30 0.8 225 / .25)'` |
+| 明暗双主题    | `{ light: '#cce5ff', dark: '#1a3a5c' }`（两侧也可写命名色）          |
+
+命名色：`wb`（浅色近黑、深色近白）、`text`（主题文字色）、`pink` `amber` `orange` `lime` `green` `cyan` `teal` `indigo` `blue` `violet` `purple` `rose`（与旧常量同值）。
+
+### 8.2 字体
+
+`font` 可写命名字体 `'mono'`（默认）`'sans'` `'serif'` `'math'`，或任意 CSS `font-family` 字符串。
+
+### 8.3 锚点
+
+写法：`'id.side'` 或 `'id.side@偏移'`。`side` ∈ `top` `bottom` `left` `right` `center`；偏移是沿该边方向的像素（top/bottom 为 x 方向，left/right 为 y 方向）。
+
+| 例               | 含义                                 |
+| ---------------- | ------------------------------------ |
+| `'mul1.top'`     | 盒子 `mul1` 上边中点                 |
+| `'mul1.top@-25'` | 上边中点向左 25px                    |
+| `'c0.right'`     | strip 中 `id: 'c0'` 的单元格右边中点 |
+
+可用于 `edges.points` 与 `braces.from/to`。id 未定义或写法非法时构建期报错。
+
+## 9. 文件结构与扩展点
+
+| 文件            | 职责                                              | 依赖           |
+| --------------- | ------------------------------------------------- | -------------- |
+| `types.ts`      | Spec / Scene 类型                                 | 无             |
+| `tokens.ts`     | 色板、字体、默认值、内置预设                      | types          |
+| `theme.ts`      | 颜色/字体解析，CSS 变量约定                       | tokens         |
+| `style.ts`      | 默认值与预设层叠，所有 `?? 默认值` 只在这里       | theme, tokens  |
+| `validate.ts`   | 字段白名单校验与迁移提示                          | types          |
+| `geometry.ts`   | 纯几何：箭头、大括号、锚点、strip、文字布局       | tokens         |
+| `compile.ts`    | Spec → Scene（校验 → 样式 → 盒子展开 → 绘制顺序） | 以上全部       |
+| `theme.css`     | 明暗主题的唯一实现                                | 无             |
+| `Diagram.astro` | 渲染层：遍历与格式化 `scene.items`                | compile, theme |
+
+| 想改的东西                | 改哪里                                                                                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 色板、字体、默认字号/线宽 | `tokens.ts`                                                                                                                                  |
+| 新增全站内置预设          | `tokens.ts` 的 `BOX_PRESETS`                                                                                                                 |
+| 文字垂直居中的松紧        | `tokens.ts` 的 `TEXT_CENTER_EM`                                                                                                              |
+| 明暗切换的判定方式        | `theme.css`（`html.dark` 选择器）                                                                                                            |
+| 新增图元类型              | `types.ts`（Spec 字段）→ `validate.ts`（白名单）→ `compile.ts`（产出 Scene 项）；若是全新的 Scene 项种类，再加 `Diagram.astro` 的一个 `case` |

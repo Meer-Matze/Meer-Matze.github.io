@@ -13,23 +13,67 @@ lang: "zh-CN"
 slug: csapp6
 ---
 
-import DFD, {
-  WB,
-  PINK,
-  AMBER,
-  ORANGE,
-  LIME,
-  GREEN,
-  CYAN,
-  TEAL,
-  INDIGO,
-  BLUE,
-  VIOLET,
-  PURPLE,
-  ROSE,
-  FONT_MATH,
-  FONT_SERIF,
-} from "@/components/custom/DataFlowDiagram.svelte";
+import Diagram from '@/components/custom/diagram/Diagram.astro';
+export const CACHE = 'oklch(0.55 0.30 194)'
+export const BRACE = 'oklch(0.52 0.55 266)'
+export const rowTops = [87, 127, 197, 237, 337, 377];
+export const lineStrip = (y) => ({
+  x: 195, y, dir: 'h', cross: 26, gap: 15, rx: 2, stroke: CACHE,
+  cells: [{ size: 50, label: 'valid' }, { size: 60, label: 'tag' }, { size: 170, divide: 4, parts: ['0', '1', '···', 'B-1'] }],
+});
+export const coreBoxes = (x0, s) => [
+  { x: x0, y: 190, w: 190, h: 220, rx: 3, stroke: 'oklch(0.4 0.3 30)' },
+  { id: 'regs' + s, x: x0 - 40, y: 110, w: 90, h: 30, label: 'Regs', rx: 2, stroke: 'orange' },
+  { id: 'l1d' + s, x: x0 - 45, y: 180, w: 80, h: 50, label: 'L1\nd-cache', rx: 2, stroke: 'violet' },
+  { id: 'l1i' + s, x: x0 + 45, y: 180, w: 80, h: 50, label: 'L1\ni-cache', rx: 2, stroke: 'violet' },
+  { id: 'l2' + s, x: x0, y: 260, w: 170, h: 50, label: 'L2 cache', rx: 2, stroke: 'violet' },
+];
+export const coreLines = (s, x0) => [
+  { points: [`regs${s}.bottom@-5`, `l1d${s}.top`], color: 'teal', arrow: 'none' },
+  { points: [`l1d${s}.bottom`, `l2${s}.top@-45`], color: 'teal', arrow: 'none' },
+  { points: [`l1i${s}.bottom`, `l2${s}.top@45`], color: 'teal', arrow: 'none' },
+  { points: [`l2${s}.bottom`, `l3.top@${x0 - 260}`], color: 'teal', arrow: 'none' },
+];
+
+export const hierarchyBraces = [
+  [75, 'CPU寄存器保存来自\n高速缓存存储器的字'],
+  [155, 'L1高速缓存保存取自\nL2高速缓存的高速缓存行'],
+  [235, 'L2高速缓存保存取自\nL3高速缓存的高速缓存行'],
+  [315, 'L3高速缓存保存取自\n磁盘的高速缓存行'],
+  [395, '主存保存取自\n本地磁盘的磁盘块'],
+  [475, '本地磁盘保存取自\n远程网络服务器上磁盘的文件'],
+];
+
+export const hierarchyTiers = [
+  [93.7, '寄存器'],
+  [153.7, 'L1高速缓存\n（SRAM）'],
+  [233.7, 'L2高速缓存\n（SRAM）'],
+  [313.7, 'L3高速缓存\n（SRAM）'],
+  [393.7, '主存\n（DRAM）'],
+  [473.7, '本地二级存储\n（本地磁盘）'],
+  [553.7, '远程二级存储\n（分布式文件系统、Web 服务器）'],
+];
+
+export const hierarchyEdges = [
+  { points: [[30, 275], [30, 35]], color: 'oklch(0.78 0.34 188)', strokeWidth: 5 },
+  { points: [[30, 345], [30, 585]], color: 'oklch(0.78 0.34 188)', strokeWidth: 5 },
+  { points: [
+    [420, 30], [119, 590], [721, 590], [420, 30],
+    [377, 110], [463, 110],
+    [506, 190], [334, 190],
+    [291, 270], [549, 270],
+    [592, 350], [248, 350],
+    [205, 430], [635, 430],
+    [678, 510], [162, 510],
+  ], color: 'oklch(0.78 0.34 88)', arrow: 'none', strokeWidth: 4 },
+];
+
+export const hierarchyTexts = [
+  { x: 75, y: 164.05, text: '更小\n\n更快\n\n（每字节）\n\n更贵的\n\n存储设备', fontSize: 17 },
+  { x: 75, y: 444.05, text: '更大\n\n更慢\n\n（每字节）\n\n更便宜的\n\n存储设备', fontSize: 17 },
+  ...['L0:', 'L1:', 'L2:', 'L3:', 'L4:', 'L5:', 'L6:'].map((t, i) => ({ x: 375 - 43 * i, y: 68.7 + 80 * i, text: t })),
+  ...hierarchyTiers.map(([y, t]) => ({ x: 420, y, text: t })),
+];
 
 存储器系统（memory system）是一个具有不同容量、成本和访问时间的存储设备的层次结构。CPU 寄存器保存着最常用的数据。靠近 CPU 的小的、快速的高速缓存存储器（cache memory）作为一部分存储在相对慢速的主存储器（main memory）中数据和指令的缓冲区域。主存缓存存储在容量较大的、慢速磁盘上的数据，而这些磁盘常常又作为存储在通过网络连接的其他机器的磁盘或磁带上的数据的缓冲区域。
 
@@ -261,7 +305,7 @@ CPU 使用一种称为内存映射 I/O（memory-mapped I/O）的技术来向 I/O
 
 具有良好局部性的程序运行更快，因为它们能更充分地利用高速缓存。
 
-### 6.4.1 程序数据引用的局部性示例
+### 6.2.1 程序数据引用的局部性示例
 
 ```c
 int sumarrayrows(int a[M][N]) {
@@ -290,7 +334,7 @@ int sumarraycols(int a[M][N]) {
 
 由于 C 语言中的二维数组按**行优先（row-major order）** 存储，`i` 的变化会导致跨行访问，空间局部性显著下降。
 
-### 6.4.2 取指令的局部性
+### 6.2.2 取指令的局部性
 
 程序指令也存放在内存中，取指令同样具有局部性：
 
@@ -301,182 +345,11 @@ int sumarraycols(int a[M][N]) {
 
 典型的存储器层次结构如下：
 
-<DFD
-  client:load
-  width={1000}
-  height={600}
-  ariaLabel="存储器层次结构"
-  lines={[
-    {
-      x1: 30,
-      y1: 275,
-      x2: 30,
-      y2: 35,
-      color: "oklch(0.78 0.34 188)",
-      strokeWidth: 5,
-    },
-    {
-      x1: 30,
-      y1: 345,
-      x2: 30,
-      y2: 585,
-      color: "oklch(0.78 0.34 188)",
-      strokeWidth: 5,
-    },
-  ]}
-  polylines={[
-    {
-      points: [
-        [420, 30],
-        [119, 590],
-        [721, 590],
-        [420, 30],
-        [377, 110],
-        [463, 110],
-        [506, 190],
-        [334, 190],
-        [291, 270],
-        [549, 270],
-        [592, 350],
-        [248, 350],
-        [205, 430],
-        [635, 430],
-        [678, 510],
-        [162, 510],
-      ],
-      color: "oklch(0.78 0.34 88)",
-      noArrow: true,
-      strokeWidth: 4,
-    },
-  ]}
-  braces={[
-    {
-      x1: 510,
-      y1: 75,
-      x2: 510,
-      y2: 145,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "CPU寄存器保存来自\n高速缓存存储器的字",
-    },
-    {
-      x1: 553,
-      y1: 155,
-      x2: 553,
-      y2: 225,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "L1高速缓存保存取自\nL2高速缓存的高速缓存行",
-    },
-    {
-      x1: 596,
-      y1: 235,
-      x2: 596,
-      y2: 305,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "L2高速缓存保存取自\nL3高速缓存的高速缓存行",
-    },
-    {
-      x1: 639,
-      y1: 315,
-      x2: 639,
-      y2: 385,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "L3高速缓存保存取自\n磁盘的高速缓存行",
-    },
-    {
-      x1: 682,
-      y1: 395,
-      x2: 682,
-      y2: 465,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "主存保存取自\n本地磁盘的磁盘块",
-    },
-    {
-      x1: 725,
-      y1: 475,
-      x2: 725,
-      y2: 545,
-      color: "oklch(0.52 0.55 266)",
-      fontFamily: FONT_SERIF,
-      fontSize: 18,
-      label: "本地磁盘保存取自\n远程网络服务器上磁盘的文件",
-    },
-  ]}
-  labels={[
-    {
-      x: 75,
-      y: 170,
-      text: "更小\n\n更快\n\n（每字节）\n\n更贵的\n\n存储设备",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 75,
-      y: 450,
-      text: "更大\n\n更慢\n\n（每字节）\n\n更便宜的\n\n存储设备",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    { x: 375, y: 75, text: "L0:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 332, y: 155, text: "L1:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 289, y: 235, text: "L2:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 246, y: 315, text: "L3:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 203, y: 395, text: "L4:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 160, y: 475, text: "L5:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 117, y: 555, text: "L6:", fontSize: 18, fontFamily: FONT_SERIF },
-    { x: 420, y: 100, text: "寄存器", fontSize: 18, fontFamily: FONT_SERIF },
-    {
-      x: 420,
-      y: 160,
-      text: "L1高速缓存\n（SRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 240,
-      text: "L2高速缓存\n（SRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 320,
-      text: "L3高速缓存\n（SRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 400,
-      text: "主存\n（DRAM）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 480,
-      text: "本地二级存储\n（本地磁盘）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 420,
-      y: 560,
-      text: "远程二级存储\n（分布式文件系统、Web 服务器）",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-  ]}
+<Diagram width={1000} height={600} caption="存储器层次结构"
+  defaults={{ font: 'serif', fontSize: 18, braceColor: BRACE }}
+  edges={hierarchyEdges}
+  braces={hierarchyBraces.map(([y, label], i) => ({ from: [510 + 43 * i, y], to: [510 + 43 * i, y + 70], label }))}
+  texts={hierarchyTexts}
 />
 
 层次结构的特点是：越往上速度越快、容量越小、单位成本越高；越往下则相反。
@@ -555,647 +428,34 @@ LRU 通常在组相联缓存中使用，能较好地利用时间局部性，但�
 - **标记位（tag）**：$t$ 位，$t = m - (b + s)$
 - **数据块（block）**：$B$ 字节
 
-<DFD
-client:load
-width={650}
-height={430}
-ariaLabel="高速缓存存储器组织结构"
-custom={[
-    // 组0~S-1
-    {
-        x: 350,
-        y: 120,
-        w: 350,
-        h: 90,
-        rx: 4,
-        stroke: "oklch(0.68 0.36 237)",
-        fill: "oklch(0.78 0.34 230 / 0.1)",
-    },
-    {
-        x: 350,
-        y: 230,
-        w: 350,
-        h: 90,
-        rx: 4,
-        stroke: "oklch(0.68 0.36 237)",
-        fill: "oklch(0.78 0.34 230 / 0.1)",
-    },
-    {
-        x: 350,
-        y: 370,
-        w: 350,
-        h: 90,
-        rx: 4,
-        stroke: "oklch(0.68 0.36 237)",
-        fill: "oklch(0.78 0.34 230 / 0.1)",
-    },
-    // 有效位
-    {
-        x: 220,
-        y: 100,
-        w: 50,
-        h: 26,
-        rx: 2,
-        label: "valid",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 220,
-        y: 140,
-        w: 50,
-        h: 26,
-        rx: 2,
-        label: "valid",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 220,
-        y: 210,
-        w: 50,
-        h: 26,
-        rx: 2,
-        label: "valid",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 220,
-        y: 250,
-        w: 50,
-        h: 26,
-        rx: 2,
-        label: "valid",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 220,
-        y: 350,
-        w: 50,
-        h: 26,
-        rx: 2,
-        label: "valid",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 220,
-        y: 390,
-        w: 50,
-        h: 26,
-        rx: 2,
-        label: "valid",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    // tag
-    {
-        x: 290,
-        y: 100,
-        w: 60,
-        h: 26,
-        rx: 2,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 290,
-        y: 140,
-        w: 60,
-        h: 26,
-        rx: 2,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 290,
-        y: 210,
-        w: 60,
-        h: 26,
-        rx: 2,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 290,
-        y: 250,
-        w: 60,
-        h: 26,
-        rx: 2,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 290,
-        y: 350,
-        w: 60,
-        h: 26,
-        rx: 2,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 290,
-        y: 390,
-        w: 60,
-        h: 26,
-        rx: 2,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    // data
-    {
-        x: 420,
-        y: 100,
-        w: 170,
-        h: 26,
-        rx: 2,
-        stroke: "oklch(0.55 0.30 194)",
-    },
-    {
-        x: 420,
-        y: 140,
-        w: 170,
-        h: 26,
-        rx: 2,
-        stroke: "oklch(0.55 0.30 194)",
-    },
-    {
-        x: 420,
-        y: 210,
-        w: 170,
-        h: 26,
-        rx: 2,
-        stroke: "oklch(0.55 0.30 194)",
-    },
-    {
-        x: 420,
-        y: 250,
-        w: 170,
-        h: 26,
-        rx: 2,
-        stroke: "oklch(0.55 0.30 194)",
-    },
-    {
-        x: 420,
-        y: 350,
-        w: 170,
-        h: 26,
-        rx: 2,
-        stroke: "oklch(0.55 0.30 194)",
-    },
-    {
-        x: 420,
-        y: 390,
-        w: 170,
-        h: 26,
-        rx: 2,
-        stroke: "oklch(0.55 0.30 194)",
-    },
-
-]}
-polylines={[
-{
-points:[
-[377.5, 87],
-[377.5, 113],
-[420, 113],
-[420, 87],
-[462.5, 87],
-[462.5, 113],
-],
-color: "oklch(0.55 0.30 194)",
-noArrow: true,
-},
-{
-points:[
-[377.5, 127],
-[377.5, 153],
-[420, 153],
-[420, 127],
-[462.5, 127],
-[462.5, 153],
-],
-color: "oklch(0.55 0.30 194)",
-noArrow: true,
-},
-{
-points:[
-[377.5, 197],
-[377.5, 223],
-[420, 223],
-[420, 197],
-[462.5, 197],
-[462.5, 223],
-],
-color: "oklch(0.55 0.30 194)",
-noArrow: true,
-},
-{
-points:[
-[377.5, 237],
-[377.5, 263],
-[420, 263],
-[420, 237],
-[462.5, 237],
-[462.5, 263],
-],
-color: "oklch(0.55 0.30 194)",
-noArrow: true,
-},
-{
-points:[
-[377.5, 337],
-[377.5, 363],
-[420, 363],
-[420, 337],
-[462.5, 337],
-[462.5, 363],
-],
-color: "oklch(0.55 0.30 194)",
-noArrow: true,
-},
-{
-points:[
-[377.5, 377],
-[377.5, 403],
-[420, 403],
-[420, 377],
-[462.5, 377],
-[462.5, 403],
-],
-color: "oklch(0.55 0.30 194)",
-noArrow: true,
-},
-]}
-braces={[
-{
-x1: 195,
-y1: 65,
-x2: 245,
-y2: 65,
-color: "oklch(0.52 0.55 266)",
-side: "top",
-fontFamily: FONT_SERIF,
-fontSize: 18,
-label: "1位",
-},
-{
-x1: 260,
-y1: 65,
-x2: 320,
-y2: 65,
-color: "oklch(0.52 0.55 266)",
-side: "top",
-fontFamily: FONT_SERIF,
-fontSize: 18,
-label: "t位",
-},
-{
-x1: 335,
-y1: 65,
-x2: 505,
-y2: 65,
-color: "oklch(0.52 0.55 266)",
-side: "top",
-fontFamily: FONT_SERIF,
-fontSize: 18,
-label: "B字节",
-},
-{
-x1: 540,
-y1: 75,
-x2: 540,
-y2: 165,
-color: "oklch(0.52 0.55 266)",
-fontFamily: FONT_SERIF,
-fontSize: 18,
-label: "E行",
-},
-{
-x1: 90,
-y1: 75,
-x2: 90,
-y2: 415,
-color: "oklch(0.52 0.55 266)",
-side: "left",
-fontFamily: FONT_SERIF,
-fontSize: 18,
-label: "S组",
-}
-]}
-labels={[
-// date
-// 第一行
-{
-x: 356.25,
-y: 106,
-text: "0",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 398.75,
-y: 106,
-text: "1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 441.25,
-y: 106,
-text: "···",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 483.75,
-y: 106,
-text: "B-1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-// 第二行
-{
-x: 356.25,
-y: 146,
-text: "0",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 398.75,
-y: 146,
-text: "1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 441.25,
-y: 146,
-text: "···",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 483.75,
-y: 146,
-text: "B-1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-// 第三行
-{
-x: 356.25,
-y: 216,
-text: "0",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 398.75,
-y: 216,
-text: "1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 441.25,
-y: 216,
-text: "···",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 483.75,
-y: 216,
-text: "B-1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-// 第四行
-{
-x: 356.25,
-y: 256,
-text: "0",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 398.75,
-y: 256,
-text: "1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 441.25,
-y: 256,
-text: "···",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 483.75,
-y: 256,
-text: "B-1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-// 第五行
-{
-x: 356.25,
-y: 356,
-text: "0",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 398.75,
-y: 356,
-text: "1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 441.25,
-y: 356,
-text: "···",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 483.75,
-y: 356,
-text: "B-1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-// 第六行
-{
-x: 356.25,
-y: 396,
-text: "0",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 398.75,
-y: 396,
-text: "1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 441.25,
-y: 396,
-text: "···",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-{
-x: 483.75,
-y: 396,
-text: "B-1",
-fontSize: 16,
-fontFamily: FONT_SERIF,
-},
-// 组号
-{
-x: 145,
-y: 125,
-text: "set 0：",
-fontSize: 18,
-fontFamily: FONT_SERIF,
-},
-{
-x: 145,
-y: 235,
-text: "set 1：",
-fontSize: 18,
-fontFamily: FONT_SERIF,
-},
-{
-x: 136,
-y: 375,
-text: "set S-1：",
-fontSize: 18,
-fontFamily: FONT_SERIF,
-},
-{
-x: 350,
-y: 303,
-text: "•\n•\n•",
-fontSize: 10,
-}
-]}
-
+<Diagram width={650} height={430} caption="高速缓存 (S, E, B, m) 的通用组织。"
+  defaults={{ font: 'serif', fontSize: 16, braceColor: 'oklch(0.52 0.55 266)' }}
+  boxes={[
+    ...[120, 230, 370].map((y) => ({ x: 350, y, w: 350, h: 90, rx: 4, stroke: 'oklch(0.68 0.36 237)', fill: 'oklch(0.78 0.34 230 / 0.1)' })),
+    ...rowTops.map(lineStrip),
+  ]}
+  braces={[
+    ...[[195, 245, '1位'], [260, 320, 't位'], [335, 505, 'B字节']].map(([x1, x2, label]) => ({ from: [x1, 65], to: [x2, 65], side: 'top', label, fontSize: 18 })),
+    { from: [540, 75], to: [540, 165], label: 'E行', fontSize: 18 },
+    { from: [90, 75], to: [90, 415], side: 'left', label: 'S组', fontSize: 18 },
+  ]}
+  texts={[
+    ...[['set 0：', 145, 118.7], ['set 1：', 145, 228.7], ['set S-1：', 136, 368.7]].map(([t, x, y]) => ({ x, y, text: t, fontSize: 18 })),
+    { x: 350, y: 299.5, text: '•\n•\n•', fontSize: 10 },
+  ]}
 />
 
 #### 2.地址划分
 
 $m$ 位地址被划分为三个部分：
 
-<DFD
-client:load
-width={470}
-height={80}
-ariaLabel="地址划分"
-custom={[
-    {
-        x: 100,
-        y: 45,
-        w: 140,
-        h: 30,
-        rx: 1,
-        label: "tag",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 240,
-        y: 45,
-        w: 140,
-        h: 30,
-        rx: 1,
-        label: "set index",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 380,
-        y: 45,
-        w: 140,
-        h: 30,
-        rx: 1,
-        label: "block offset",
-        stroke: "oklch(0.55 0.30 194)",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-]}
-labels={[
-    {
-        x: 100,
-        y: 20,
-        text: "t位",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 240,
-        y: 20,
-        text: "s位",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 380,
-        y: 20,
-        text: "b位",
-        fontSize: 16,
-        fontFamily: FONT_SERIF,
-    },
-    {
-        x: 30,
-        y: 74,
-        text: "m-1",
-        fontSize: 16,
-        fontFamily: FONT_MATH,
-        fontStyle: "italic",
-    },
-    {
-        x: 450,
-        y: 74,
-        text: "0",
-        fontSize: 16,
-        fontFamily: FONT_MATH,
-        fontStyle: "italic",
-    }
-]}
-
+<Diagram width={470} height={80} defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={[{ x: 30, y: 30, dir: 'h', cross: 30, rx: 1, stroke: CACHE,
+    cells: [{ size: 140, label: 'tag' }, { size: 140, label: 'set index' }, { size: 140, label: 'block offset' }] }]}
+  texts={[
+    ...[['t位', 100], ['s位', 240], ['b位', 380]].map(([t, x]) => ({ x, y: 14.4, text: t })),
+    ...[['m-1', 30], ['0', 450]].map(([t, x]) => ({ x, y: 68.4, text: t, font: 'math' })),
+  ]}
 />
 
 访问流程：
@@ -1273,258 +533,24 @@ float dotprod(float x[8], float y[8]) {
 
 以 Intel Core i7 为例：
 
-<DFD
-  client:load
-  width={520}
-  height={500}
-  ariaLabel="Core i7 cache hierarchy"
-  custom={[
-    {
-      x: 120,
-      y: 190,
-      w: 190,
-      h: 220,
-      rx: 3,
-      stroke: "oklch(0.4 0.3 30)",
-    },
-    {
-      x: 80,
-      y: 110,
-      w: 90,
-      h: 30,
-      label: "Regs",
-      rx: 2,
-      stroke: ORANGE,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 75,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\nd-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 165,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\ni-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 120,
-      y: 260,
-      w: 170,
-      h: 50,
-      label: "L2 cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 400,
-      y: 190,
-      w: 190,
-      h: 220,
-      rx: 3,
-      stroke: "oklch(0.4 0.3 30)",
-    },
-    {
-      x: 360,
-      y: 110,
-      w: 90,
-      h: 30,
-      label: "Regs",
-      rx: 2,
-      stroke: ORANGE,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 355,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\nd-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 445,
-      y: 180,
-      w: 80,
-      h: 50,
-      label: "L1\ni-cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 400,
-      y: 260,
-      w: 170,
-      h: 50,
-      label: "L2 cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 260,
-      y: 350,
-      w: 340,
-      h: 50,
-      label: "L3 cache",
-      rx: 2,
-      stroke: VIOLET,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 260,
-      y: 440,
-      w: 480,
-      h: 50,
-      label: "Main memory",
-      rx: 2,
-      stroke: ORANGE,
-      fontSize: 16,
-      fontFamily: FONT_SERIF,
-    },
+<Diagram width={520} height={500} caption="Intel Core i7 的高速缓存层次结构" defaults={{ font: 'serif', fontSize: 16 }}
+  boxes={[
+    ...coreBoxes(120, 0),
+    ...coreBoxes(400, 3),
+    { id: 'l3', x: 260, y: 350, w: 340, h: 50, label: 'L3 cache', rx: 2, stroke: 'violet' },
+    { id: 'mem', x: 260, y: 440, w: 480, h: 50, label: 'Main memory', rx: 2, stroke: 'orange' },
   ]}
-  lines={[
-    {
-        x1: 75,
-        y1: 125,
-        x2: 75,
-        y2: 155,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 75,
-        y1: 205,
-        x2: 75,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 165,
-        y1: 205,
-        x2: 165,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 120,
-        y1: 285,
-        x2: 120,
-        y2: 325,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 355,
-        y1: 125,
-        x2: 355,
-        y2: 155,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 355,
-        y1: 205,
-        x2: 355,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 445,
-        y1: 205,
-        x2: 445,
-        y2: 235,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 400,
-        y1: 285,
-        x2: 400,
-        y2: 325,
-        color: TEAL,
-        noArrow: true,
-    },
-    {
-        x1: 260,
-        y1: 375,
-        x2: 260, 
-        y2: 415,
-        color: TEAL,
-        noArrow: true,
-    }
+  edges={[
+    ...coreLines(0, 120),
+    ...coreLines(3, 400),
+    { points: ['l3.bottom', 'mem.top'], color: 'teal', arrow: 'none' },
+    { points: [[10, 40], [10, 390], [510, 390], [510, 40], [10, 40]], color: 'oklch(0.5 0.3 125 /.7)', strokeWidth: 2, arrow: 'none' },
   ]}
-  polylines={[
-    {
-      points: [
-        [10, 40],
-        [10, 390],
-        [510, 390],
-        [510, 40],
-        [10, 40],
-      ],
-      color: "oklch(0.5 0.3 125 /.7)",
-      strokeWidth: 2,
-      noArrow: true,
-    },
+  texts={[
+    { x: 60, y: 23.7, text: 'CPU Package', fontSize: 18 },
+    ...[['Core 0', 50], ['Core 3', 330]].map(([t, x]) => ({ x, y: 69.05, text: t, fontSize: 17 })),
+    { x: 260, y: 183, text: '...', fontSize: 20 },
   ]}
-  labels={[
-    {
-      x: 50,
-      y: 75,
-      text: "Core 0",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 330,
-      y: 75,
-      text: "Core 3",
-      fontSize: 17,
-      fontFamily: FONT_SERIF,
-    },
-    {
-      x: 60,
-      y: 30,
-      text: "CPU Package",
-      fontSize: 18,
-      fontFamily: FONT_SERIF,
-    },
-    {
-        x: 260,
-        y: 190,
-        text: "...",
-        fontSize: 20,
-
-    }
-
-]}
 />
 
 - L1 和 L2 为每个核心私有
